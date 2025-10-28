@@ -1,4 +1,4 @@
-import { Flag, Plane, Briefcase, GraduationCap, Heart, FileCheck } from "lucide-react";
+import { Flag, Plane, Briefcase, GraduationCap, Heart, FileCheck, Trophy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const services = [
@@ -37,12 +37,18 @@ const services = [
     title: "إعداد الملفات",
     description: "إعداد وترجمة جميع الوثائق المطلوبة بطريقة احترافية ومعتمدة",
     color: "from-primary to-accent"
+  },
+  {
+    icon: Trophy,
+    title: "مواهب كرة القدم",
+    description: "نساعد في إبراز مواهب كرة القدم وربطهم بأفضل الأكاديميات المهنية في أمريكا وكندا",
+    color: "from-accent to-primary"
   }
 ];
 
 const Services = () => {
   return (
-    <section id="services" className="py-24 bg-muted/30">
+    <section dir="rtl" id="services" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">

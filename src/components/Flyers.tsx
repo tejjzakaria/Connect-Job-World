@@ -5,7 +5,7 @@ const Flyers = () => {
   const flyers = [
     {
       id: 1,
-      title: "فرص العمل في أمريكا",
+      title: "التسجيل في القرعة الامريكية",
       image: "/flyers/poste america jiob with number .png",
       alt: "فرص العمل في أمريكا"
     },
