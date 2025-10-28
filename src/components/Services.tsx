@@ -65,7 +65,7 @@ const Services = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
                 
                 <div className="relative p-8 space-y-4">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-medium group-hover:scale-110 transition-transform duration-300`}>
+                  <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-medium group-hover:scale-110 transition-transform duration-300">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   

@@ -1,4 +1,4 @@
-import { ArrowRight, Globe2, Users, Award } from "lucide-react";
+import { ArrowRight, Users, Award, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Hero = () => {
@@ -7,7 +7,16 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-secondary">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(/hero.png)' }}
+      />
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary-dark/85 to-secondary/90" />
+
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-float" />
@@ -17,9 +26,12 @@ const Hero = () => {
       <div className="container relative z-10 mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in-up">
           {/* Logo/Brand */}
-          <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 animate-scale-in">
-            <Globe2 className="w-5 h-5 text-white" />
-            <span className="text-white font-semibold">Connect Job World</span>
+          <div className="flex justify-center mb-8 animate-scale-in">
+            <img
+              src="/logo.png"
+              alt="Connect Job World"
+              className="h-24 md:h-32 drop-shadow-2xl"
+            />
           </div>
 
           {/* Main heading */}
