@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer dir="rtl" className="bg-primary from-foreground via-foreground/95 to-foreground text-white py-12">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8 mb-8">
+        <div className="grid md:grid-cols-3 gap-12 mb-8">
           {/* Brand */}
           <div className="space-y-4">
             <img
