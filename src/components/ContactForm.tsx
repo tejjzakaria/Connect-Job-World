@@ -129,7 +129,7 @@ const ContactForm = () => {
 
               <div className="mt-8 pt-8 border-t border-white/20">
                 <p className="text-sm opacity-90 leading-relaxed">
-                  نحن متاحون من السبت إلى الخميس
+                  نحن متاحون من الاثنين إلى الجمعة
                   <br />
                   من 9:00 صباحاً حتى 6:00 مساءً
                 </p>
@@ -177,16 +177,15 @@ const ContactForm = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
-                    placeholder="+212 XXX XXX XXX"
+                    placeholder="0XXXXXXXXX"
                     className="h-12 border-border focus:border-primary transition-colors"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">البريد الإلكتروني *</label>
+                <label className="text-sm font-medium text-foreground">البريد الإلكتروني (اختياري)</label>
                 <Input
-                  required
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
