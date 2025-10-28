@@ -2,34 +2,28 @@ import { Facebook, Instagram, Linkedin, Mail, Phone } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-br from-foreground via-foreground/95 to-foreground text-white py-12">
+    <footer dir="rtl" className="bg-primary from-foreground via-foreground/95 to-foreground text-white py-12">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-primary">Connect Job World</h3>
+            <img
+                src="/logo.png"
+                alt=""
+                className="h-16"
+              />
             <p className="text-white/70 leading-relaxed">
               شريكك الموثوق في رحلة الهجرة نحو مستقبل أفضل
             </p>
             <div className="flex gap-4">
+              
               <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
-              >
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
+                href="https://www.instagram.com/connect.job.world?igsh=MWx6NWloeGNlandiaQ%3D%3D&utm_source=qr" target="_blank"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 hover:scale-110"
               >
                 <Instagram className="w-5 h-5" />
               </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
+              
             </div>
           </div>
 
@@ -38,22 +32,22 @@ const Footer = () => {
             <h4 className="text-lg font-bold">روابط سريعة</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#services" className="text-white/70 hover:text-primary transition-colors">
+                <a href="#services" className="text-white/70 hover:text-white transition-colors">
                   خدماتنا
                 </a>
               </li>
               <li>
-                <a href="#contact-form" className="text-white/70 hover:text-primary transition-colors">
+                <a href="#contact-form" className="text-white/70 hover:text-white transition-colors">
                   تواصل معنا
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white/70 hover:text-primary transition-colors">
+                <a href="#" className="text-white/70 hover:text-white transition-colors">
                   من نحن
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white/70 hover:text-primary transition-colors">
+                <a href="#" className="text-white/70 hover:text-white transition-colors">
                   الأسئلة الشائعة
                 </a>
               </li>
@@ -66,14 +60,14 @@ const Footer = () => {
             <div className="space-y-3">
               <a
                 href="tel:+212764724608"
-                className="flex items-center gap-3 text-white/70 hover:text-primary transition-colors group"
+                className="flex items-center gap-3 text-white/70 hover:text-white transition-colors group"
               >
                 <Phone className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span>+212 764 724 608</span>
+                <span>212764724608+</span>
               </a>
               <a
                 href="mailto:info@connectjobworld.com"
-                className="flex items-center gap-3 text-white/70 hover:text-primary transition-colors group"
+                className="flex items-center gap-3 text-white/70 hover:text-white transition-colors group"
               >
                 <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 <span>info@connectjobworld.com</span>
@@ -83,7 +77,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-white/10 pt-8 text-center text-white/60 text-sm">
-          <p>© 2024 Connect Job World. جميع الحقوق محفوظة.</p>
+          <p>© 2025 Connect Job World. جميع الحقوق محفوظة.</p>
         </div>
       </div>
     </footer>

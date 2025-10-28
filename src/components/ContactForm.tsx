@@ -28,15 +28,43 @@ const ContactForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      // Get Google Sheets URL from environment variable
+      const googleSheetsUrl = import.meta.env.VITE_GOOGLE_SHEETS_URL;
+
+      if (!googleSheetsUrl) {
+        throw new Error("Google Sheets URL not configured");
+      }
+
+      // Send data to Google Sheets
+      await fetch(googleSheetsUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        mode: 'no-cors', // Required for Google Apps Script
+      });
+
+      // Note: no-cors mode doesn't allow reading the response,
+      // but the request will still be processed by Google Sheets
       toast({
         title: "تم إرسال طلبك بنجاح!",
         description: "سنتواصل معك في أقرب وقت ممكن",
       });
-      setIsSubmitting(false);
+
+      // Reset form
       setFormData({ name: "", email: "", phone: "", service: "", message: "" });
-    }, 1500);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "حدث خطأ",
+        description: "يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {

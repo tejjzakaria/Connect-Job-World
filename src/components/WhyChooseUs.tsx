@@ -36,8 +36,7 @@ const WhyChooseUs = () => {
           <div className="space-y-8 animate-fade-in-up">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                لماذا تختار
-                <span className="text-primary"> Connect Job World</span>؟
+                لماذا نحن؟
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
                 نحن نفهم أن قرار الهجرة هو أحد أهم القرارات في حياتك. لذلك نلتزم بتقديم أفضل الخدمات لضمان نجاحك.
