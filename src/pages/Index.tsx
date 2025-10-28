@@ -11,6 +11,7 @@ import FAQ from "@/components/FAQ";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import CTACard from "@/components/CTACard";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Index = () => {
   return (
@@ -35,6 +36,7 @@ const Index = () => {
       <FAQ />
       <ContactForm />
       <Footer />
+      <ScrollToTop />
     </div>
   );
 };
