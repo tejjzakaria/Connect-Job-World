@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { submissionsAPI } from "@/lib/api";
 
 const ContactForm = () => {
   const { toast } = useToast();
@@ -28,33 +29,72 @@ const ContactForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      // Get Google Sheets URL from environment variable
-      const googleSheetsUrl = import.meta.env.VITE_GOOGLE_SHEETS_URL;
+    let mongoSuccess = false;
+    let sheetsSuccess = false;
 
-      if (!googleSheetsUrl) {
-        throw new Error("Google Sheets URL not configured");
+    try {
+      // 1. Send to MongoDB
+      try {
+        console.log("🔄 Attempting to save to MongoDB...");
+        console.log("API URL:", import.meta.env.VITE_API_URL);
+
+        const response = await submissionsAPI.create({
+          name: formData.name,
+          email: formData.email || undefined,
+          phone: formData.phone,
+          service: formData.service,
+          message: formData.message,
+          source: "نموذج الموقع"
+        });
+
+        console.log("MongoDB Response:", response);
+
+        if (response.success) {
+          mongoSuccess = true;
+          console.log("✅ Saved to MongoDB");
+        }
+      } catch (mongoError) {
+        console.error("❌ MongoDB error:", mongoError);
+        console.error("Error details:", mongoError);
+        // Continue to try Google Sheets even if MongoDB fails
       }
 
-      // Send data to Google Sheets
-      await fetch(googleSheetsUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-        mode: 'no-cors', // Required for Google Apps Script
-      });
+      // 2. Send to Google Sheets (in parallel)
+      try {
+        const googleSheetsUrl = import.meta.env.VITE_GOOGLE_SHEETS_URL;
 
-      // Note: no-cors mode doesn't allow reading the response,
-      // but the request will still be processed by Google Sheets
-      toast({
-        title: "تم إرسال طلبك بنجاح!",
-        description: "سنتواصل معك في أقرب وقت ممكن",
-      });
+        if (googleSheetsUrl) {
+          await fetch(googleSheetsUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+            mode: 'no-cors', // Required for Google Apps Script
+          });
 
-      // Reset form
-      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
+          sheetsSuccess = true;
+          console.log("✅ Saved to Google Sheets");
+        } else {
+          console.warn("⚠️ Google Sheets URL not configured");
+        }
+      } catch (sheetsError) {
+        console.error("❌ Google Sheets error:", sheetsError);
+        // Continue anyway
+      }
+
+      // Show success if at least one destination worked
+      if (mongoSuccess || sheetsSuccess) {
+        toast({
+          title: "تم إرسال طلبك بنجاح!",
+          description: "سنتواصل معك في أقرب وقت ممكن",
+        });
+
+        // Reset form
+        setFormData({ name: "", email: "", phone: "", service: "", message: "" });
+      } else {
+        throw new Error("Both MongoDB and Google Sheets failed");
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
       toast({
@@ -231,13 +271,12 @@ const ContactForm = () => {
                     <SelectValue placeholder="اختر الخدمة" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="dv-lottery">القرعة الأمريكية</SelectItem>
-                    <SelectItem value="canada">الهجرة إلى كندا</SelectItem>
-                    <SelectItem value="work-visa">تأشيرة عمل</SelectItem>
-                    <SelectItem value="study">الدراسة في الخارج</SelectItem>
-                    <SelectItem value="family">لم شمل العائلة</SelectItem>
-                    <SelectItem value="sports">مواهب كرة القدم</SelectItem>
-                    <SelectItem value="other">خدمات أخرى</SelectItem>
+                    <SelectItem value="القرعة الأمريكية">القرعة الأمريكية</SelectItem>
+                    <SelectItem value="الهجرة إلى كندا">الهجرة إلى كندا</SelectItem>
+                    <SelectItem value="تأشيرة عمل">تأشيرة عمل</SelectItem>
+                    <SelectItem value="الدراسة في الخارج">الدراسة في الخارج</SelectItem>
+                    <SelectItem value="لم شمل العائلة">لم شمل العائلة</SelectItem>
+                    <SelectItem value="مواهب كرة القدم">مواهب كرة القدم</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

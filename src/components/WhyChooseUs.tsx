@@ -25,7 +25,7 @@ const features = [
 
 const WhyChooseUs = () => {
   return (
-    <section dir="rtl" className="py-24 bg-gradient-to-br from-background via-muted/20 to-background relative overflow-hidden">
+    <section id="why-choose-us" dir="rtl" className="py-24 bg-gradient-to-br from-background via-muted/20 to-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary/5 to-transparent" />
       <div className="absolute bottom-0 left-0 w-1/3 h-full bg-gradient-to-r from-secondary/5 to-transparent" />

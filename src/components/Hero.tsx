@@ -7,7 +7,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -26,7 +26,7 @@ const Hero = () => {
       <div className="container relative z-10 mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in-up">
           {/* Logo/Brand */}
-          <div className="flex justify-center mb-8 animate-scale-in">
+          <div className="flex justify-center mt-5 mb-8 animate-scale-in">
             <img
               src="/logo.png"
               alt="Connect Job World"
@@ -89,7 +89,7 @@ const Hero = () => {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce mt-5">
         <div className="w-6 h-10 border-2 border-white/40 rounded-full flex items-start justify-center p-2">
           <div className="w-1 h-3 bg-white/60 rounded-full animate-pulse" />
         </div>
