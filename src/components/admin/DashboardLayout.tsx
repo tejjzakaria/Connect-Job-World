@@ -117,7 +117,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               تسجيل الخروج
             </Button>
           </div>
-          <Signature />
         </div>
       </aside>
 
