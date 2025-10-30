@@ -23,6 +23,7 @@ import {
 import DashboardLayout from "@/components/admin/DashboardLayout";
 import { submissionsAPI, documentsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { formatDateForExport, formatDateForFilename, formatDateTime } from "@/lib/dateUtils";
 
 interface Submission {
   _id: string;
@@ -36,9 +37,17 @@ interface Submission {
   source: string;
   createdAt?: string;
   workflowStatus?: string;
-  validatedBy?: any;
+  validatedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   validatedAt?: string;
-  callConfirmedBy?: any;
+  callConfirmedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   callConfirmedAt?: string;
   callNotes?: string;
   convertedToClient?: boolean;
@@ -339,7 +348,7 @@ const Submissions = () => {
           submission.status || "",
           submission.source || "",
           `"${(submission.message || "").replace(/"/g, '""')}"`, // Escape quotes in message
-          new Date(submission.timestamp || submission.createdAt || "").toLocaleString('ar-EG'),
+          formatDateForExport(submission.timestamp || submission.createdAt || ""),
           submission.workflowStatus || "",
           submission.convertedToClient ? "نعم" : "لا"
         ];
@@ -359,7 +368,7 @@ const Submissions = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `submissions_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `submissions_${formatDateForFilename()}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -590,8 +599,33 @@ const Submissions = () => {
                 {/* Timestamp */}
                 <div className="text-xs text-muted-foreground mb-4 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  {new Date(submission.timestamp || submission.createdAt || '').toLocaleString('ar-EG')}
+                  تم التقديم: {formatDateForExport(submission.timestamp || submission.createdAt || '')}
                 </div>
+
+                {/* Audit Trail */}
+                {(submission.validatedBy || submission.callConfirmedBy) && (
+                  <div className="space-y-2 mb-4">
+                    {submission.validatedBy && submission.validatedAt && (
+                      <div className="bg-green-50 border border-green-200 rounded p-2 text-xs">
+                        <p className="font-semibold text-green-900">✓ تم التحقق من البيانات</p>
+                        <p className="text-green-800">
+                          بواسطة: {submission.validatedBy.name} • {formatDateTime(submission.validatedAt)}
+                        </p>
+                      </div>
+                    )}
+                    {submission.callConfirmedBy && submission.callConfirmedAt && (
+                      <div className="bg-blue-50 border border-blue-200 rounded p-2 text-xs">
+                        <p className="font-semibold text-blue-900">📞 تم التواصل</p>
+                        <p className="text-blue-800">
+                          بواسطة: {submission.callConfirmedBy.name} • {formatDateTime(submission.callConfirmedAt)}
+                        </p>
+                        {submission.callNotes && (
+                          <p className="text-blue-700 mt-1 italic">ملاحظات: {submission.callNotes}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2 pt-4 border-t">

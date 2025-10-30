@@ -12,7 +12,11 @@ import {
   Clock,
   AlertCircle,
   Send,
-  UserCheck
+  UserCheck,
+  UserCog,
+  Activity,
+  Lock,
+  UserPlus
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import DashboardLayout from "@/components/admin/DashboardLayout";
@@ -117,6 +121,18 @@ const Documentation = () => {
       ]
     },
     {
+      icon: UserCog,
+      title: "إدارة الموظفين",
+      color: "text-indigo-500",
+      bgColor: "bg-indigo-50",
+      items: [
+        "إضافة موظفين جدد مع تحديد الأدوار",
+        "تفعيل وإلغاء تفعيل حسابات الموظفين",
+        "تعديل معلومات وصلاحيات الموظفين",
+        "نظام صلاحيات متقدم (مدير، موظف، مشاهد)"
+      ]
+    },
+    {
       icon: Upload,
       title: "نظام المستندات",
       color: "text-purple-500",
@@ -126,6 +142,18 @@ const Documentation = () => {
         "تحديد صلاحية الروابط (عدد الأيام)",
         "تخزين منظم بأسماء موحدة للملفات",
         "تحميل المستندات بنقرة واحدة"
+      ]
+    },
+    {
+      icon: Activity,
+      title: "تسجيل الأنشطة",
+      color: "text-cyan-500",
+      bgColor: "bg-cyan-50",
+      items: [
+        "تسجيل تلقائي لجميع العمليات",
+        "تتبع تسجيل الدخول والخروج",
+        "مراقبة التعديلات على البيانات",
+        "إحصائيات مفصلة عن النشاطات"
       ]
     },
     {
@@ -207,7 +235,7 @@ const Documentation = () => {
             منصة <span className="font-bold text-primary">Connect Job World</span> هي نظام متكامل لإدارة طلبات الهجرة والتأشيرات
             والخدمات المرتبطة. تم تصميم النظام لتبسيط عملية معالجة الطلبات من الاستقبال الأولي وحتى التحويل إلى عميل نشط.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
             <div className="bg-white p-4 rounded-lg border border-blue-200">
               <div className="text-3xl font-bold text-primary mb-1">7</div>
               <div className="text-sm text-muted-foreground">مراحل العمل</div>
@@ -219,6 +247,10 @@ const Documentation = () => {
             <div className="bg-white p-4 rounded-lg border border-blue-200">
               <div className="text-3xl font-bold text-purple-600 mb-1">6</div>
               <div className="text-sm text-muted-foreground">خدمات متاحة</div>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-blue-200">
+              <div className="text-3xl font-bold text-indigo-600 mb-1">3</div>
+              <div className="text-sm text-muted-foreground">أدوار مستخدمين</div>
             </div>
           </div>
         </Card>
@@ -263,6 +295,93 @@ const Documentation = () => {
             ))}
           </div>
         </div>
+
+        {/* User Roles & Permissions */}
+        <Card className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200">
+          <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <Lock className="w-6 h-6 text-indigo-600" />
+            الأدوار والصلاحيات
+          </h3>
+          <p className="text-muted-foreground mb-6">
+            النظام يدعم ثلاثة أدوار مختلفة لضمان التحكم الكامل في الصلاحيات والوصول
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white p-5 rounded-lg border-2 border-red-200">
+              <div className="flex items-center gap-2 mb-3">
+                <UserCog className="w-5 h-5 text-red-600" />
+                <h4 className="font-bold text-red-600">مدير (Admin)</h4>
+              </div>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                  <span>صلاحيات كاملة على النظام</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                  <span>إدارة الموظفين والأدوار</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                  <span>عرض سجلات الأنشطة</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                  <span>حذف العملاء والطلبات</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-5 rounded-lg border-2 border-blue-200">
+              <div className="flex items-center gap-2 mb-3">
+                <UserPlus className="w-5 h-5 text-blue-600" />
+                <h4 className="font-bold text-blue-600">موظف (Agent)</h4>
+              </div>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <span>إدارة العملاء والطلبات</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <span>رفع وإدارة المستندات</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <span>رؤية العملاء المخصصين فقط</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <span>لا يمكن حذف البيانات</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-5 rounded-lg border-2 border-gray-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Eye className="w-5 h-5 text-gray-600" />
+                <h4 className="font-bold text-gray-600">مشاهد (Viewer)</h4>
+              </div>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                  <span>عرض التقارير والإحصائيات</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                  <span>الوصول للقراءة فقط</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                  <span>لا يمكن تعديل البيانات</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                  <span>مناسب للمراقبة والإشراف</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </Card>
 
         {/* Features Grid */}
         <div>
@@ -365,6 +484,165 @@ const Documentation = () => {
           </div>
         </Card>
 
+        {/* Employee Management Guide */}
+        <Card className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200">
+          <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <UserCog className="w-5 h-5 text-cyan-600" />
+            إدارة الموظفين
+          </h3>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                1
+              </div>
+              <div>
+                <p className="font-semibold text-foreground mb-1">إضافة موظف جديد</p>
+                <p className="text-sm text-muted-foreground">
+                  من صفحة الموظفين، اضغط "إضافة موظف جديد" وأدخل البيانات (الاسم، البريد، كلمة المرور، الدور)
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                2
+              </div>
+              <div>
+                <p className="font-semibold text-foreground mb-1">تعديل الصلاحيات</p>
+                <p className="text-sm text-muted-foreground">
+                  يمكنك تغيير دور أي موظف (مدير، موظف، مشاهد) في أي وقت من خلال زر "تعديل"
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                3
+              </div>
+              <div>
+                <p className="font-semibold text-foreground mb-1">إلغاء التفعيل</p>
+                <p className="text-sm text-muted-foreground">
+                  بدلاً من الحذف، يمكنك إلغاء تفعيل حساب الموظف مؤقتاً للحفاظ على سجلات الأنشطة
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-cyan-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                4
+              </div>
+              <div>
+                <p className="font-semibold text-foreground mb-1">البحث والتصفية</p>
+                <p className="text-sm text-muted-foreground">
+                  استخدم البحث للعثور على موظف معين، أو صفي حسب الدور أو الحالة (نشط/غير نشط)
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Activity Logging Guide */}
+        <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
+          <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-green-600" />
+            تسجيل الأنشطة
+          </h3>
+          <p className="text-muted-foreground mb-4">
+            النظام يسجل تلقائياً جميع العمليات المهمة لضمان الشفافية والأمان:
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-lg border border-green-200">
+              <h5 className="font-semibold text-foreground mb-2">أنشطة المستخدمين</h5>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  تسجيل الدخول والخروج
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  إنشاء وتعديل الموظفين
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  تفعيل/إلغاء تفعيل الحسابات
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  تغيير كلمات المرور
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-4 rounded-lg border border-green-200">
+              <h5 className="font-semibold text-foreground mb-2">أنشطة العملاء والطلبات</h5>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  إنشاء وتعديل العملاء
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  التحقق من الطلبات
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  تأكيد المكالمات
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  التحويل إلى عميل
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-4 rounded-lg border border-green-200">
+              <h5 className="font-semibold text-foreground mb-2">أنشطة المستندات</h5>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  إنشاء روابط الرفع
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  التحقق من المستندات
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  رفض المستندات
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  حذف المستندات
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white p-4 rounded-lg border border-green-200">
+              <h5 className="font-semibold text-foreground mb-2">معلومات إضافية</h5>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  عنوان IP المستخدم
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  نوع المتصفح
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  تاريخ ووقت الإجراء
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                  تفاصيل العملية
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-green-300">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">ملاحظة:</span> يمكن للمديرين فقط الوصول إلى سجلات الأنشطة من خلال قسم خاص في لوحة التحكم
+            </p>
+          </div>
+        </Card>
+
         {/* Best Practices */}
         <div>
           <h3 className="text-2xl font-bold text-foreground mb-6">أفضل الممارسات</h3>
@@ -456,6 +734,64 @@ const Documentation = () => {
               <span className="text-sm text-foreground">
                 تأكد من تحديث حالة المستندات (موثق/مرفوض/يحتاج استبدال) قبل التحويل لعميل
               </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+              <span className="text-sm text-foreground">
+                امنح كل موظف الدور المناسب لعمله - لا تعطي صلاحيات المدير إلا عند الضرورة
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+              <span className="text-sm text-foreground">
+                راجع سجلات الأنشطة بشكل دوري لمراقبة العمليات وضمان الأمان
+              </span>
+            </li>
+          </ul>
+        </Card>
+
+        {/* Security Best Practices */}
+        <Card className="p-6 bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-200">
+          <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+            <Shield className="w-5 h-5 text-red-600" />
+            أفضل ممارسات الأمان
+          </h3>
+          <ul className="space-y-3">
+            <li className="flex items-start gap-3">
+              <Lock className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-foreground mb-1">كلمات المرور القوية</p>
+                <p className="text-sm text-muted-foreground">
+                  تأكد من أن جميع الموظفين يستخدمون كلمات مرور قوية (6 أحرف على الأقل، مزيج من الأحرف والأرقام)
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <UserCog className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-foreground mb-1">مبدأ الحد الأدنى من الصلاحيات</p>
+                <p className="text-sm text-muted-foreground">
+                  امنح كل موظف فقط الصلاحيات التي يحتاجها لأداء عمله - لا أكثر ولا أقل
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Activity className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-foreground mb-1">مراجعة سجلات الأنشطة</p>
+                <p className="text-sm text-muted-foreground">
+                  راجع سجلات الأنشطة بانتظام لاكتشاف أي نشاط غير عادي أو محاولات وصول غير مصرح بها
+                </p>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-foreground mb-1">إلغاء تفعيل الحسابات غير المستخدمة</p>
+                <p className="text-sm text-muted-foreground">
+                  عند مغادرة موظف، قم بإلغاء تفعيل حسابه فوراً للحفاظ على أمان النظام
+                </p>
+              </div>
             </li>
           </ul>
         </Card>

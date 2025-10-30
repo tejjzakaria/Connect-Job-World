@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { protect } from '../middleware/auth.js';
+import { logActivity } from '../utils/activityLogger.js';
 
 const router = express.Router();
 
@@ -24,6 +25,16 @@ router.post('/register', async (req, res) => {
       email,
       password,
       role: role || 'viewer',
+    });
+
+    // Log activity
+    await logActivity({
+      userId: user._id,
+      action: 'user_created',
+      entityType: 'User',
+      entityId: user._id,
+      details: { name: user.name, email: user.email, role: user.role },
+      req,
     });
 
     // Generate token
@@ -79,6 +90,16 @@ router.post('/login', async (req, res) => {
     user.lastLogin = Date.now();
     await user.save();
 
+    // Log activity
+    await logActivity({
+      userId: user._id,
+      action: 'user_login',
+      entityType: 'User',
+      entityId: user._id,
+      details: { email: user.email },
+      req,
+    });
+
     // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '30d',
@@ -124,6 +145,15 @@ router.get('/me', protect, async (req, res) => {
 // @route   POST /api/auth/logout
 // @access  Private
 router.post('/logout', protect, async (req, res) => {
+  // Log activity
+  await logActivity({
+    userId: req.user.id,
+    action: 'user_logout',
+    entityType: 'User',
+    entityId: req.user.id,
+    req,
+  });
+
   res.json({
     success: true,
     message: 'Logged out successfully',

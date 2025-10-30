@@ -12,6 +12,7 @@ import {
 import DashboardLayout from "@/components/admin/DashboardLayout";
 import { clientsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { formatShortDate, formatDateForExport, formatDateForFilename, formatNumber } from "@/lib/dateUtils";
 
 interface ServiceStat {
   name: string;
@@ -134,21 +135,21 @@ const Analytics = () => {
   const overallStats = [
     {
       title: "إجمالي العملاء",
-      value: totalClients.toLocaleString(),
+      value: formatNumber(totalClients),
       icon: Users,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50"
     },
     {
       title: "إجمالي الطلبات",
-      value: totalSubmissions.toLocaleString(),
+      value: formatNumber(totalSubmissions),
       icon: FileText,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50"
     },
     {
       title: "طلبات مكتملة",
-      value: completedSubmissions.toLocaleString(),
+      value: formatNumber(completedSubmissions),
       icon: CheckCircle,
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50"
@@ -171,7 +172,7 @@ const Analytics = () => {
 
       // Create comprehensive analytics report
       const reportLines: string[] = [];
-      const date = new Date().toLocaleDateString('ar-EG');
+      const date = formatShortDate(new Date());
 
       // Report Header
       reportLines.push("تقرير التحليلات والإحصائيات");
@@ -233,7 +234,7 @@ const Analytics = () => {
       // Footer
       reportLines.push("=== نهاية التقرير ===");
       reportLines.push(`تم إنشاء التقرير بواسطة: Connect Job World`);
-      reportLines.push(`تاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}`);
+      reportLines.push(`تاريخ الإنشاء: ${formatDateForExport(new Date())}`);
 
       // Create CSV content
       const csvContent = reportLines.join("\n");
@@ -246,7 +247,7 @@ const Analytics = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `analytics_report_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `analytics_report_${formatDateForFilename()}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

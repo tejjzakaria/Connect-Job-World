@@ -1,9 +1,10 @@
 import express from 'express';
 import Submission from '../models/Submission.js';
 import Client from '../models/Client.js';
-import { protect } from '../middleware/auth.js';
+import { protect, authorize } from '../middleware/auth.js';
 import { createNotification } from '../utils/notifications.js';
 import whatsappService from '../services/whatsapp.js';
+import { logActivity } from '../utils/activityLogger.js';
 
 const router = express.Router();
 
@@ -111,8 +112,8 @@ router.use(protect);
 
 // @desc    Get all submissions
 // @route   GET /api/submissions
-// @access  Private
-router.get('/', async (req, res) => {
+// @access  Private (Admin, Agent)
+router.get('/', authorize('admin', 'agent'), async (req, res) => {
   try {
     const { search, service, status, source, page = 1, limit = 10 } = req.query;
 
@@ -147,6 +148,8 @@ router.get('/', async (req, res) => {
     // Execute query with pagination
     const submissions = await Submission.find(query)
       .populate('reviewedBy', 'name email')
+      .populate('validatedBy', 'name email')
+      .populate('callConfirmedBy', 'name email')
       .populate('clientId', 'name')
       .sort({ timestamp: -1 })
       .limit(limit * 1)
@@ -169,16 +172,28 @@ router.get('/', async (req, res) => {
 
 // @desc    Get single submission
 // @route   GET /api/submissions/:id
-// @access  Private
-router.get('/:id', async (req, res) => {
+// @access  Private (Admin, Agent)
+router.get('/:id', authorize('admin', 'agent'), async (req, res) => {
   try {
     const submission = await Submission.findById(req.params.id)
       .populate('reviewedBy', 'name email')
+      .populate('validatedBy', 'name email')
+      .populate('callConfirmedBy', 'name email')
       .populate('clientId');
 
     if (!submission) {
       return res.status(404).json({ message: 'Submission not found' });
     }
+
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: 'submission_viewed',
+      entityType: 'Submission',
+      entityId: submission._id,
+      details: { name: submission.name, service: submission.service },
+      req,
+    });
 
     res.json({
       success: true,
@@ -191,8 +206,8 @@ router.get('/:id', async (req, res) => {
 
 // @desc    Update submission status
 // @route   PUT /api/submissions/:id
-// @access  Private
-router.put('/:id', async (req, res) => {
+// @access  Private (Admin, Agent)
+router.put('/:id', authorize('admin', 'agent'), async (req, res) => {
   try {
     const submission = await Submission.findById(req.params.id);
 
@@ -208,6 +223,16 @@ router.put('/:id', async (req, res) => {
 
     const updatedSubmission = await submission.save();
 
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: 'submission_updated',
+      entityType: 'Submission',
+      entityId: updatedSubmission._id,
+      details: { status, name: updatedSubmission.name },
+      req,
+    });
+
     res.json({
       success: true,
       data: updatedSubmission,
@@ -219,14 +244,24 @@ router.put('/:id', async (req, res) => {
 
 // @desc    Delete submission
 // @route   DELETE /api/submissions/:id
-// @access  Private
-router.delete('/:id', async (req, res) => {
+// @access  Private (Admin only)
+router.delete('/:id', authorize('admin'), async (req, res) => {
   try {
     const submission = await Submission.findById(req.params.id);
 
     if (!submission) {
       return res.status(404).json({ message: 'Submission not found' });
     }
+
+    // Log activity before deletion
+    await logActivity({
+      userId: req.user.id,
+      action: 'submission_deleted',
+      entityType: 'Submission',
+      entityId: submission._id,
+      details: { name: submission.name, email: submission.email },
+      req,
+    });
 
     await submission.deleteOne();
 
@@ -241,8 +276,8 @@ router.delete('/:id', async (req, res) => {
 
 // @desc    Validate submission
 // @route   POST /api/submissions/:id/validate
-// @access  Private
-router.post('/:id/validate', async (req, res) => {
+// @access  Private (Admin, Agent)
+router.post('/:id/validate', authorize('admin', 'agent'), async (req, res) => {
   try {
     const submission = await Submission.findById(req.params.id);
 
@@ -255,6 +290,16 @@ router.post('/:id/validate', async (req, res) => {
     submission.validatedAt = new Date();
     submission.status = 'تمت المعاينة';
     await submission.save();
+
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: 'submission_validated',
+      entityType: 'Submission',
+      entityId: submission._id,
+      details: { name: submission.name, service: submission.service },
+      req,
+    });
 
     // Send WhatsApp notification
     await whatsappService.notifyStatusUpdate(submission, 'validated');
@@ -271,8 +316,8 @@ router.post('/:id/validate', async (req, res) => {
 
 // @desc    Confirm call
 // @route   POST /api/submissions/:id/confirm-call
-// @access  Private
-router.post('/:id/confirm-call', async (req, res) => {
+// @access  Private (Admin, Agent)
+router.post('/:id/confirm-call', authorize('admin', 'agent'), async (req, res) => {
   try {
     const { callNotes } = req.body;
     const submission = await Submission.findById(req.params.id);
@@ -287,6 +332,16 @@ router.post('/:id/confirm-call', async (req, res) => {
     submission.callNotes = callNotes;
     submission.status = 'تم التواصل';
     await submission.save();
+
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: 'submission_call_confirmed',
+      entityType: 'Submission',
+      entityId: submission._id,
+      details: { name: submission.name, callNotes },
+      req,
+    });
 
     // Send WhatsApp notification
     await whatsappService.notifyStatusUpdate(submission, 'call_confirmed', callNotes);
@@ -303,8 +358,8 @@ router.post('/:id/confirm-call', async (req, res) => {
 
 // @desc    Convert submission to client
 // @route   POST /api/submissions/:id/convert
-// @access  Private
-router.post('/:id/convert', async (req, res) => {
+// @access  Private (Admin only)
+router.post('/:id/convert', authorize('admin'), async (req, res) => {
   try {
     const submission = await Submission.findById(req.params.id);
 
@@ -341,6 +396,16 @@ router.post('/:id/convert', async (req, res) => {
     submission.workflowStatus = 'converted_to_client';
     await submission.save();
 
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: 'submission_converted',
+      entityType: 'Submission',
+      entityId: submission._id,
+      details: { name: submission.name, clientId: client._id },
+      req,
+    });
+
     // Create notification for client conversion
     await createNotification({
       type: 'converted_to_client',
@@ -371,8 +436,8 @@ router.post('/:id/convert', async (req, res) => {
 
 // @desc    Get submission statistics
 // @route   GET /api/submissions/stats/overview
-// @access  Private
-router.get('/stats/overview', async (req, res) => {
+// @access  Private (Admin, Viewer)
+router.get('/stats/overview', authorize('admin', 'viewer'), async (req, res) => {
   try {
     const total = await Submission.countDocuments();
     const byStatus = await Submission.aggregate([

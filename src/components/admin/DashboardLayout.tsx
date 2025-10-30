@@ -10,7 +10,8 @@ import {
   LogOut,
   Menu,
   X,
-  BookOpen
+  BookOpen,
+  UserCog
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,12 +30,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "لوحة التحكم", path: "/admin/dashboard" },
-    { icon: Users, label: "العملاء", path: "/admin/clients" },
-    { icon: FileText, label: "الطلبات", path: "/admin/submissions" },
-    { icon: BarChart3, label: "التقارير", path: "/admin/analytics" },
-    { icon: BookOpen, label: "الدليل", path: "/admin/documentation" },
-    { icon: Settings, label: "الإعدادات", path: "/admin/settings" },
+    { icon: LayoutDashboard, label: "لوحة التحكم", path: "/admin/dashboard", roles: ["admin", "agent", "viewer"] },
+    { icon: Users, label: "العملاء", path: "/admin/clients", roles: ["admin", "agent"] },
+    { icon: FileText, label: "الطلبات", path: "/admin/submissions", roles: ["admin", "agent"] },
+    { icon: UserCog, label: "الموظفين", path: "/admin/employees", roles: ["admin"] },
+    { icon: BarChart3, label: "التقارير", path: "/admin/analytics", roles: ["admin", "viewer"] },
+    { icon: BookOpen, label: "الدليل", path: "/admin/documentation", roles: ["admin", "agent", "viewer"] },
+    { icon: Settings, label: "تفاصيل النظام", path: "/admin/settings", roles: ["admin"] },
   ];
 
   const handleLogout = () => {
@@ -66,50 +68,54 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+            {menuItems
+              .filter((item) => item.roles.includes(user?.role || "viewer"))
+              .map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
 
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                      ? "bg-primary text-white shadow-md"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
-                </Link>
-              );
-            })}
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
+                        ? "bg-primary text-white shadow-md"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                );
+              })}
           </nav>
 
           {/* User Info & Logout */}
           
-          <div className="p-4 border-t border-border">
-            <Card className="p-4 bg-muted/50">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold">
-                  {user?.name?.charAt(0) || "A"}
+          <div className="p-4 border-t border-border space-y-2">
+            <Link to="/admin/profile" onClick={() => setSidebarOpen(false)}>
+              <Card className="p-4 bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold">
+                    {user?.name?.charAt(0) || "A"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate">{user?.name || "Admin"}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">{user?.name || "Admin"}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                </div>
-              </div>
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="w-full gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                تسجيل الخروج
-              </Button>
-            </Card>
+              </Card>
+            </Link>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="w-full gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              تسجيل الخروج
+            </Button>
           </div>
           <Signature />
         </div>
@@ -130,7 +136,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
               <h1 className="text-xl font-bold text-foreground">
-                {menuItems.find(item => item.path === location.pathname)?.label || "لوحة التحكم"}
+                {menuItems.filter((item) => item.roles.includes(user?.role || "viewer")).find(item => item.path === location.pathname)?.label || "لوحة التحكم"}
               </h1>
             </div>
 

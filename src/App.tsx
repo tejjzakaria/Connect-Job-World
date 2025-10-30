@@ -19,6 +19,8 @@ import SubmissionDocuments from "./pages/admin/SubmissionDocuments";
 import Analytics from "./pages/admin/Analytics";
 import Settings from "./pages/admin/Settings";
 import Documentation from "./pages/admin/Documentation";
+import Employees from "./pages/admin/Employees";
+import Profile from "./pages/admin/Profile";
 import DocumentUpload from "./pages/DocumentUpload";
 import TrackApplication from "./pages/public/TrackApplication";
 
@@ -112,6 +114,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Documentation />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/employees"
+              element={
+                <ProtectedRoute>
+                  <Employees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

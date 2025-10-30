@@ -22,6 +22,7 @@ import {
 import DashboardLayout from "@/components/admin/DashboardLayout";
 import { clientsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { formatDateForExport, formatDateForFilename, formatShortDate } from "@/lib/dateUtils";
 
 interface Client {
   _id: string;
@@ -200,7 +201,7 @@ const Clients = () => {
           client.service || "",
           client.status || "",
           `"${(client.message || "").replace(/"/g, '""')}"`, // Escape quotes in message
-          new Date(client.date || client.createdAt || "").toLocaleString('ar-EG')
+          formatDateForExport(client.date || client.createdAt || "")
         ];
       });
 
@@ -218,7 +219,7 @@ const Clients = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `clients_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `clients_${formatDateForFilename()}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -380,7 +381,7 @@ const Clients = () => {
                       </td>
                       <td className="p-4">
                         <span className="text-sm text-muted-foreground">
-                          {new Date(client.date || client.createdAt || '').toLocaleDateString('ar-EG')}
+                          {formatShortDate(client.date || client.createdAt || '')}
                         </span>
                       </td>
                       <td className="p-4">

@@ -11,8 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { notificationsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { formatDistanceToNow } from "date-fns";
-import { ar } from "date-fns/locale";
+import { formatRelativeTime } from "@/lib/dateUtils";
 
 interface Notification {
   _id: string;
@@ -146,16 +145,6 @@ export function NotificationsDropdown() {
     }
   };
 
-  const formatTime = (dateString: string) => {
-    try {
-      return formatDistanceToNow(new Date(dateString), {
-        addSuffix: true,
-        locale: ar,
-      });
-    } catch (error) {
-      return '';
-    }
-  };
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -234,7 +223,7 @@ export function NotificationsDropdown() {
                       {notification.message}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {formatTime(notification.createdAt)}
+                      {formatRelativeTime(notification.createdAt)}
                     </p>
                   </div>
                 </div>

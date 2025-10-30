@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import DashboardLayout from "@/components/admin/DashboardLayout";
 import { clientsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { formatShortDate, formatNumber } from "@/lib/dateUtils";
 
 interface DashboardStats {
   totalClients: number;
@@ -101,21 +102,21 @@ const Dashboard = () => {
   const statsCards = [
     {
       title: "إجمالي العملاء",
-      value: stats.totalClients.toLocaleString(),
+      value: formatNumber(stats.totalClients),
       icon: Users,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50"
     },
     {
       title: "طلبات جديدة",
-      value: stats.newSubmissions.toLocaleString(),
+      value: formatNumber(stats.newSubmissions),
       icon: FileText,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50"
     },
     {
       title: "طلبات مكتملة",
-      value: stats.completedSubmissions.toLocaleString(),
+      value: formatNumber(stats.completedSubmissions),
       icon: CheckCircle,
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50"
@@ -236,7 +237,7 @@ const Dashboard = () => {
                         {submission.status}
                       </span>
                       <span className="text-sm text-muted-foreground hidden sm:block">
-                        {new Date(submission.timestamp).toLocaleDateString('ar-EG')}
+                        {formatShortDate(submission.timestamp)}
                       </span>
                     </div>
                   </div>

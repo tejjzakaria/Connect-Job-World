@@ -49,7 +49,7 @@ const documentLinkSchema = new mongoose.Schema(
 );
 
 // Index for faster lookups
-documentLinkSchema.index({ token: 1 });
+// Note: token already has unique index from schema definition
 documentLinkSchema.index({ submission: 1 });
 documentLinkSchema.index({ expiresAt: 1 });
 

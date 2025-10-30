@@ -3,9 +3,10 @@ import DocumentLink from '../models/DocumentLink.js';
 import Document from '../models/Document.js';
 import Submission from '../models/Submission.js';
 import upload from '../config/multer.js';
-import { protect } from '../middleware/auth.js';
+import { protect, authorize } from '../middleware/auth.js';
 import { createNotification } from '../utils/notifications.js';
 import whatsappService from '../services/whatsapp.js';
+import { logActivity } from '../utils/activityLogger.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -17,8 +18,8 @@ const __dirname = path.dirname(__filename);
 
 // @desc    Generate document upload link for a submission
 // @route   POST /api/documents/generate-link
-// @access  Private (Admin only)
-router.post('/generate-link', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.post('/generate-link', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const { submissionId, expiresInDays = 7, maxUploads = 10, notes } = req.body;
 
@@ -43,6 +44,16 @@ router.post('/generate-link', protect, async (req, res) => {
       workflowStatus: 'documents_requested'
     });
 
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: 'document_link_generated',
+      entityType: 'DocumentLink',
+      entityId: documentLink._id,
+      details: { submissionId, submissionName: submission.name, expiresInDays, maxUploads },
+      req,
+    });
+
     // Send WhatsApp notification to client about document request
     const uploadUrl = `${process.env.FRONTEND_URL || 'http://localhost:8083'}/upload/${documentLink.token}`;
     await whatsappService.sendMessage(
@@ -63,8 +74,8 @@ router.post('/generate-link', protect, async (req, res) => {
 
 // @desc    Get all document links for a submission
 // @route   GET /api/documents/links/:submissionId
-// @access  Private (Admin only)
-router.get('/links/:submissionId', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.get('/links/:submissionId', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const links = await DocumentLink.find({ submission: req.params.submissionId })
       .populate('generatedBy', 'name email')
@@ -252,8 +263,8 @@ router.post('/upload/:token', upload.array('documents', 10), async (req, res) =>
 
 // @desc    Get all documents for a submission
 // @route   GET /api/documents/submission/:submissionId
-// @access  Private (Admin only)
-router.get('/submission/:submissionId', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.get('/submission/:submissionId', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const documents = await Document.find({ submission: req.params.submissionId })
       .populate('documentLink', 'token createdAt')
@@ -269,8 +280,8 @@ router.get('/submission/:submissionId', protect, async (req, res) => {
 
 // @desc    Get single document by ID
 // @route   GET /api/documents/:id
-// @access  Private (Admin only)
-router.get('/:id', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.get('/:id', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const document = await Document.findById(req.params.id)
       .populate('submission', 'name phone email')
@@ -289,8 +300,8 @@ router.get('/:id', protect, async (req, res) => {
 
 // @desc    Preview document file (view in browser)
 // @route   GET /api/documents/:id/preview
-// @access  Private (Admin only)
-router.get('/:id/preview', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.get('/:id/preview', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
 
@@ -319,8 +330,8 @@ router.get('/:id/preview', protect, async (req, res) => {
 
 // @desc    Download document file
 // @route   GET /api/documents/:id/download
-// @access  Private (Admin only)
-router.get('/:id/download', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.get('/:id/download', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
 
@@ -345,8 +356,8 @@ router.get('/:id/download', protect, async (req, res) => {
 
 // @desc    Verify or reject document
 // @route   PATCH /api/documents/:id/verify
-// @access  Private (Admin only)
-router.patch('/:id/verify', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.patch('/:id/verify', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const { status, rejectionReason, notes } = req.body;
 
@@ -373,6 +384,22 @@ router.patch('/:id/verify', protect, async (req, res) => {
 
     // Get submission for WhatsApp notification
     const submission = await Submission.findById(document.submission);
+
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: status === 'verified' ? 'document_verified' : 'document_rejected',
+      entityType: 'Document',
+      entityId: document._id,
+      details: {
+        submissionId: document.submission,
+        submissionName: submission?.name,
+        fileName: document.fileName,
+        status,
+        rejectionReason
+      },
+      req,
+    });
 
     // Send WhatsApp notification for single document verification
     if (status === 'verified') {
@@ -422,13 +449,27 @@ router.patch('/:id/verify', protect, async (req, res) => {
 // @desc    Delete document
 // @route   DELETE /api/documents/:id
 // @access  Private (Admin only)
-router.delete('/:id', protect, async (req, res) => {
+router.delete('/:id', protect, authorize('admin'), async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
 
     if (!document) {
       return res.status(404).json({ success: false, message: 'المستند غير موجود' });
     }
+
+    // Log activity before deletion
+    await logActivity({
+      userId: req.user.id,
+      action: 'document_deleted',
+      entityType: 'Document',
+      entityId: document._id,
+      details: {
+        submissionId: document.submission,
+        fileName: document.fileName,
+        originalName: document.originalName
+      },
+      req,
+    });
 
     // Delete file from filesystem
     if (fs.existsSync(document.filePath)) {
@@ -447,8 +488,8 @@ router.delete('/:id', protect, async (req, res) => {
 
 // @desc    Deactivate document link
 // @route   PATCH /api/documents/links/:id/deactivate
-// @access  Private (Admin only)
-router.patch('/links/:id/deactivate', protect, async (req, res) => {
+// @access  Private (Admin, Agent)
+router.patch('/links/:id/deactivate', protect, authorize('admin', 'agent'), async (req, res) => {
   try {
     const documentLink = await DocumentLink.findById(req.params.id);
 
@@ -458,6 +499,16 @@ router.patch('/links/:id/deactivate', protect, async (req, res) => {
 
     documentLink.isActive = false;
     await documentLink.save();
+
+    // Log activity
+    await logActivity({
+      userId: req.user.id,
+      action: 'document_link_deactivated',
+      entityType: 'DocumentLink',
+      entityId: documentLink._id,
+      details: { submissionId: documentLink.submission },
+      req,
+    });
 
     res.json({ success: true, message: 'تم إلغاء تفعيل الرابط', data: documentLink });
   } catch (error) {

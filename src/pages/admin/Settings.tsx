@@ -1,27 +1,15 @@
-import { User, Mail, Shield, Key, Globe, Bell, Database, Clock, Calendar, Loader2 } from "lucide-react";
+import { Shield, Globe, Bell, Database, Loader2, User as UserIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/admin/DashboardLayout";
 import { useState, useEffect } from "react";
 import { clientsAPI, submissionsAPI } from "@/lib/api";
-import { useToast } from "@/hooks/use-toast";
 
 const Settings = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [totalClients, setTotalClients] = useState(0);
   const [totalSubmissions, setTotalSubmissions] = useState(0);
-
-  const [notifications, setNotifications] = useState({
-    email: true,
-    sms: false,
-    whatsapp: true,
-    newSubmissions: true,
-    statusUpdates: true,
-    reports: false
-  });
 
   useEffect(() => {
     fetchAccountStats();
@@ -49,29 +37,12 @@ const Settings = () => {
     }
   };
 
-  const handleSaveNotifications = () => {
-    // TODO: Save to backend when notification preferences API is implemented
-    toast({
-      title: "تم حفظ الإعدادات",
-      description: "تم حفظ إعدادات الإشعارات بنجاح",
-    });
-  };
-
   // System info
   const systemInfo = {
-    version: "2.0.0",
-    lastUpdate: new Date().toLocaleDateString('ar-EG'),
+    version: "1.0.0",
+    lastUpdate: new Date().toLocaleDateString('en-GB'),
     database: "MongoDB Atlas",
     apiStatus: "متصل",
-  };
-
-  const accountInfo = {
-    accountId: user?.id || user?._id || "N/A",
-    createdDate: user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-EG') : "N/A",
-    lastLogin: new Date().toLocaleString('ar-EG'),
-    totalClients,
-    totalSubmissions,
-    activeSessions: 1
   };
 
   if (isLoading) {
@@ -95,270 +66,50 @@ const Settings = () => {
           </p>
         </div>
 
-        {/* Profile Information - Read Only */}
+        {/* Account Information */}
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 rounded-lg bg-primary/10">
-              <User className="w-6 h-6 text-primary" />
+            <div className="p-3 rounded-lg bg-blue-100">
+              <UserIcon className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <h3 className="text-xl font-bold text-foreground">معلومات الحساب</h3>
-              <p className="text-sm text-muted-foreground">بيانات حسابك الشخصية (للعرض فقط)</p>
+              <p className="text-sm text-muted-foreground">تفاصيل حول حسابك ونشاطك</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Profile Avatar */}
-            <div className="md:col-span-2 flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white text-3xl font-bold">
-                {user?.name?.charAt(0) || "A"}
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">الصورة الشخصية</p>
-                <p className="font-semibold text-foreground">{user?.name || "Admin"}</p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
+              <p className="text-sm text-muted-foreground mb-1">الاسم</p>
+              <p className="text-lg font-semibold text-foreground">{user?.name || "N/A"}</p>
             </div>
 
-            {/* Name */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <User className="w-4 h-4" />
-                الاسم الكامل
-              </label>
-              <div className="p-3 bg-muted/50 rounded-lg border border-border">
-                <p className="text-foreground font-medium">{user?.name || "Admin User"}</p>
-              </div>
+            <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
+              <p className="text-sm text-muted-foreground mb-1">البريد الإلكتروني</p>
+              <p className="text-lg font-semibold text-foreground">{user?.email || "N/A"}</p>
             </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                البريد الإلكتروني
-              </label>
-              <div className="p-3 bg-muted/50 rounded-lg border border-border">
-                <p className="text-foreground font-medium">{user?.email}</p>
-              </div>
+            <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
+              <p className="text-sm text-muted-foreground mb-1">الدور</p>
+              <p className="text-lg font-semibold text-foreground capitalize">
+                {user?.role === "admin" ? "مدير" : user?.role === "agent" ? "موظف" : "مشاهد"}
+              </p>
             </div>
 
-            {/* Role */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                الصلاحية
-              </label>
-              <div className="p-3 bg-muted/50 rounded-lg border border-border">
-                <span className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-semibold">
-                  {user?.role === "admin" ? "مدير النظام" : user?.role}
-                </span>
-              </div>
-            </div>
-
-            {/* Account ID */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Key className="w-4 h-4" />
-                معرف الحساب
-              </label>
-              <div className="p-3 bg-muted/50 rounded-lg border border-border">
-                <p className="text-foreground font-medium font-mono">{accountInfo.accountId}</p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Account Statistics */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-lg bg-blue-100">
-                <Database className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-foreground">إحصائيات الحساب</h3>
-                <p className="text-sm text-muted-foreground">نظرة عامة على نشاط حسابك</p>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchAccountStats}
-              className="gap-2"
-            >
-              <Database className="w-4 h-4" />
-              تحديث
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-              <p className="text-sm text-muted-foreground mb-1">تاريخ الإنشاء</p>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-primary" />
-                <p className="text-lg font-bold text-foreground">{accountInfo.createdDate}</p>
-              </div>
-            </div>
-
-            <div className="p-4 bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-lg border border-green-500/20">
-              <p className="text-sm text-muted-foreground mb-1">آخر تسجيل دخول</p>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-green-600" />
-                <p className="text-lg font-bold text-foreground">{accountInfo.lastLogin}</p>
-              </div>
-            </div>
-
-            <div className="p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-lg border border-purple-500/20">
-              <p className="text-sm text-muted-foreground mb-1">الجلسات النشطة</p>
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-purple-600" />
-                <p className="text-lg font-bold text-foreground">{accountInfo.activeSessions}</p>
-              </div>
-            </div>
-
-            <div className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-lg border border-blue-500/20">
+            <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
               <p className="text-sm text-muted-foreground mb-1">إجمالي العملاء</p>
-              <p className="text-2xl font-bold text-foreground">{accountInfo.totalClients.toLocaleString()}</p>
+              <p className="text-lg font-semibold text-foreground">{totalClients}</p>
             </div>
 
-            <div className="p-4 bg-gradient-to-br from-orange-500/10 to-orange-500/5 rounded-lg border border-orange-500/20 md:col-span-2">
+            <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
               <p className="text-sm text-muted-foreground mb-1">إجمالي الطلبات</p>
-              <p className="text-2xl font-bold text-foreground">{accountInfo.totalSubmissions.toLocaleString()}</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Notification Settings */}
-        <Card className="p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 rounded-lg bg-yellow-100">
-              <Bell className="w-6 h-6 text-yellow-600" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-foreground">إعدادات الإشعارات</h3>
-              <p className="text-sm text-muted-foreground">اختر كيف تريد تلقي الإشعارات</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {/* Notification Channels */}
-            <div>
-              <h4 className="font-semibold text-foreground mb-3">قنوات الإشعارات</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-muted-foreground" />
-                    <span className="font-medium text-foreground">البريد الإلكتروني</span>
-                  </div>
-                  <button
-                    onClick={() => setNotifications({...notifications, email: !notifications.email})}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      notifications.email ? 'bg-primary' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      notifications.email ? 'right-1' : 'right-7'
-                    }`} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Bell className="w-5 h-5 text-muted-foreground" />
-                    <span className="font-medium text-foreground">الرسائل النصية</span>
-                  </div>
-                  <button
-                    onClick={() => setNotifications({...notifications, sms: !notifications.sms})}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      notifications.sms ? 'bg-primary' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      notifications.sms ? 'right-1' : 'right-7'
-                    }`} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-5 h-5 text-muted-foreground" />
-                    <span className="font-medium text-foreground">واتساب</span>
-                  </div>
-                  <button
-                    onClick={() => setNotifications({...notifications, whatsapp: !notifications.whatsapp})}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      notifications.whatsapp ? 'bg-primary' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      notifications.whatsapp ? 'right-1' : 'right-7'
-                    }`} />
-                  </button>
-                </div>
-              </div>
+              <p className="text-lg font-semibold text-foreground">{totalSubmissions}</p>
             </div>
 
-            {/* Notification Types */}
-            <div>
-              <h4 className="font-semibold text-foreground mb-3">أنواع الإشعارات</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors">
-                  <div>
-                    <p className="font-medium text-foreground">طلبات جديدة</p>
-                    <p className="text-sm text-muted-foreground">تلقي إشعار عند وصول طلب جديد</p>
-                  </div>
-                  <button
-                    onClick={() => setNotifications({...notifications, newSubmissions: !notifications.newSubmissions})}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      notifications.newSubmissions ? 'bg-primary' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      notifications.newSubmissions ? 'right-1' : 'right-7'
-                    }`} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors">
-                  <div>
-                    <p className="font-medium text-foreground">تحديثات الحالة</p>
-                    <p className="text-sm text-muted-foreground">تلقي إشعار عند تغيير حالة طلب</p>
-                  </div>
-                  <button
-                    onClick={() => setNotifications({...notifications, statusUpdates: !notifications.statusUpdates})}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      notifications.statusUpdates ? 'bg-primary' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      notifications.statusUpdates ? 'right-1' : 'right-7'
-                    }`} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors">
-                  <div>
-                    <p className="font-medium text-foreground">التقارير الأسبوعية</p>
-                    <p className="text-sm text-muted-foreground">تلقي تقرير أسبوعي بالإحصائيات</p>
-                  </div>
-                  <button
-                    onClick={() => setNotifications({...notifications, reports: !notifications.reports})}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${
-                      notifications.reports ? 'bg-primary' : 'bg-gray-300'
-                    }`}
-                  >
-                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                      notifications.reports ? 'right-1' : 'right-7'
-                    }`} />
-                  </button>
-                </div>
-              </div>
+            <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
+              <p className="text-sm text-muted-foreground mb-1">معرف الحساب</p>
+              <p className="text-sm font-semibold text-foreground truncate">{user?.id || "N/A"}</p>
             </div>
-          </div>
-
-          <div className="mt-6 pt-6 border-t border-border flex justify-end">
-            <Button onClick={handleSaveNotifications} className="bg-primary hover:bg-primary-dark">
-              حفظ الإعدادات
-            </Button>
           </div>
         </Card>
 

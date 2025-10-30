@@ -406,10 +406,105 @@ export const notificationsAPI = {
   },
 };
 
+// Users API
+export const usersAPI = {
+  getAll: async (params?: {
+    search?: string;
+    role?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.role) queryParams.append('role', params.role);
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+    return await apiCall(`/users?${queryParams.toString()}`);
+  },
+
+  getById: async (id: string) => {
+    return await apiCall(`/users/${id}`);
+  },
+
+  create: async (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role?: string;
+  }) => {
+    return await apiCall('/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  },
+
+  update: async (id: string, userData: Partial<{
+    name: string;
+    email: string;
+    role: string;
+    isActive: boolean;
+  }>) => {
+    return await apiCall(`/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  },
+
+  deactivate: async (id: string) => {
+    return await apiCall(`/users/${id}/deactivate`, {
+      method: 'PATCH',
+    });
+  },
+
+  activate: async (id: string) => {
+    return await apiCall(`/users/${id}/activate`, {
+      method: 'PATCH',
+    });
+  },
+
+  delete: async (id: string) => {
+    return await apiCall(`/users/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  getMyProfile: async () => {
+    return await apiCall('/users/me/profile');
+  },
+
+  updateMyProfile: async (userData: {
+    name?: string;
+    email?: string;
+  }) => {
+    return await apiCall('/users/me/profile', {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  },
+
+  changePassword: async (data: {
+    currentPassword: string;
+    newPassword: string;
+  }) => {
+    return await apiCall('/users/me/password', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  getStats: async () => {
+    return await apiCall('/users/stats/overview');
+  },
+};
+
 export default {
   auth: authAPI,
   clients: clientsAPI,
   submissions: submissionsAPI,
   documents: documentsAPI,
   notifications: notificationsAPI,
+  users: usersAPI,
 };

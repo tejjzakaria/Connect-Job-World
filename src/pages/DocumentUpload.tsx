@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { documentsAPI } from "@/lib/api";
+import { formatFullDateTime } from "@/lib/dateUtils";
 import {
   Select,
   SelectContent,
@@ -242,7 +243,7 @@ const DocumentUpload = () => {
                 <li>• المستخدم: {linkData.uploadCount} / {linkData.maxUploads}</li>
                 <li>• المتبقي: {remainingUploads} ملف</li>
                 <li className={isExpiringSoon ? "text-red-600 font-semibold" : ""}>
-                  • ينتهي في: {expiresAt.toLocaleDateString("ar-EG")} الساعة {expiresAt.toLocaleTimeString("ar-EG")}
+                  • ينتهي في: {formatFullDateTime(expiresAt)}
                   {isExpiringSoon && " (ينتهي قريباً!)"}
                 </li>
               </ul>

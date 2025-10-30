@@ -4,6 +4,7 @@ import { Search, CheckCircle, Clock, FileText, ArrowLeft, Phone, Mail } from "lu
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { formatShortDate } from "@/lib/dateUtils";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -230,7 +231,7 @@ export default function TrackApplication() {
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span className="text-foreground">
-                      تاريخ التقديم: {new Date(applicationData.timestamp || applicationData.createdAt).toLocaleDateString('ar-EG')}
+                      تاريخ التقديم: {formatShortDate(applicationData.timestamp || applicationData.createdAt)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">

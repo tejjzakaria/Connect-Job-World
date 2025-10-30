@@ -7,6 +7,8 @@ import clientRoutes from './routes/clients.js';
 import submissionRoutes from './routes/submissions.js';
 import documentRoutes from './routes/documents.js';
 import notificationRoutes from './routes/notifications.js';
+import userRoutes from './routes/users.js';
+import activityLogRoutes from './routes/activityLogs.js';
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +31,8 @@ app.use('/api/clients', clientRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/activity-logs', activityLogRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

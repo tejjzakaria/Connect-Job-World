@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/admin/DashboardLayout";
 import { clientsAPI, submissionsAPI, documentsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { formatShortDate } from "@/lib/dateUtils";
 
 interface Client {
   _id: string;
@@ -265,7 +266,7 @@ const ClientDetail = () => {
                 <span>تاريخ التسجيل</span>
               </div>
               <p className="font-semibold text-foreground">
-                {new Date(client.date || client.createdAt).toLocaleDateString("ar-EG")}
+                {formatShortDate(client.date || client.createdAt)}
               </p>
             </div>
           </div>

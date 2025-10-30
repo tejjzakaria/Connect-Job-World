@@ -34,6 +34,7 @@ import DashboardLayout from "@/components/admin/DashboardLayout";
 import { DocumentPreview } from "@/components/admin/DocumentPreview";
 import { documentsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { formatShortDate, formatDateTime } from "@/lib/dateUtils";
 
 interface Document {
   _id: string;
@@ -43,7 +44,11 @@ interface Document {
   fileSize: number;
   documentType: string;
   status: "pending" | "verified" | "rejected" | "needs_replacement";
-  verifiedBy?: any;
+  verifiedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   verifiedAt?: string;
   rejectionReason?: string;
   notes?: string;
@@ -321,7 +326,7 @@ const SubmissionDocuments = () => {
                       </p>
                       <p className="text-xs text-muted-foreground">
                         تم الاستخدام: {link.uploadCount} / {link.maxUploads} | ينتهي في:{" "}
-                        {new Date(link.expiresAt).toLocaleDateString("ar-EG")}
+                        {formatShortDate(link.expiresAt)}
                       </p>
                     </div>
                   </div>
@@ -391,8 +396,38 @@ const SubmissionDocuments = () => {
 
                       <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                         <span>{formatFileSize(document.fileSize)}</span>
-                        <span>{new Date(document.createdAt).toLocaleDateString("ar-EG")}</span>
+                        <span>تم الرفع: {formatShortDate(document.createdAt)}</span>
                       </div>
+
+                      {/* Verification Info */}
+                      {document.verifiedBy && document.verifiedAt && (
+                        <div className={`text-xs mb-3 p-2 rounded ${
+                          document.status === 'verified'
+                            ? 'bg-green-50 border border-green-200'
+                            : document.status === 'rejected'
+                            ? 'bg-red-50 border border-red-200'
+                            : 'bg-yellow-50 border border-yellow-200'
+                        }`}>
+                          <p className={`font-semibold ${
+                            document.status === 'verified'
+                              ? 'text-green-900'
+                              : document.status === 'rejected'
+                              ? 'text-red-900'
+                              : 'text-yellow-900'
+                          }`}>
+                            {document.status === 'verified' ? '✓ تم التوثيق' : document.status === 'rejected' ? '✗ تم الرفض' : '⚠ يحتاج استبدال'}
+                          </p>
+                          <p className={`${
+                            document.status === 'verified'
+                              ? 'text-green-800'
+                              : document.status === 'rejected'
+                              ? 'text-red-800'
+                              : 'text-yellow-800'
+                          }`}>
+                            بواسطة: {document.verifiedBy.name} • {formatDateTime(document.verifiedAt)}
+                          </p>
+                        </div>
+                      )}
 
                       {document.rejectionReason && (
                         <div className="bg-red-50 border border-red-200 rounded p-3 mb-3">
