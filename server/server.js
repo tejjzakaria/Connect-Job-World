@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 import connectDB from './config/database.js';
 import authRoutes from './routes/auth.js';
 import clientRoutes from './routes/clients.js';
@@ -42,7 +43,18 @@ app.use('/api/activity-logs', activityLogRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+  const dbName = mongoose.connection.name || 'Not connected';
+  const dbHost = mongoose.connection.host || 'Unknown';
+
+  res.json({
+    status: 'OK',
+    message: 'Server is running',
+    database: {
+      name: dbName,
+      host: dbHost,
+      connected: mongoose.connection.readyState === 1
+    }
+  });
 });
 
 // Serve static files in production (if frontend is built)
