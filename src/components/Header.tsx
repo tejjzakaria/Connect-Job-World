@@ -42,7 +42,7 @@ const Header = () => {
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          {/* Track Application Button */}
+          {/* Track Application & Login Buttons */}
           <div className="hidden lg:flex items-center gap-4">
             <Button
               onClick={() => navigate('/track')}
@@ -57,16 +57,14 @@ const Header = () => {
             </Button>
             <Button
               onClick={() => navigate('/admin/login')}
-              variant="ghost"
-              size="icon"
-              className={`shadow-md hover:shadow-lg transition-all duration-300 ${
+              className={`gap-2 shadow-md hover:shadow-lg transition-all duration-300 ${
                 isScrolled
-                  ? "text-primary hover:bg-primary/10"
-                  : "text-white hover:bg-white/20"
+                  ? "bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark text-white"
+                  : "bg-white text-primary hover:bg-white/90"
               }`}
-              title="تسجيل الدخول"
             >
-              <LogIn className="w-5 h-5" />
+              <LogIn className="w-4 h-4" />
+              تسجيل الدخول
             </Button>
           </div>
 
@@ -153,8 +151,7 @@ const Header = () => {
                     setMobileMenuOpen(false);
                     navigate('/admin/login');
                   }}
-                  variant="outline"
-                  className="w-full gap-2"
+                  className="w-full gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark"
                 >
                   <LogIn className="w-4 h-4" />
                   تسجيل الدخول
