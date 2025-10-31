@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Header = () => {
@@ -54,6 +54,19 @@ const Header = () => {
             >
               <Search className="w-4 h-4" />
               تتبع طلبك
+            </Button>
+            <Button
+              onClick={() => navigate('/admin/login')}
+              variant="ghost"
+              size="icon"
+              className={`shadow-md hover:shadow-lg transition-all duration-300 ${
+                isScrolled
+                  ? "text-primary hover:bg-primary/10"
+                  : "text-white hover:bg-white/20"
+              }`}
+              title="تسجيل الدخول"
+            >
+              <LogIn className="w-5 h-5" />
             </Button>
           </div>
 
@@ -124,7 +137,7 @@ const Header = () => {
                   {item.label}
                 </button>
               ))}
-              <div className="px-4 pt-2">
+              <div className="px-4 pt-2 flex flex-col gap-2">
                 <Button
                   onClick={() => {
                     setMobileMenuOpen(false);
@@ -134,6 +147,17 @@ const Header = () => {
                 >
                   <Search className="w-4 h-4" />
                   تتبع طلبك
+                </Button>
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/admin/login');
+                  }}
+                  variant="outline"
+                  className="w-full gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  تسجيل الدخول
                 </Button>
               </div>
             </nav>
