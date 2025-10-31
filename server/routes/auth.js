@@ -64,25 +64,31 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log(`🔐 Login attempt from IP: ${req.ip}, Email: ${email}`);
+
     // Validate input
     if (!email || !password) {
+      console.warn(`⚠️ Missing credentials from IP: ${req.ip}`);
       return res.status(400).json({ message: 'Please provide email and password' });
     }
 
     // Check for user and include password
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
+      console.warn(`⚠️ User not found: ${email} from IP: ${req.ip}`);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Check if password matches
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      console.warn(`⚠️ Invalid password for: ${email} from IP: ${req.ip}`);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Check if user is active
     if (!user.isActive) {
+      console.warn(`⚠️ Inactive account attempted login: ${email} from IP: ${req.ip}`);
       return res.status(401).json({ message: 'Account is deactivated' });
     }
 
@@ -105,6 +111,8 @@ router.post('/login', async (req, res) => {
       expiresIn: '30d',
     });
 
+    console.log(`✅ Successful login: ${email} from IP: ${req.ip}`);
+
     res.json({
       success: true,
       token,
@@ -116,7 +124,11 @@ router.post('/login', async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(`❌ Login error for ${req.body.email} from IP: ${req.ip}`, error);
+    res.status(500).json({
+      message: error.message,
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
