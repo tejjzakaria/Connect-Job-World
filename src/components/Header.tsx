@@ -45,6 +45,18 @@ const Header = () => {
           {/* Track Application & Login Buttons */}
           <div className="hidden lg:flex items-center gap-4">
             <Button
+              onClick={() => navigate('/admin/login')}
+              size="icon"
+              className={`shadow-md hover:shadow-lg transition-all duration-300 ${
+                isScrolled
+                  ? "bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark text-white"
+                  : "bg-white text-primary hover:bg-white/90"
+              }`}
+              title="تسجيل الدخول"
+            >
+              <LogIn className="w-5 h-5" />
+            </Button>
+            <Button
               onClick={() => navigate('/track')}
               className={`gap-2 shadow-md hover:shadow-lg transition-all duration-300 ${
                 isScrolled
@@ -54,17 +66,6 @@ const Header = () => {
             >
               <Search className="w-4 h-4" />
               تتبع طلبك
-            </Button>
-            <Button
-              onClick={() => navigate('/admin/login')}
-              className={`gap-2 shadow-md hover:shadow-lg transition-all duration-300 ${
-                isScrolled
-                  ? "bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark text-white"
-                  : "bg-white text-primary hover:bg-white/90"
-              }`}
-            >
-              <LogIn className="w-4 h-4" />
-              تسجيل الدخول
             </Button>
           </div>
 
@@ -135,26 +136,27 @@ const Header = () => {
                   {item.label}
                 </button>
               ))}
-              <div className="px-4 pt-2 flex flex-col gap-2">
-                <Button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate('/track');
-                  }}
-                  className="w-full gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark"
-                >
-                  <Search className="w-4 h-4" />
-                  تتبع طلبك
-                </Button>
+              <div className="px-4 pt-2 flex gap-2">
                 <Button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     navigate('/admin/login');
                   }}
-                  className="w-full gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark"
+                  size="icon"
+                  className="shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark"
+                  title="تسجيل الدخول"
                 >
-                  <LogIn className="w-4 h-4" />
-                  تسجيل الدخول
+                  <LogIn className="w-5 h-5" />
+                </Button>
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/track');
+                  }}
+                  className="flex-1 gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark"
+                >
+                  <Search className="w-4 h-4" />
+                  تتبع طلبك
                 </Button>
               </div>
             </nav>
