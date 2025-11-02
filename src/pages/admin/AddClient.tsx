@@ -84,8 +84,8 @@ const AddClient = () => {
 
     if (!validateForm()) {
       toast({
-        title: "خطأ في البيانات",
-        description: "يرجى التحقق من جميع الحقول المطلوبة",
+        title: t("clients.validationError"),
+        description: t("clients.validationErrorDesc"),
         variant: "destructive"
       });
       return;
@@ -105,8 +105,8 @@ const AddClient = () => {
 
       if (response.success) {
         toast({
-          title: "تم بنجاح!",
-          description: "تمت إضافة العميل بنجاح",
+          title: t("clients.clientAddedSuccess"),
+          description: t("clients.clientAddedSuccessDesc"),
         });
         navigate("/admin/clients");
       } else {
@@ -115,8 +115,8 @@ const AddClient = () => {
     } catch (error: any) {
       console.error("Error creating client:", error);
       toast({
-        title: "حدث خطأ",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t("clients.errorOccurred"),
+        description: error.message || t("clients.errorOccurredDesc"),
         variant: "destructive"
       });
     } finally {
@@ -172,7 +172,7 @@ const AddClient = () => {
                   {t("clients.fullName")} <span className="text-red-500">*</span>
                 </label>
                 <Input
-                  placeholder="مثال: أحمد محمد العلوي"
+                  placeholder={t("clients.namePlaceholder")}
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   className={`h-12 ${errors.name ? "border-red-500" : ""}`}
@@ -186,7 +186,7 @@ const AddClient = () => {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <Mail className="w-4 h-4 text-muted-foreground" />
-                  {t("clients.email")} <span className="text-muted-foreground text-xs">(اختياري)</span>
+                  {t("clients.email")} <span className="text-muted-foreground text-xs">{t("clients.optional")}</span>
                 </label>
                 <Input
                   type="email"
@@ -207,7 +207,7 @@ const AddClient = () => {
                   {t("clients.phone")} <span className="text-red-500">*</span>
                 </label>
                 <Input
-                  placeholder="+212 612 345 678"
+                  placeholder={t("clients.phonePlaceholder")}
                   value={formData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                   className={`h-12 ${errors.phone ? "border-red-500" : ""}`}
@@ -286,7 +286,7 @@ const AddClient = () => {
                 {t("clients.message")} <span className="text-red-500">*</span>
               </label>
               <Textarea
-                placeholder="أدخل تفاصيل الطلب أو أي ملاحظات إضافية..."
+                placeholder={t("clients.messagePlaceholder")}
                 value={formData.message}
                 onChange={(e) => handleInputChange("message", e.target.value)}
                 className={`min-h-32 resize-none ${errors.message ? "border-red-500" : ""}`}
@@ -295,7 +295,7 @@ const AddClient = () => {
                 <p className="text-sm text-red-500">{errors.message}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                اكتب أي معلومات إضافية حول طلب العميل أو احتياجاته الخاصة
+                {t("clients.messageHelp")}
               </p>
             </div>
           </Card>

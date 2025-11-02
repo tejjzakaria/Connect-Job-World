@@ -793,6 +793,9 @@ const resources = {
       'footer.faq': 'الأسئلة الشائعة',
       'footer.contactHeading': 'تواصل معنا',
       'footer.copyright': '© 2025 Connect Job World. جميع الحقوق محفوظة.',
+      'footer.followUs': 'تابعنا',
+      'footer.location': 'المغرب',
+      'footer.globalService': 'خدمة عالمية',
 
       // Country Comparison Section
       'countryComparison.badge': 'مقارنة الدول',
@@ -1145,6 +1148,15 @@ const resources = {
       'clients.editClient': 'تعديل بيانات العميل',
       'clients.editClientDescription': 'قم بتحديث المعلومات أدناه',
       'clients.date': 'التاريخ',
+      'clients.namePlaceholder': 'مثال: أحمد محمد العلوي',
+      'clients.phonePlaceholder': '+212 612 345 678',
+      'clients.optional': '(اختياري)',
+      'clients.validationError': 'خطأ في البيانات',
+      'clients.validationErrorDesc': 'يرجى التحقق من جميع الحقول المطلوبة',
+      'clients.clientAddedSuccess': 'تم بنجاح!',
+      'clients.clientAddedSuccessDesc': 'تمت إضافة العميل بنجاح',
+      'clients.errorOccurred': 'حدث خطأ',
+      'clients.errorOccurredDesc': 'يرجى المحاولة مرة أخرى',
 
       // Services
       'service.visa': 'فيزا',
@@ -1943,6 +1955,9 @@ const resources = {
       'footer.faq': 'FAQ',
       'footer.contactHeading': 'Contactez-Nous',
       'footer.copyright': '© 2025 Connect Job World. Tous droits réservés.',
+      'footer.followUs': 'Suivez-nous',
+      'footer.location': 'Maroc',
+      'footer.globalService': 'Service mondial',
 
       // Country Comparison Section
       'countryComparison.badge': 'Comparaison des Pays',
@@ -2295,6 +2310,15 @@ const resources = {
       'clients.editClient': 'Modifier les données du client',
       'clients.editClientDescription': 'Mettez à jour les informations ci-dessous',
       'clients.date': 'Date',
+      'clients.namePlaceholder': 'Exemple: Ahmed Mohammed Alaoui',
+      'clients.phonePlaceholder': '+212 612 345 678',
+      'clients.optional': '(facultatif)',
+      'clients.validationError': 'Erreur de validation',
+      'clients.validationErrorDesc': 'Veuillez vérifier tous les champs obligatoires',
+      'clients.clientAddedSuccess': 'Succès!',
+      'clients.clientAddedSuccessDesc': 'Client ajouté avec succès',
+      'clients.errorOccurred': 'Une erreur s\'est produite',
+      'clients.errorOccurredDesc': 'Veuillez réessayer',
 
       // Services
       'service.visa': 'Visa',
@@ -3093,6 +3117,9 @@ const resources = {
       'footer.faq': 'FAQ',
       'footer.contactHeading': 'Contact Us',
       'footer.copyright': '© 2025 Connect Job World. All rights reserved.',
+      'footer.followUs': 'Follow Us',
+      'footer.location': 'Morocco',
+      'footer.globalService': 'Global Service',
 
       // Country Comparison Section
       'countryComparison.badge': 'Country Comparison',
@@ -3445,6 +3472,15 @@ const resources = {
       'clients.editClient': 'Edit Client Data',
       'clients.editClientDescription': 'Update the information below',
       'clients.date': 'Date',
+      'clients.namePlaceholder': 'Example: John Smith',
+      'clients.phonePlaceholder': '+1 234 567 890',
+      'clients.optional': '(optional)',
+      'clients.validationError': 'Validation Error',
+      'clients.validationErrorDesc': 'Please check all required fields',
+      'clients.clientAddedSuccess': 'Success!',
+      'clients.clientAddedSuccessDesc': 'Client added successfully',
+      'clients.errorOccurred': 'An error occurred',
+      'clients.errorOccurredDesc': 'Please try again',
 
       // Services
       'service.visa': 'Visa',
