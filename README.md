@@ -715,7 +715,7 @@ This project is proprietary software. All rights reserved.
 
 ## 👨‍💻 Development Team
 
-Built with ❤️ by the Connect Job World team
+Built with ❤️ by tejjzakaria
 
 ---
 
@@ -724,7 +724,7 @@ Built with ❤️ by the Connect Job World team
 For support and queries:
 - 📧 Email: support@connectjobworld.com
 - 🌐 Website: [connectjobworld.com](https://connectjobworld.com)
-- 📱 WhatsApp: +1 (415) 523-8886
+- 📱 WhatsApp: +31682057991
 
 ---
 
