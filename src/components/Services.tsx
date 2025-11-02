@@ -1,61 +1,64 @@
 import { Flag, Plane, Briefcase, GraduationCap, Heart, FileCheck, Trophy } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
-const services = [
-  {
-    icon: Flag,
-    title: "القرعة الأمريكية (DV Lottery)",
-    description: "استشارة كاملة للتسجيل في القرعة الأمريكية بطريقة احترافية مع متابعة حتى النتائج",
-    color: "from-primary to-primary-dark"
-  },
-  {
-    icon: Plane,
-    title: "الهجرة إلى كندا",
-    description: "برامج Express Entry، والهجرة السريعة للعمال المهرة مع تقييم شامل للملف",
-    color: "from-secondary to-primary"
-  },
-  {
-    icon: Briefcase,
-    title: "تأشيرات العمل",
-    description: "مساعدة في الحصول على تأشيرات العمل لأمريكا وكندا مع دعم في إيجاد فرص العمل",
-    color: "from-accent to-secondary"
-  },
-  {
-    icon: GraduationCap,
-    title: "الدراسة في الخارج",
-    description: "استشارات للقبول الجامعي والحصول على تأشيرة الطالب",
-    color: "from-primary-glow to-accent"
-  },
-  {
-    icon: Heart,
-    title: "لم شمل العائلة",
-    description: "مساعدة في إجراءات لم الشمل العائلي وتأشيرات الزواج",
-    color: "from-secondary to-primary-dark"
-  },
-  {
-    icon: FileCheck,
-    title: "إعداد الملفات",
-    description: "إعداد وترجمة جميع الوثائق المطلوبة بطريقة احترافية ومعتمدة",
-    color: "from-primary to-accent"
-  },
-  {
-    icon: Trophy,
-    title: "مواهب كرة القدم",
-    description: "نساعد في إبراز مواهب كرة القدم وربطهم بأفضل الأكاديميات المهنية في أمريكا وكندا",
-    color: "from-accent to-primary"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 const Services = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
+  const services = [
+    {
+      icon: Flag,
+      titleKey: "services.dvLottery.title",
+      descriptionKey: "services.dvLottery.description",
+      color: "from-primary to-primary-dark"
+    },
+    {
+      icon: Plane,
+      titleKey: "services.canadaImmigration.title",
+      descriptionKey: "services.canadaImmigration.description",
+      color: "from-secondary to-primary"
+    },
+    {
+      icon: Briefcase,
+      titleKey: "services.workVisa.title",
+      descriptionKey: "services.workVisa.description",
+      color: "from-accent to-secondary"
+    },
+    {
+      icon: GraduationCap,
+      titleKey: "services.studyAbroad.title",
+      descriptionKey: "services.studyAbroad.description",
+      color: "from-primary-glow to-accent"
+    },
+    {
+      icon: Heart,
+      titleKey: "services.familyReunification.title",
+      descriptionKey: "services.familyReunification.description",
+      color: "from-secondary to-primary-dark"
+    },
+    {
+      icon: FileCheck,
+      titleKey: "services.filePreparation.title",
+      descriptionKey: "services.filePreparation.description",
+      color: "from-primary to-accent"
+    },
+    {
+      icon: Trophy,
+      titleKey: "services.footballTalent.title",
+      descriptionKey: "services.footballTalent.description",
+      color: "from-accent to-primary"
+    }
+  ];
   return (
-    <section dir="rtl" id="services" className="py-24 bg-muted/30">
+    <section dir={isRTL ? 'rtl' : 'ltr'} id="services" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            خدماتنا المتميزة
+            {t('services.heading')}
           </h2>
           <p className="text-xl text-muted-foreground">
-            نقدم مجموعة شاملة من الخدمات لمساعدتك في تحقيق حلم الهجرة
+            {t('services.subtitle')}
           </p>
         </div>
 
@@ -76,11 +79,11 @@ const Services = () => {
                   </div>
                   
                   <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
-                    {service.title}
+                    {t(service.titleKey)}
                   </h3>
-                  
+
                   <p className="text-muted-foreground leading-relaxed">
-                    {service.description}
+                    {t(service.descriptionKey)}
                   </p>
 
                   <div className="pt-4">

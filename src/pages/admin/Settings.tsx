@@ -4,9 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/admin/DashboardLayout";
 import { useState, useEffect } from "react";
 import { clientsAPI, submissionsAPI } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 const Settings = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [totalClients, setTotalClients] = useState(0);
   const [totalSubmissions, setTotalSubmissions] = useState(0);
@@ -60,9 +62,9 @@ const Settings = () => {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold text-foreground">الإعدادات</h2>
+          <h2 className="text-3xl font-bold text-foreground">{t('settings.title')}</h2>
           <p className="text-muted-foreground mt-1">
-            إدارة الحساب والإعدادات العامة
+            {t('settings.subtitle')}
           </p>
         </div>
 
@@ -73,41 +75,41 @@ const Settings = () => {
               <UserIcon className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-foreground">معلومات الحساب</h3>
-              <p className="text-sm text-muted-foreground">تفاصيل حول حسابك ونشاطك</p>
+              <h3 className="text-xl font-bold text-foreground">{t('settings.accountInfo')}</h3>
+              <p className="text-sm text-muted-foreground">{t('settings.accountDetails')}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">الاسم</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.name')}</p>
               <p className="text-lg font-semibold text-foreground">{user?.name || "N/A"}</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">البريد الإلكتروني</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.email')}</p>
               <p className="text-lg font-semibold text-foreground">{user?.email || "N/A"}</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">الدور</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.role')}</p>
               <p className="text-lg font-semibold text-foreground capitalize">
-                {user?.role === "admin" ? "مدير" : user?.role === "agent" ? "موظف" : "مشاهد"}
+                {user?.role === "admin" ? t('roles.admin') : user?.role === "agent" ? t('roles.agent') : t('roles.viewer')}
               </p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">إجمالي العملاء</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.totalClients')}</p>
               <p className="text-lg font-semibold text-foreground">{totalClients}</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">إجمالي الطلبات</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.totalSubmissions')}</p>
               <p className="text-lg font-semibold text-foreground">{totalSubmissions}</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">معرف الحساب</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.accountId')}</p>
               <p className="text-sm font-semibold text-foreground truncate">{user?.id || "N/A"}</p>
             </div>
           </div>
@@ -120,65 +122,65 @@ const Settings = () => {
               <Database className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-foreground">معلومات النظام</h3>
-              <p className="text-sm text-muted-foreground">تفاصيل حول النظام والخدمات</p>
+              <h3 className="text-xl font-bold text-foreground">{t('settings.systemInfo')}</h3>
+              <p className="text-sm text-muted-foreground">{t('settings.systemDetails')}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">إصدار النظام</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.systemVersion')}</p>
               <p className="text-lg font-semibold text-foreground">{systemInfo.version}</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">آخر تحديث</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.lastUpdate')}</p>
               <p className="text-lg font-semibold text-foreground">{systemInfo.lastUpdate}</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">قاعدة البيانات</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.database')}</p>
               <p className="text-lg font-semibold text-foreground">{systemInfo.database}</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">حالة API</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.apiStatus')}</p>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <p className="text-lg font-semibold text-green-600">{systemInfo.apiStatus}</p>
+                <p className="text-lg font-semibold text-green-600">{t('settings.connected')}</p>
               </div>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">التقنيات المستخدمة</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.technologies')}</p>
               <p className="text-sm font-semibold text-foreground">React + TypeScript</p>
             </div>
 
             <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors">
-              <p className="text-sm text-muted-foreground mb-1">الخادم</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('settings.server')}</p>
               <p className="text-sm font-semibold text-foreground">Node.js + Express</p>
             </div>
           </div>
 
           {/* Platform Features */}
           <div className="mt-6 pt-6 border-t border-border">
-            <h4 className="font-semibold text-foreground mb-4">مميزات المنصة</h4>
+            <h4 className="font-semibold text-foreground mb-4">{t('settings.platformFeatures')}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg">
                 <Shield className="w-4 h-4 text-green-600" />
-                <span className="text-sm text-foreground">مصادقة JWT آمنة</span>
+                <span className="text-sm text-foreground">{t('settings.jwtAuth')}</span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
                 <Database className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-foreground">تخزين سحابي MongoDB</span>
+                <span className="text-sm text-foreground">{t('settings.mongoStorage')}</span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-lg">
                 <Globe className="w-4 h-4 text-purple-600" />
-                <span className="text-sm text-foreground">روابط رفع مستندات آمنة</span>
+                <span className="text-sm text-foreground">{t('settings.secureLinks')}</span>
               </div>
               <div className="flex items-center gap-2 p-3 bg-orange-50 rounded-lg">
                 <Bell className="w-4 h-4 text-orange-600" />
-                <span className="text-sm text-foreground">نظام إشعارات متقدم</span>
+                <span className="text-sm text-foreground">{t('settings.notifications')}</span>
               </div>
             </div>
           </div>
@@ -189,10 +191,9 @@ const Settings = () => {
           <div className="flex items-start gap-3">
             <Shield className="w-6 h-6 text-primary mt-1" />
             <div>
-              <h4 className="font-bold text-foreground mb-2">ملاحظة أمنية</h4>
+              <h4 className="font-bold text-foreground mb-2">{t('settings.securityNotice')}</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                معلومات حسابك محمية ولا يمكن تعديلها من خلال لوحة التحكم. لتغيير أي معلومات، يرجى الاتصال بمسؤول النظام.
-                جميع الأنشطة في هذا الحساب مسجلة ومراقبة لضمان الأمان.
+                {t('settings.securityMessage')}
               </p>
             </div>
           </div>

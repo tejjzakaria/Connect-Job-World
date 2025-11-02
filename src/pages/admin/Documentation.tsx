@@ -20,190 +20,192 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import DashboardLayout from "@/components/admin/DashboardLayout";
+import { useTranslation } from "react-i18next";
 
 const Documentation = () => {
+  const { t } = useTranslation();
   const workflowSteps = [
     {
       number: 1,
-      title: "استقبال الطلب",
-      status: "جديد",
+      title: t('docs.step1Title'),
+      status: t('status.new'),
       icon: FileText,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50",
-      description: "يتم استقبال الطلب من العميل عبر نموذج الموقع أو القنوات الأخرى",
-      action: "مراجعة البيانات الأولية"
+      description: t('docs.step1Desc'),
+      action: t('docs.step1Action')
     },
     {
       number: 2,
-      title: "التحقق من البيانات",
+      title: t('docs.step2Title'),
       status: "pending_validation → validated",
       icon: Shield,
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50",
-      description: "التأكد من صحة واكتمال البيانات المقدمة من العميل",
-      action: "الضغط على زر 'التحقق من البيانات'"
+      description: t('docs.step2Desc'),
+      action: t('docs.step2Action')
     },
     {
       number: 3,
-      title: "التواصل الهاتفي",
+      title: t('docs.step3Title'),
       status: "validated → call_confirmed",
       icon: Phone,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50",
-      description: "التواصل مع العميل عبر الهاتف وتأكيد التفاصيل",
-      action: "الضغط على زر 'تأكيد المكالمة' وإضافة ملاحظات"
+      description: t('docs.step3Desc'),
+      action: t('docs.step3Action')
     },
     {
       number: 4,
-      title: "طلب المستندات",
+      title: t('docs.step4Title'),
       status: "call_confirmed → documents_requested",
       icon: Send,
       color: "from-orange-500 to-orange-600",
       bgColor: "bg-orange-50",
-      description: "إنشاء رابط آمن لرفع المستندات المطلوبة",
-      action: "الضغط على زر 'طلب المستندات' وإرسال الرابط للعميل"
+      description: t('docs.step4Desc'),
+      action: t('docs.step4Action')
     },
     {
       number: 5,
-      title: "رفع المستندات",
+      title: t('docs.step5Title'),
       status: "documents_requested → documents_uploaded",
       icon: Upload,
       color: "from-pink-500 to-pink-600",
       bgColor: "bg-pink-50",
-      description: "العميل يقوم برفع المستندات عبر الرابط الآمن",
-      action: "انتظار رفع المستندات من العميل"
+      description: t('docs.step5Desc'),
+      action: t('docs.step5Action')
     },
     {
       number: 6,
-      title: "التحقق من المستندات",
+      title: t('docs.step6Title'),
       status: "documents_uploaded → documents_verified",
       icon: Eye,
       color: "from-indigo-500 to-indigo-600",
       bgColor: "bg-indigo-50",
-      description: "مراجعة والتحقق من صحة المستندات المرفوعة",
-      action: "تحديد حالة كل مستند (موثق/مرفوض/يحتاج استبدال)"
+      description: t('docs.step6Desc'),
+      action: t('docs.step6Action')
     },
     {
       number: 7,
-      title: "التحويل لعميل",
+      title: t('docs.step7Title'),
       status: "documents_verified → converted_to_client",
       icon: UserCheck,
       color: "from-emerald-500 to-emerald-600",
       bgColor: "bg-emerald-50",
-      description: "تحويل الطلب إلى عميل نشط في النظام",
-      action: "الضغط على زر 'تحويل إلى عميل'"
+      description: t('docs.step7Desc'),
+      action: t('docs.step7Action')
     }
   ];
 
   const features = [
     {
       icon: FileText,
-      title: "إدارة الطلبات",
+      title: t('docs.feature1Title'),
       color: "text-blue-500",
       bgColor: "bg-blue-50",
       items: [
-        "عرض جميع الطلبات مع إمكانية البحث والتصفية",
-        "تتبع حالة كل طلب في مراحل العمل المختلفة",
-        "إضافة وتعديل وحذف الطلبات",
-        "عرض تفاصيل كاملة لكل طلب"
+        t('docs.feature1Item1'),
+        t('docs.feature1Item2'),
+        t('docs.feature1Item3'),
+        t('docs.feature1Item4')
       ]
     },
     {
       icon: Users,
-      title: "إدارة العملاء",
+      title: t('docs.feature2Title'),
       color: "text-green-500",
       bgColor: "bg-green-50",
       items: [
-        "قاعدة بيانات شاملة لجميع العملاء",
-        "عرض المستندات المرفقة لكل عميل",
-        "تعديل بيانات العملاء",
-        "حذف سجلات العملاء عند الحاجة"
+        t('docs.feature2Item1'),
+        t('docs.feature2Item2'),
+        t('docs.feature2Item3'),
+        t('docs.feature2Item4')
       ]
     },
     {
       icon: UserCog,
-      title: "إدارة الموظفين",
+      title: t('docs.feature3Title'),
       color: "text-indigo-500",
       bgColor: "bg-indigo-50",
       items: [
-        "إضافة موظفين جدد مع تحديد الأدوار",
-        "تفعيل وإلغاء تفعيل حسابات الموظفين",
-        "تعديل معلومات وصلاحيات الموظفين",
-        "نظام صلاحيات متقدم (مدير، موظف، مشاهد)"
+        t('docs.feature3Item1'),
+        t('docs.feature3Item2'),
+        t('docs.feature3Item3'),
+        t('docs.feature3Item4')
       ]
     },
     {
       icon: Upload,
-      title: "نظام المستندات",
+      title: t('docs.feature4Title'),
       color: "text-purple-500",
       bgColor: "bg-purple-50",
       items: [
-        "إنشاء روابط آمنة ومشفرة للرفع",
-        "تحديد صلاحية الروابط (عدد الأيام)",
-        "تخزين منظم بأسماء موحدة للملفات",
-        "تحميل المستندات بنقرة واحدة"
+        t('docs.feature4Item1'),
+        t('docs.feature4Item2'),
+        t('docs.feature4Item3'),
+        t('docs.feature4Item4')
       ]
     },
     {
       icon: Activity,
-      title: "تسجيل الأنشطة",
+      title: t('docs.feature5Title'),
       color: "text-cyan-500",
       bgColor: "bg-cyan-50",
       items: [
-        "تسجيل تلقائي لجميع العمليات",
-        "تتبع تسجيل الدخول والخروج",
-        "مراقبة التعديلات على البيانات",
-        "إحصائيات مفصلة عن النشاطات"
+        t('docs.feature5Item1'),
+        t('docs.feature5Item2'),
+        t('docs.feature5Item3'),
+        t('docs.feature5Item4')
       ]
     },
     {
       icon: Shield,
-      title: "الأمان والخصوصية",
+      title: t('docs.feature6Title'),
       color: "text-orange-500",
       bgColor: "bg-orange-50",
       items: [
-        "مصادقة آمنة بنظام JWT",
-        "روابط رفع المستندات محمية برموز فريدة",
-        "تخزين آمن للبيانات في قاعدة MongoDB",
-        "حماية جميع المسارات بنظام المصادقة"
+        t('docs.feature6Item1'),
+        t('docs.feature6Item2'),
+        t('docs.feature6Item3'),
+        t('docs.feature6Item4')
       ]
     }
   ];
 
   const documentTypes = [
-    { name: "جواز السفر", key: "passport" },
-    { name: "بطاقة الهوية الوطنية", key: "national_id" },
-    { name: "شهادة الميلاد", key: "birth_certificate" },
-    { name: "الشهادة الدراسية", key: "diploma" },
-    { name: "عقد العمل", key: "work_contract" },
-    { name: "كشف حساب بنكي", key: "bank_statement" },
-    { name: "إثبات العنوان", key: "proof_of_address" },
-    { name: "عقد الزواج", key: "marriage_certificate" },
-    { name: "السجل العدلي", key: "police_clearance" },
-    { name: "تقرير طبي", key: "medical_report" },
-    { name: "أخرى", key: "other" }
+    { name: t('docTypes.passport'), key: "passport" },
+    { name: t('docTypes.national_id'), key: "national_id" },
+    { name: t('docTypes.birth_certificate'), key: "birth_certificate" },
+    { name: t('docTypes.diploma'), key: "diploma" },
+    { name: t('docTypes.work_contract'), key: "work_contract" },
+    { name: t('docTypes.bank_statement'), key: "bank_statement" },
+    { name: t('docTypes.proof_of_address'), key: "proof_of_address" },
+    { name: t('docTypes.marriage_certificate'), key: "marriage_certificate" },
+    { name: t('docTypes.police_clearance'), key: "police_clearance" },
+    { name: t('docTypes.medical_report'), key: "medical_report" },
+    { name: t('docTypes.other'), key: "other" }
   ];
 
   const bestPractices = [
     {
       icon: CheckCircle,
-      title: "التحقق السريع",
-      description: "تحقق من البيانات خلال 24 ساعة من استلام الطلب"
+      title: t('docs.quickVerification'),
+      description: t('docs.quickVerificationDesc')
     },
     {
       icon: Phone,
-      title: "التواصل الفعال",
-      description: "تواصل مع العميل مباشرة لتأكيد التفاصيل وبناء الثقة"
+      title: t('docs.effectiveCommunication'),
+      description: t('docs.effectiveCommunicationDesc')
     },
     {
       icon: Clock,
-      title: "المتابعة المنتظمة",
-      description: "تابع حالة المستندات وذكر العملاء عند الحاجة"
+      title: t('docs.regularFollowUp'),
+      description: t('docs.regularFollowUpDesc')
     },
     {
       icon: AlertCircle,
-      title: "الوضوح والشفافية",
-      description: "أبقِ العميل على علم بحالة طلبه في كل مرحلة"
+      title: t('docs.transparencyCommunication'),
+      description: t('docs.transparencyCommunicationDesc')
     }
   ];
 
@@ -217,9 +219,9 @@ const Documentation = () => {
               <BookOpen className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-foreground">دليل استخدام المنصة</h2>
+              <h2 className="text-3xl font-bold text-foreground">{t('docs.title')}</h2>
               <p className="text-muted-foreground mt-1">
-                كل ما تحتاج معرفته عن نظام إدارة الطلبات والعملاء
+                {t('docs.subtitle')}
               </p>
             </div>
           </div>
@@ -229,35 +231,34 @@ const Documentation = () => {
         <Card className="p-8 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
           <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
             <FileText className="w-6 h-6 text-primary" />
-            نظرة عامة على المنصة
+            {t('docs.overviewTitle')}
           </h3>
           <p className="text-foreground leading-relaxed mb-4">
-            منصة <span className="font-bold text-primary">Connect Job World</span> هي نظام متكامل لإدارة طلبات الهجرة والتأشيرات
-            والخدمات المرتبطة. تم تصميم النظام لتبسيط عملية معالجة الطلبات من الاستقبال الأولي وحتى التحويل إلى عميل نشط.
+            <span className="font-bold text-primary">Connect Job World</span> {t('docs.overviewDescription')}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
             <div className="bg-white p-4 rounded-lg border border-blue-200">
               <div className="text-3xl font-bold text-primary mb-1">7</div>
-              <div className="text-sm text-muted-foreground">مراحل العمل</div>
+              <div className="text-sm text-muted-foreground">{t('docs.workflowStages')}</div>
             </div>
             <div className="bg-white p-4 rounded-lg border border-blue-200">
               <div className="text-3xl font-bold text-green-600 mb-1">11</div>
-              <div className="text-sm text-muted-foreground">نوع من المستندات</div>
+              <div className="text-sm text-muted-foreground">{t('docs.documentTypes')}</div>
             </div>
             <div className="bg-white p-4 rounded-lg border border-blue-200">
               <div className="text-3xl font-bold text-purple-600 mb-1">6</div>
-              <div className="text-sm text-muted-foreground">خدمات متاحة</div>
+              <div className="text-sm text-muted-foreground">{t('docs.availableServices')}</div>
             </div>
             <div className="bg-white p-4 rounded-lg border border-blue-200">
               <div className="text-3xl font-bold text-indigo-600 mb-1">3</div>
-              <div className="text-sm text-muted-foreground">أدوار مستخدمين</div>
+              <div className="text-sm text-muted-foreground">{t('docs.userRoles')}</div>
             </div>
           </div>
         </Card>
 
         {/* Workflow Steps */}
         <div>
-          <h3 className="text-2xl font-bold text-foreground mb-6">مراحل معالجة الطلب</h3>
+          <h3 className="text-2xl font-bold text-foreground mb-6">{t('docs.workflowTitle')}</h3>
           <div className="space-y-4">
             {workflowSteps.map((step, index) => (
               <Card
@@ -300,33 +301,33 @@ const Documentation = () => {
         <Card className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200">
           <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
             <Lock className="w-6 h-6 text-indigo-600" />
-            الأدوار والصلاحيات
+            {t('docs.rolesTitle')}
           </h3>
           <p className="text-muted-foreground mb-6">
-            النظام يدعم ثلاثة أدوار مختلفة لضمان التحكم الكامل في الصلاحيات والوصول
+            {t('docs.rolesSubtitle')}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-5 rounded-lg border-2 border-red-200">
               <div className="flex items-center gap-2 mb-3">
                 <UserCog className="w-5 h-5 text-red-600" />
-                <h4 className="font-bold text-red-600">مدير (Admin)</h4>
+                <h4 className="font-bold text-red-600">{t('docs.adminRole')}</h4>
               </div>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                  <span>صلاحيات كاملة على النظام</span>
+                  <span>{t('docs.fullPermissions')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                  <span>إدارة الموظفين والأدوار</span>
+                  <span>{t('docs.manageEmployees')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                  <span>عرض سجلات الأنشطة</span>
+                  <span>{t('docs.viewActivityLogs')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                  <span>حذف العملاء والطلبات</span>
+                  <span>{t('docs.deleteClientsRequests')}</span>
                 </li>
               </ul>
             </div>
@@ -334,24 +335,24 @@ const Documentation = () => {
             <div className="bg-white p-5 rounded-lg border-2 border-blue-200">
               <div className="flex items-center gap-2 mb-3">
                 <UserPlus className="w-5 h-5 text-blue-600" />
-                <h4 className="font-bold text-blue-600">موظف (Agent)</h4>
+                <h4 className="font-bold text-blue-600">{t('docs.agentRole')}</h4>
               </div>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <span>إدارة العملاء والطلبات</span>
+                  <span>{t('docs.manageClientsRequests')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <span>رفع وإدارة المستندات</span>
+                  <span>{t('docs.manageDocuments')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <span>رؤية العملاء المخصصين فقط</span>
+                  <span>{t('docs.viewAssignedOnly')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-                  <span>لا يمكن حذف البيانات</span>
+                  <span>{t('docs.cannotDelete')}</span>
                 </li>
               </ul>
             </div>
@@ -359,24 +360,24 @@ const Documentation = () => {
             <div className="bg-white p-5 rounded-lg border-2 border-gray-200">
               <div className="flex items-center gap-2 mb-3">
                 <Eye className="w-5 h-5 text-gray-600" />
-                <h4 className="font-bold text-gray-600">مشاهد (Viewer)</h4>
+                <h4 className="font-bold text-gray-600">{t('docs.viewerRole')}</h4>
               </div>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                  <span>عرض التقارير والإحصائيات</span>
+                  <span>{t('docs.viewReports')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                  <span>الوصول للقراءة فقط</span>
+                  <span>{t('docs.readOnlyAccess')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                  <span>لا يمكن تعديل البيانات</span>
+                  <span>{t('docs.cannotModify')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                  <span>مناسب للمراقبة والإشراف</span>
+                  <span>{t('docs.suitableForMonitoring')}</span>
                 </li>
               </ul>
             </div>
@@ -385,7 +386,7 @@ const Documentation = () => {
 
         {/* Features Grid */}
         <div>
-          <h3 className="text-2xl font-bold text-foreground mb-6">المميزات الرئيسية</h3>
+          <h3 className="text-2xl font-bold text-foreground mb-6">{t('docs.keyFeatures')}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {features.map((feature, index) => (
               <Card
@@ -415,7 +416,7 @@ const Documentation = () => {
         <Card className="p-6">
           <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            أنواع المستندات المدعومة
+            {t('docs.supportedDocTypes')}
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {documentTypes.map((doc, index) => (
@@ -434,7 +435,7 @@ const Documentation = () => {
         <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200">
           <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <Link className="w-5 h-5 text-purple-600" />
-            كيفية عمل نظام رفع المستندات
+            {t('docs.uploadSystemTitle')}
           </h3>
           <div className="space-y-4">
             <div className="flex items-start gap-3">
@@ -442,9 +443,9 @@ const Documentation = () => {
                 1
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">إنشاء الرابط</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.createLink')}</p>
                 <p className="text-sm text-muted-foreground">
-                  اضغط على "طلب المستندات" في صفحة تفاصيل الطلب لإنشاء رابط آمن ومشفر
+                  {t('docs.createLinkDesc')}
                 </p>
               </div>
             </div>
@@ -453,9 +454,9 @@ const Documentation = () => {
                 2
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">إرسال الرابط</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.sendLink')}</p>
                 <p className="text-sm text-muted-foreground">
-                  انسخ الرابط وأرسله للعميل عبر واتساب أو البريد الإلكتروني
+                  {t('docs.sendLinkDesc')}
                 </p>
               </div>
             </div>
@@ -464,9 +465,9 @@ const Documentation = () => {
                 3
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">رفع المستندات</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.uploadDocuments')}</p>
                 <p className="text-sm text-muted-foreground">
-                  العميل يفتح الرابط ويقوم برفع المستندات المطلوبة (حتى 10 ملفات)
+                  {t('docs.uploadDocumentsDesc')}
                 </p>
               </div>
             </div>
@@ -475,9 +476,9 @@ const Documentation = () => {
                 4
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">المراجعة</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.review')}</p>
                 <p className="text-sm text-muted-foreground">
-                  ستظهر المستندات في صفحة إدارة المستندات لمراجعتها والتحقق منها
+                  {t('docs.reviewDesc')}
                 </p>
               </div>
             </div>
@@ -488,7 +489,7 @@ const Documentation = () => {
         <Card className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200">
           <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <UserCog className="w-5 h-5 text-cyan-600" />
-            إدارة الموظفين
+            {t('docs.employeeManagementTitle')}
           </h3>
           <div className="space-y-4">
             <div className="flex items-start gap-3">
@@ -496,9 +497,9 @@ const Documentation = () => {
                 1
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">إضافة موظف جديد</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.addNewEmployee')}</p>
                 <p className="text-sm text-muted-foreground">
-                  من صفحة الموظفين، اضغط "إضافة موظف جديد" وأدخل البيانات (الاسم، البريد، كلمة المرور، الدور)
+                  {t('docs.addEmployeeDesc')}
                 </p>
               </div>
             </div>
@@ -507,9 +508,9 @@ const Documentation = () => {
                 2
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">تعديل الصلاحيات</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.editPermissions')}</p>
                 <p className="text-sm text-muted-foreground">
-                  يمكنك تغيير دور أي موظف (مدير، موظف، مشاهد) في أي وقت من خلال زر "تعديل"
+                  {t('docs.editPermissionsDesc')}
                 </p>
               </div>
             </div>
@@ -518,9 +519,9 @@ const Documentation = () => {
                 3
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">إلغاء التفعيل</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.deactivate')}</p>
                 <p className="text-sm text-muted-foreground">
-                  بدلاً من الحذف، يمكنك إلغاء تفعيل حساب الموظف مؤقتاً للحفاظ على سجلات الأنشطة
+                  {t('docs.deactivateDesc')}
                 </p>
               </div>
             </div>
@@ -529,9 +530,9 @@ const Documentation = () => {
                 4
               </div>
               <div>
-                <p className="font-semibold text-foreground mb-1">البحث والتصفية</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.searchFilter')}</p>
                 <p className="text-sm text-muted-foreground">
-                  استخدم البحث للعثور على موظف معين، أو صفي حسب الدور أو الحالة (نشط/غير نشط)
+                  {t('docs.searchFilterDesc')}
                 </p>
               </div>
             </div>
@@ -542,110 +543,110 @@ const Documentation = () => {
         <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
           <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <Activity className="w-5 h-5 text-green-600" />
-            تسجيل الأنشطة
+            {t('docs.activityLogTitle')}
           </h3>
           <p className="text-muted-foreground mb-4">
-            النظام يسجل تلقائياً جميع العمليات المهمة لضمان الشفافية والأمان:
+            {t('docs.activityLogDesc')}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white p-4 rounded-lg border border-green-200">
-              <h5 className="font-semibold text-foreground mb-2">أنشطة المستخدمين</h5>
+              <h5 className="font-semibold text-foreground mb-2">{t('docs.userActivities')}</h5>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  تسجيل الدخول والخروج
+                  {t('docs.activityUser1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  إنشاء وتعديل الموظفين
+                  {t('docs.activityUser2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  تفعيل/إلغاء تفعيل الحسابات
+                  {t('docs.activityUser3')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  تغيير كلمات المرور
+                  {t('docs.activityUser4')}
                 </li>
               </ul>
             </div>
 
             <div className="bg-white p-4 rounded-lg border border-green-200">
-              <h5 className="font-semibold text-foreground mb-2">أنشطة العملاء والطلبات</h5>
+              <h5 className="font-semibold text-foreground mb-2">{t('docs.clientRequestActivities')}</h5>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  إنشاء وتعديل العملاء
+                  {t('docs.activityClient1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  التحقق من الطلبات
+                  {t('docs.activityClient2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  تأكيد المكالمات
+                  {t('docs.activityClient3')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  التحويل إلى عميل
+                  {t('docs.activityClient4')}
                 </li>
               </ul>
             </div>
 
             <div className="bg-white p-4 rounded-lg border border-green-200">
-              <h5 className="font-semibold text-foreground mb-2">أنشطة المستندات</h5>
+              <h5 className="font-semibold text-foreground mb-2">{t('docs.documentActivities')}</h5>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  إنشاء روابط الرفع
+                  {t('docs.activityDoc1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  التحقق من المستندات
+                  {t('docs.activityDoc2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  رفض المستندات
+                  {t('docs.activityDoc3')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  حذف المستندات
+                  {t('docs.activityDoc4')}
                 </li>
               </ul>
             </div>
 
             <div className="bg-white p-4 rounded-lg border border-green-200">
-              <h5 className="font-semibold text-foreground mb-2">معلومات إضافية</h5>
+              <h5 className="font-semibold text-foreground mb-2">{t('docs.additionalInfo')}</h5>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  عنوان IP المستخدم
+                  {t('docs.activityInfo1')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  نوع المتصفح
+                  {t('docs.activityInfo2')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  تاريخ ووقت الإجراء
+                  {t('docs.activityInfo3')}
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                  تفاصيل العملية
+                  {t('docs.activityInfo4')}
                 </li>
               </ul>
             </div>
           </div>
           <div className="mt-4 p-4 bg-white rounded-lg border-2 border-green-300">
             <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">ملاحظة:</span> يمكن للمديرين فقط الوصول إلى سجلات الأنشطة من خلال قسم خاص في لوحة التحكم
+              <span className="font-semibold text-foreground">{t('docs.activityNote')}</span> {t('docs.activityLogNote')}
             </p>
           </div>
         </Card>
 
         {/* Best Practices */}
         <div>
-          <h3 className="text-2xl font-bold text-foreground mb-6">أفضل الممارسات</h3>
+          <h3 className="text-2xl font-bold text-foreground mb-6">{t('docs.bestPracticesTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {bestPractices.map((practice, index) => (
               <Card
@@ -670,36 +671,36 @@ const Documentation = () => {
         <Card className="p-6">
           <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-primary" />
-            دليل حالات الطلبات
+            {t('docs.statusGuideTitle')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                <span className="font-semibold text-foreground">جديد</span>
+                <span className="font-semibold text-foreground">{t('status.new')}</span>
               </div>
-              <p className="text-sm text-muted-foreground">طلب جديد تم استقباله ولم تتم مراجعته بعد</p>
+              <p className="text-sm text-muted-foreground">{t('docs.statusNew')}</p>
             </div>
             <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <span className="font-semibold text-foreground">تمت المعاينة</span>
+                <span className="font-semibold text-foreground">{t('status.inProgress')}</span>
               </div>
-              <p className="text-sm text-muted-foreground">تم التحقق من البيانات بنجاح</p>
+              <p className="text-sm text-muted-foreground">{t('docs.statusViewed')}</p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="font-semibold text-foreground">تم التواصل</span>
+                <span className="font-semibold text-foreground">{t('status.approved')}</span>
               </div>
-              <p className="text-sm text-muted-foreground">تم التواصل مع العميل وتأكيد التفاصيل</p>
+              <p className="text-sm text-muted-foreground">{t('docs.statusContacted')}</p>
             </div>
             <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                <span className="font-semibold text-foreground">مكتمل</span>
+                <span className="font-semibold text-foreground">{t('status.completed')}</span>
               </div>
-              <p className="text-sm text-muted-foreground">تم إكمال جميع المراحل وتحويله لعميل</p>
+              <p className="text-sm text-muted-foreground">{t('docs.statusCompleted')}</p>
             </div>
           </div>
         </Card>
@@ -708,43 +709,43 @@ const Documentation = () => {
         <Card className="p-6 bg-gradient-to-br from-orange-50 to-yellow-50 border-2 border-orange-200">
           <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-orange-600" />
-            نصائح سريعة
+            {t('docs.quickTipsTitle')}
           </h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <span className="text-sm text-foreground">
-                استخدم البحث والتصفية للوصول السريع إلى الطلبات والعملاء
+                {t('docs.tip1')}
               </span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <span className="text-sm text-foreground">
-                اجعل روابط رفع المستندات قصيرة المدة (3-7 أيام) للحفاظ على الأمان
+                {t('docs.tip2')}
               </span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <span className="text-sm text-foreground">
-                راجع صفحة التقارير بانتظام لمتابعة أداء العمل
+                {t('docs.tip3')}
               </span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <span className="text-sm text-foreground">
-                تأكد من تحديث حالة المستندات (موثق/مرفوض/يحتاج استبدال) قبل التحويل لعميل
+                {t('docs.tip4')}
               </span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <span className="text-sm text-foreground">
-                امنح كل موظف الدور المناسب لعمله - لا تعطي صلاحيات المدير إلا عند الضرورة
+                {t('docs.tip5')}
               </span>
             </li>
             <li className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
               <span className="text-sm text-foreground">
-                راجع سجلات الأنشطة بشكل دوري لمراقبة العمليات وضمان الأمان
+                {t('docs.tip6')}
               </span>
             </li>
           </ul>
@@ -754,42 +755,42 @@ const Documentation = () => {
         <Card className="p-6 bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-200">
           <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-red-600" />
-            أفضل ممارسات الأمان
+            {t('docs.securityBestPracticesTitle')}
           </h3>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
               <Lock className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-foreground mb-1">كلمات المرور القوية</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.strongPasswords')}</p>
                 <p className="text-sm text-muted-foreground">
-                  تأكد من أن جميع الموظفين يستخدمون كلمات مرور قوية (6 أحرف على الأقل، مزيج من الأحرف والأرقام)
+                  {t('docs.strongPasswordsDesc')}
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
               <UserCog className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-foreground mb-1">مبدأ الحد الأدنى من الصلاحيات</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.leastPrivilege')}</p>
                 <p className="text-sm text-muted-foreground">
-                  امنح كل موظف فقط الصلاحيات التي يحتاجها لأداء عمله - لا أكثر ولا أقل
+                  {t('docs.leastPrivilegeDesc')}
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
               <Activity className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-foreground mb-1">مراجعة سجلات الأنشطة</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.reviewActivityLogs')}</p>
                 <p className="text-sm text-muted-foreground">
-                  راجع سجلات الأنشطة بانتظام لاكتشاف أي نشاط غير عادي أو محاولات وصول غير مصرح بها
+                  {t('docs.reviewActivityLogsDesc')}
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-foreground mb-1">إلغاء تفعيل الحسابات غير المستخدمة</p>
+                <p className="font-semibold text-foreground mb-1">{t('docs.deactivateUnused')}</p>
                 <p className="text-sm text-muted-foreground">
-                  عند مغادرة موظف، قم بإلغاء تفعيل حسابه فوراً للحفاظ على أمان النظام
+                  {t('docs.deactivateUnusedDesc')}
                 </p>
               </div>
             </li>

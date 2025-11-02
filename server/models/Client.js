@@ -22,6 +22,14 @@ const clientSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Service is required'],
       enum: [
+        // New service keys (language-independent)
+        'us_lottery',
+        'canada_immigration',
+        'work_visa',
+        'study_abroad',
+        'family_reunion',
+        'soccer_talent',
+        // Old Arabic values for backward compatibility
         'القرعة الأمريكية',
         'الهجرة إلى كندا',
         'تأشيرة عمل',
@@ -33,8 +41,19 @@ const clientSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ['جديد', 'قيد المراجعة', 'مكتمل', 'مرفوض'],
-      default: 'جديد',
+      enum: [
+        // New status keys (language-independent)
+        'new',
+        'in_review',
+        'completed',
+        'rejected',
+        // Old Arabic values for backward compatibility
+        'جديد',
+        'قيد المراجعة',
+        'مكتمل',
+        'مرفوض'
+      ],
+      default: 'new',
     },
     message: {
       type: String,

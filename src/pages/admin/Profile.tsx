@@ -11,10 +11,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usersAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateTime } from "@/lib/dateUtils";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "",
@@ -40,7 +42,7 @@ const Profile = () => {
 
     if (!profileData.name || !profileData.email) {
       toast({
-        title: "خطأ",
+        title: t('common.error'),
         description: "يرجى ملء جميع الحقول",
         variant: "destructive"
       });
@@ -56,7 +58,7 @@ const Profile = () => {
 
       if (response.success) {
         toast({
-          title: "نجح",
+          title: t('common.success'),
           description: response.message || "تم تحديث الملف الشخصي بنجاح",
         });
 
@@ -74,7 +76,7 @@ const Profile = () => {
     } catch (error: any) {
       console.error("Error updating profile:", error);
       toast({
-        title: "خطأ",
+        title: t('common.error'),
         description: error.message || "فشل تحديث الملف الشخصي",
         variant: "destructive"
       });
@@ -88,7 +90,7 @@ const Profile = () => {
 
     if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
       toast({
-        title: "خطأ",
+        title: t('common.error'),
         description: "يرجى ملء جميع حقول كلمة المرور",
         variant: "destructive"
       });
@@ -97,7 +99,7 @@ const Profile = () => {
 
     if (passwordData.newPassword.length < 6) {
       toast({
-        title: "خطأ",
+        title: t('common.error'),
         description: "يجب أن تكون كلمة المرور الجديدة 6 أحرف على الأقل",
         variant: "destructive"
       });
@@ -106,7 +108,7 @@ const Profile = () => {
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast({
-        title: "خطأ",
+        title: t('common.error'),
         description: "كلمات المرور غير متطابقة",
         variant: "destructive"
       });
@@ -122,7 +124,7 @@ const Profile = () => {
 
       if (response.success) {
         toast({
-          title: "نجح",
+          title: t('common.success'),
           description: response.message || "تم تغيير كلمة المرور بنجاح",
         });
 
@@ -136,7 +138,7 @@ const Profile = () => {
     } catch (error: any) {
       console.error("Error changing password:", error);
       toast({
-        title: "خطأ",
+        title: t('common.error'),
         description: error.message || "فشل تغيير كلمة المرور",
         variant: "destructive"
       });
@@ -147,9 +149,9 @@ const Profile = () => {
 
   const getRoleBadge = (role: string) => {
     const variants: Record<string, { label: string; className: string }> = {
-      admin: { label: "مدير", className: "bg-red-500 hover:bg-red-600" },
-      agent: { label: "موظف", className: "bg-blue-500 hover:bg-blue-600" },
-      viewer: { label: "مشاهد", className: "bg-gray-500 hover:bg-gray-600" },
+      admin: { label: t('roles.admin'), className: "bg-red-500 hover:bg-red-600" },
+      agent: { label: t('roles.agent'), className: "bg-blue-500 hover:bg-blue-600" },
+      viewer: { label: t('roles.viewer'), className: "bg-gray-500 hover:bg-gray-600" },
     };
 
     const variant = variants[role] || variants.viewer;
@@ -165,9 +167,9 @@ const Profile = () => {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">الملف الشخصي</h1>
+          <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            إدارة معلومات حسابك وإعداداتك
+            {t('profile.subtitle')}
           </p>
         </div>
 
@@ -175,7 +177,7 @@ const Profile = () => {
           {/* Profile Summary Card */}
           <Card className="lg:col-span-1">
             <CardHeader>
-              <CardTitle>معلومات الحساب</CardTitle>
+              <CardTitle>{t('profile.accountInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Avatar */}
@@ -196,7 +198,7 @@ const Profile = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Shield className="w-4 h-4" />
-                    <span>الصلاحية</span>
+                    <span>{t('profile.role')}</span>
                   </div>
                   {getRoleBadge(user?.role || "viewer")}
                 </div>
@@ -204,10 +206,10 @@ const Profile = () => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4" />
-                    <span>آخر تسجيل دخول</span>
+                    <span>{t('profile.lastLogin')}</span>
                   </div>
                   <p className="text-xs text-muted-foreground pr-6">
-                    {user?.lastLogin ? formatDateTime(user.lastLogin) : "لم يتم تسجيل الدخول بعد"}
+                    {user?.lastLogin ? formatDateTime(user.lastLogin) : t('profile.noLogin')}
                   </p>
                 </div>
               </div>
@@ -217,15 +219,15 @@ const Profile = () => {
           {/* Edit Profile Form */}
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>تعديل الملف الشخصي</CardTitle>
+              <CardTitle>{t('profile.editProfile')}</CardTitle>
               <CardDescription>
-                قم بتحديث معلومات حسابك الشخصية
+                {t('profile.editDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">الاسم الكامل</Label>
+                  <Label htmlFor="name">{t('profile.fullName')}</Label>
                   <div className="relative">
                     <User className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
@@ -233,13 +235,13 @@ const Profile = () => {
                       value={profileData.name}
                       onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                       className="pr-10"
-                      placeholder="أدخل اسمك الكامل"
+                      placeholder={t('profile.fullNamePlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">البريد الإلكتروني</Label>
+                  <Label htmlFor="email">{t('profile.email')}</Label>
                   <div className="relative">
                     <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
@@ -254,7 +256,7 @@ const Profile = () => {
                 </div>
 
                 <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
+                  {isLoading ? t('common.saving') : t('common.saveChanges')}
                 </Button>
               </form>
             </CardContent>
@@ -263,15 +265,15 @@ const Profile = () => {
           {/* Change Password Form */}
           <Card className="lg:col-span-3">
             <CardHeader>
-              <CardTitle>تغيير كلمة المرور</CardTitle>
+              <CardTitle>{t('profile.changePassword')}</CardTitle>
               <CardDescription>
-                تأكد من استخدام كلمة مرور قوية لحماية حسابك
+                {t('profile.passwordDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleChangePassword} className="space-y-4 max-w-2xl">
                 <div className="space-y-2">
-                  <Label htmlFor="currentPassword">كلمة المرور الحالية</Label>
+                  <Label htmlFor="currentPassword">{t('profile.currentPassword')}</Label>
                   <div className="relative">
                     <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
@@ -280,14 +282,14 @@ const Profile = () => {
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                       className="pr-10"
-                      placeholder="أدخل كلمة المرور الحالية"
+                      placeholder={t('profile.currentPasswordPlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="newPassword">كلمة المرور الجديدة</Label>
+                    <Label htmlFor="newPassword">{t('profile.newPassword')}</Label>
                     <div className="relative">
                       <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                       <Input
@@ -296,13 +298,13 @@ const Profile = () => {
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                         className="pr-10"
-                        placeholder="6 أحرف على الأقل"
+                        placeholder={t('profile.newPasswordPlaceholder')}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
+                    <Label htmlFor="confirmPassword">{t('profile.confirmPassword')}</Label>
                     <div className="relative">
                       <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                       <Input
@@ -311,14 +313,14 @@ const Profile = () => {
                         value={passwordData.confirmPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                         className="pr-10"
-                        placeholder="أعد إدخال كلمة المرور"
+                        placeholder={t('profile.confirmPasswordPlaceholder')}
                       />
                     </div>
                   </div>
                 </div>
 
                 <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "جاري التغيير..." : "تغيير كلمة المرور"}
+                  {isLoading ? t('common.changing') : t('profile.changePasswordButton')}
                 </Button>
               </form>
             </CardContent>

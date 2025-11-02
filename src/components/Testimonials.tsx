@@ -1,60 +1,64 @@
 import { Star, Quote } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
-const testimonials = [
-  {
-    id: 1,
-    name: "أحمد المالكي",
-    service: "القرعة الأمريكية",
-    rating: 5,
-    text: "بفضل فريق Connect Job World حصلت على الفيزا الأمريكية من أول مرة! كانوا معي في كل خطوة وقدموا لي كل الدعم اللازم. خدمة احترافية ومتابعة مستمرة.",
-    image: "👨‍💼"
-  },
-  {
-    id: 2,
-    name: "فاطمة الزهراء",
-    service: "الهجرة إلى كندا",
-    rating: 5,
-    text: "تجربة رائعة! ساعدوني في برنامج Express Entry وحصلت على الإقامة الدائمة في كندا خلال 8 أشهر. فريق محترف جداً ويفهم كل التفاصيل.",
-    image: "👩‍💼"
-  },
-  {
-    id: 3,
-    name: "يوسف بنعلي",
-    service: "تأشيرة عمل",
-    rating: 5,
-    text: "حصلت على عقد عمل في أمريكا بمساعدة Connect Job World. ساعدوني في إيجاد الفرصة وإكمال جميع الإجراءات. أنصح بهم بشدة!",
-    image: "👨‍🔧"
-  },
-  {
-    id: 4,
-    name: "سارة التازي",
-    service: "الدراسة في الخارج",
-    rating: 5,
-    text: "حلمت بالدراسة في كندا وبفضل فريق Connect Job World حصلت على قبول جامعي وفيزا دراسية. شكراً لكم من القلب على كل المساعدة والدعم!",
-    image: "👩‍🎓"
-  },
-  {
-    id: 5,
-    name: "محمد الإدريسي",
-    service: "لم شمل العائلة",
-    rating: 5,
-    text: "كنت أعيش في كندا وأردت أن تلحق بي عائلتي. بفضل Connect Job World تمت الإجراءات بسلاسة وسرعة. الآن عائلتي معي والحمد لله!",
-    image: "👨‍👩‍👧"
-  },
-  {
-    id: 6,
-    name: "نورا العلوي",
-    service: "مواهب كرة القدم",
-    rating: 5,
-    text: "ابني لاعب كرة قدم موهوب وساعدوه في الالتحاق بأكاديمية مرموقة في أمريكا. خدمة مميزة وفريق متفاني في عمله.",
-    image: "⚽"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 const Testimonials = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
+  const testimonials = [
+    {
+      id: 1,
+      nameKey: "testimonials.client1.name",
+      serviceKey: "testimonials.client1.service",
+      rating: 5,
+      textKey: "testimonials.client1.text",
+      image: "👨‍💼"
+    },
+    {
+      id: 2,
+      nameKey: "testimonials.client2.name",
+      serviceKey: "testimonials.client2.service",
+      rating: 5,
+      textKey: "testimonials.client2.text",
+      image: "👩‍💼"
+    },
+    {
+      id: 3,
+      nameKey: "testimonials.client3.name",
+      serviceKey: "testimonials.client3.service",
+      rating: 5,
+      textKey: "testimonials.client3.text",
+      image: "👨‍🔧"
+    },
+    {
+      id: 4,
+      nameKey: "testimonials.client4.name",
+      serviceKey: "testimonials.client4.service",
+      rating: 5,
+      textKey: "testimonials.client4.text",
+      image: "👩‍🎓"
+    },
+    {
+      id: 5,
+      nameKey: "testimonials.client5.name",
+      serviceKey: "testimonials.client5.service",
+      rating: 5,
+      textKey: "testimonials.client5.text",
+      image: "👨‍👩‍👧"
+    },
+    {
+      id: 6,
+      nameKey: "testimonials.client6.name",
+      serviceKey: "testimonials.client6.service",
+      rating: 5,
+      textKey: "testimonials.client6.text",
+      image: "⚽"
+    }
+  ];
+
   return (
-    <section dir="rtl" className="py-24 bg-gradient-to-b from-muted/30 to-background relative overflow-hidden">
+    <section dir={isRTL ? 'rtl' : 'ltr'} className="py-24 bg-gradient-to-b from-muted/30 to-background relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
@@ -63,13 +67,13 @@ const Testimonials = () => {
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
             <Star className="w-5 h-5 text-primary fill-primary" />
-            <span className="text-primary font-semibold">قصص النجاح</span>
+            <span className="text-primary font-semibold">{t('testimonials.badge')}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            ماذا يقول عملاؤنا
+            {t('testimonials.heading')}
           </h2>
           <p className="text-xl text-muted-foreground">
-            آراء حقيقية من عملاء حققوا أحلامهم بالهجرة معنا
+            {t('testimonials.subtitle')}
           </p>
         </div>
 
@@ -98,7 +102,7 @@ const Testimonials = () => {
 
                 {/* Testimonial text */}
                 <p className="text-muted-foreground leading-relaxed">
-                  "{testimonial.text}"
+                  "{t(testimonial.textKey)}"
                 </p>
 
                 {/* Author info */}
@@ -108,10 +112,10 @@ const Testimonials = () => {
                   </div>
                   <div>
                     <div className="font-bold text-foreground">
-                      {testimonial.name}
+                      {t(testimonial.nameKey)}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {testimonial.service}
+                      {t(testimonial.serviceKey)}
                     </div>
                   </div>
                 </div>
@@ -124,19 +128,19 @@ const Testimonials = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto mt-16 pt-16 border-t">
           <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
             <div className="text-4xl font-bold text-primary mb-2">5000+</div>
-            <div className="text-muted-foreground">عميل راضٍ</div>
+            <div className="text-muted-foreground">{t('testimonials.stats.satisfiedClients')}</div>
           </div>
           <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.7s" }}>
             <div className="text-4xl font-bold text-primary mb-2">98%</div>
-            <div className="text-muted-foreground">معدل النجاح</div>
+            <div className="text-muted-foreground">{t('testimonials.stats.successRate')}</div>
           </div>
           <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.8s" }}>
             <div className="text-4xl font-bold text-primary mb-2">15+</div>
-            <div className="text-muted-foreground">سنة خبرة</div>
+            <div className="text-muted-foreground">{t('testimonials.stats.yearsExperience')}</div>
           </div>
           <div className="text-center animate-fade-in-up" style={{ animationDelay: "0.9s" }}>
             <div className="text-4xl font-bold text-primary mb-2">24/7</div>
-            <div className="text-muted-foreground">دعم مستمر</div>
+            <div className="text-muted-foreground">{t('testimonials.stats.support')}</div>
           </div>
         </div>
       </div>

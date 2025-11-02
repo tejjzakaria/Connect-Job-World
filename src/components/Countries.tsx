@@ -1,130 +1,85 @@
 import { MapPin, Users, Briefcase, GraduationCap, Home, TrendingUp, DollarSign, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-const countries = [
-  {
-    id: "usa",
-    name: "الولايات المتحدة الأمريكية",
-    flag: "🇺🇸",
-    tagline: "أرض الفرص والأحلام",
-    gradient: "from-blue-600 to-blue-800",
-    stats: [
-      { label: "عدد المهاجرين سنوياً", value: "1M+", icon: Users },
-      { label: "متوسط الراتب", value: "$60K", icon: DollarSign },
-      { label: "وقت المعالجة", value: "12-24 شهر", icon: Clock },
-      { label: "معدل البطالة", value: "3.8%", icon: TrendingUp }
-    ],
-    programs: [
-      {
-        icon: "🎰",
-        title: "القرعة الأمريكية",
-        description: "برنامج التنوع للحصول على البطاقة الخضراء"
-      },
-      {
-        icon: "💼",
-        title: "تأشيرات العمل",
-        description: "H-1B, L-1, O-1 وتأشيرات أخرى"
-      },
-      {
-        icon: "🎓",
-        title: "تأشيرة الطالب",
-        description: "F-1 للدراسة في الجامعات الأمريكية"
-      },
-      {
-        icon: "👨‍👩‍👧",
-        title: "لم شمل العائلة",
-        description: "تأشيرات K-1, K-3 للأزواج والعائلات"
-      },
-      {
-        icon: "🏢",
-        title: "المستثمرون",
-        description: "تأشيرة EB-5 للمستثمرين"
-      },
-      {
-        icon: "⚽",
-        title: "الرياضيون",
-        description: "برامج خاصة للمواهب الرياضية"
-      }
-    ],
-    benefits: [
-      "أكبر اقتصاد في العالم",
-      "رواتب عالية وفرص وظيفية ممتازة",
-      "جامعات ومؤسسات تعليمية رائدة",
-      "تنوع ثقافي واجتماعي كبير",
-      "فرص للابتكار وريادة الأعمال",
-      "حماية قانونية وحقوق قوية"
-    ]
-  },
-  {
-    id: "canada",
-    name: "كندا",
-    flag: "🇨🇦",
-    tagline: "بلد الترحيب والفرص",
-    gradient: "from-red-600 to-red-800",
-    stats: [
-      { label: "عدد المهاجرين سنوياً", value: "400K+", icon: Users },
-      { label: "متوسط الراتب", value: "$50K", icon: DollarSign },
-      { label: "وقت المعالجة", value: "6-12 شهر", icon: Clock },
-      { label: "معدل البطالة", value: "5.2%", icon: TrendingUp }
-    ],
-    programs: [
-      {
-        icon: "🚀",
-        title: "Express Entry",
-        description: "أسرع طريقة للهجرة للعمال المهرة"
-      },
-      {
-        icon: "🏘️",
-        title: "البرامج الإقليمية",
-        description: "PNP برامج الترشيح الإقليمية"
-      },
-      {
-        icon: "💼",
-        title: "تأشيرات العمل",
-        description: "LMIA وتصاريح العمل المختلفة"
-      },
-      {
-        icon: "🎓",
-        title: "تأشيرة الطالب",
-        description: "Study Permit للدراسة في كندا"
-      },
-      {
-        icon: "👨‍👩‍👧",
-        title: "لم شمل العائلة",
-        description: "برامج رعاية الأزواج والآباء"
-      },
-      {
-        icon: "🏢",
-        title: "رجال الأعمال",
-        description: "برامج Start-up Visa للمستثمرين"
-      }
-    ],
-    benefits: [
-      "نظام هجرة واضح وشفاف",
-      "رعاية صحية شاملة ومجانية",
-      "تعليم عالي الجودة وبأسعار معقولة",
-      "جودة حياة عالية وأمان",
-      "مجتمع متعدد الثقافات ومرحب",
-      "مسار سريع للحصول على الجنسية (3 سنوات)"
-    ]
-  }
-];
+import { useTranslation } from "react-i18next";
 
 const Countries = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
+  const countries = [
+    {
+      id: "usa",
+      nameKey: "countries.usa.name",
+      flag: "🇺🇸",
+      taglineKey: "countries.usa.tagline",
+      gradient: "from-blue-600 to-blue-800",
+      stats: [
+        { labelKey: "countries.usa.stat1Label", value: "1M+", icon: Users },
+        { labelKey: "countries.usa.stat2Label", value: "$60K", icon: DollarSign },
+        { labelKey: "countries.usa.stat3Label", valueKey: "countries.usa.stat3Value", icon: Clock },
+        { labelKey: "countries.usa.stat4Label", value: "3.8%", icon: TrendingUp }
+      ],
+      programs: [
+        { icon: "🎰", titleKey: "countries.usa.program1Title", descKey: "countries.usa.program1Desc" },
+        { icon: "💼", titleKey: "countries.usa.program2Title", descKey: "countries.usa.program2Desc" },
+        { icon: "🎓", titleKey: "countries.usa.program3Title", descKey: "countries.usa.program3Desc" },
+        { icon: "👨‍👩‍👧", titleKey: "countries.usa.program4Title", descKey: "countries.usa.program4Desc" },
+        { icon: "🏢", titleKey: "countries.usa.program5Title", descKey: "countries.usa.program5Desc" },
+        { icon: "⚽", titleKey: "countries.usa.program6Title", descKey: "countries.usa.program6Desc" }
+      ],
+      benefitKeys: [
+        "countries.usa.benefit1",
+        "countries.usa.benefit2",
+        "countries.usa.benefit3",
+        "countries.usa.benefit4",
+        "countries.usa.benefit5",
+        "countries.usa.benefit6"
+      ]
+    },
+    {
+      id: "canada",
+      nameKey: "countries.canada.name",
+      flag: "🇨🇦",
+      taglineKey: "countries.canada.tagline",
+      gradient: "from-red-600 to-red-800",
+      stats: [
+        { labelKey: "countries.canada.stat1Label", value: "400K+", icon: Users },
+        { labelKey: "countries.canada.stat2Label", value: "$50K", icon: DollarSign },
+        { labelKey: "countries.canada.stat3Label", valueKey: "countries.canada.stat3Value", icon: Clock },
+        { labelKey: "countries.canada.stat4Label", value: "5.2%", icon: TrendingUp }
+      ],
+      programs: [
+        { icon: "🚀", titleKey: "countries.canada.program1Title", descKey: "countries.canada.program1Desc" },
+        { icon: "🏘️", titleKey: "countries.canada.program2Title", descKey: "countries.canada.program2Desc" },
+        { icon: "💼", titleKey: "countries.canada.program3Title", descKey: "countries.canada.program3Desc" },
+        { icon: "🎓", titleKey: "countries.canada.program4Title", descKey: "countries.canada.program4Desc" },
+        { icon: "👨‍👩‍👧", titleKey: "countries.canada.program5Title", descKey: "countries.canada.program5Desc" },
+        { icon: "🏢", titleKey: "countries.canada.program6Title", descKey: "countries.canada.program6Desc" }
+      ],
+      benefitKeys: [
+        "countries.canada.benefit1",
+        "countries.canada.benefit2",
+        "countries.canada.benefit3",
+        "countries.canada.benefit4",
+        "countries.canada.benefit5",
+        "countries.canada.benefit6"
+      ]
+    }
+  ];
   return (
-    <section dir="rtl" className="py-24 bg-gradient-to-b from-muted/30 to-background">
+    <section dir={isRTL ? 'rtl' : 'ltr'} className="py-24 bg-gradient-to-b from-muted/30 to-background">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
             <MapPin className="w-5 h-5 text-primary" />
-            <span className="text-primary font-semibold">وجهاتنا</span>
+            <span className="text-primary font-semibold">{t('countries.badge')}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            الدول التي نخدمها
+            {t('countries.heading')}
           </h2>
           <p className="text-xl text-muted-foreground">
-            نتخصص في خدمات الهجرة لأفضل وجهتين في العالم
+            {t('countries.subtitle')}
           </p>
         </div>
 
@@ -144,15 +99,15 @@ const Countries = () => {
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div>
                       <div className="text-6xl mb-4">{country.flag}</div>
-                      <h3 className="text-4xl font-bold mb-2">{country.name}</h3>
-                      <p className="text-xl opacity-90">{country.tagline}</p>
+                      <h3 className="text-4xl font-bold mb-2">{t(country.nameKey)}</h3>
+                      <p className="text-xl opacity-90">{t(country.taglineKey)}</p>
                     </div>
                     <Button
                       size="lg"
                       className="bg-white text-primary hover:bg-white/90 font-semibold"
                       onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}
                     >
-                      ابدأ طلبك الآن
+                      {t('countries.startApplication')}
                     </Button>
                   </div>
                 </div>
@@ -169,10 +124,10 @@ const Countries = () => {
                     >
                       <Icon className="w-8 h-8 text-primary mx-auto mb-3" />
                       <div className="text-3xl font-bold text-foreground mb-1">
-                        {stat.value}
+                        {stat.valueKey ? t(stat.valueKey) : stat.value}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {stat.label}
+                        {t(stat.labelKey)}
                       </div>
                     </Card>
                   );
@@ -184,7 +139,7 @@ const Countries = () => {
                 <div className="lg:col-span-2">
                   <h4 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Briefcase className="w-6 h-6 text-primary" />
-                    البرامج المتاحة
+                    {t('countries.availablePrograms')}
                   </h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     {country.programs.map((program, index) => (
@@ -194,10 +149,10 @@ const Countries = () => {
                       >
                         <div className="text-4xl mb-3">{program.icon}</div>
                         <h5 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                          {program.title}
+                          {t(program.titleKey)}
                         </h5>
                         <p className="text-sm text-muted-foreground leading-relaxed">
-                          {program.description}
+                          {t(program.descKey)}
                         </p>
                       </Card>
                     ))}
@@ -208,11 +163,11 @@ const Countries = () => {
                 <div>
                   <h4 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Home className="w-6 h-6 text-primary" />
-                    المميزات الرئيسية
+                    {t('countries.keyBenefits')}
                   </h4>
                   <Card className="p-6">
                     <div className="space-y-3">
-                      {country.benefits.map((benefit, index) => (
+                      {country.benefitKeys.map((benefitKey, index) => (
                         <div
                           key={index}
                           className="flex items-start gap-3 pb-3 border-b border-border last:border-0 last:pb-0"
@@ -221,7 +176,7 @@ const Countries = () => {
                             <div className="w-2 h-2 rounded-full bg-primary" />
                           </div>
                           <span className="text-sm text-muted-foreground leading-relaxed">
-                            {benefit}
+                            {t(benefitKey)}
                           </span>
                         </div>
                       ))}
@@ -237,17 +192,17 @@ const Countries = () => {
         <div className="text-center mt-16">
           <Card className="inline-block p-8 bg-gradient-to-br from-primary/10 to-accent/10 max-w-3xl">
             <h3 className="text-2xl font-bold text-foreground mb-4">
-              أي دولة تناسبك أكثر؟
+              {t('countries.finalCtaHeading')}
             </h3>
             <p className="text-muted-foreground mb-6">
-              احجز استشارة مجانية وسنساعدك في اتخاذ القرار الصحيح بناءً على وضعك الشخصي
+              {t('countries.finalCtaDescription')}
             </p>
             <Button
               size="lg"
               className="bg-primary hover:bg-primary-dark text-white"
               onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}
             >
-              احجز استشارة مجانية الآن
+              {t('countries.finalCtaButton')}
             </Button>
           </Card>
         </div>

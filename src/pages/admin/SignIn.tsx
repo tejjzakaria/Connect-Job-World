@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, Lock, Mail, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,17 +6,26 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const SignIn = () => {
   const { toast } = useToast();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
+
+  // Update document direction based on language
+  useEffect(() => {
+    const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = dir;
+  }, [i18n.language]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,15 +34,15 @@ const SignIn = () => {
     try {
       await login(formData.email, formData.password);
       toast({
-        title: "تم تسجيل الدخول بنجاح!",
-        description: "مرحباً بك في لوحة التحكم",
+        title: t('auth.loginSuccess'),
+        description: t('auth.welcomeToDashboard'),
       });
       // Navigate to dashboard
       navigate("/admin/dashboard");
     } catch (error) {
       toast({
-        title: "خطأ في تسجيل الدخول",
-        description: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+        title: t('auth.loginError'),
+        description: t('auth.invalidCredentials'),
         variant: "destructive",
       });
     } finally {
@@ -46,10 +55,15 @@ const SignIn = () => {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary-dark to-secondary relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-primary-dark to-secondary relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: "4s" }} />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-glow/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: "6s", animationDelay: "1s" }} />
+
+      {/* Language Switcher - Fixed Position */}
+      <div className="absolute top-6 right-6 z-20 text-white">
+        <LanguageSwitcher />
+      </div>
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-md mx-auto">
@@ -64,13 +78,13 @@ const SignIn = () => {
             </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full mb-4">
               <Shield className="w-5 h-5 text-white" />
-              <span className="text-white font-semibold">لوحة التحكم</span>
+              <span className="text-white font-semibold">{t('auth.dashboard')}</span>
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">
-              تسجيل الدخول
+              {t('auth.signIn')}
             </h1>
             <p className="text-white">
-              قم بتسجيل الدخول للوصول إلى لوحة التحكم
+              {t('auth.accessDashboard')}
             </p>
           </div>
 
@@ -81,7 +95,7 @@ const SignIn = () => {
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Mail className="w-4 h-4 text-primary" />
-                  البريد الإلكتروني
+                  {t('auth.email')}
                 </label>
                 <Input
                   required
@@ -89,7 +103,8 @@ const SignIn = () => {
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
                   placeholder="admin@connectjobworld.com"
-                  className="h-12 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 bg-background"
+                  dir="ltr"
+                  className="h-12 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 bg-background px-4"
                 />
               </div>
 
@@ -97,7 +112,7 @@ const SignIn = () => {
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Lock className="w-4 h-4 text-primary" />
-                  كلمة المرور
+                  {t('auth.password')}
                 </label>
                 <div className="relative">
                   <Input
@@ -106,12 +121,13 @@ const SignIn = () => {
                     value={formData.password}
                     onChange={(e) => handleChange("password", e.target.value)}
                     placeholder="••••••••"
-                    className="h-12 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 bg-background pr-12"
+                    dir="ltr"
+                    className="h-12 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 bg-background pr-12 pl-4"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -145,10 +161,10 @@ const SignIn = () => {
                 {isSubmitting ? (
                   <span className="flex items-center gap-3">
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    جاري التحميل...
+                    {t('auth.loading')}
                   </span>
                 ) : (
-                  "تسجيل الدخول"
+                  t('auth.signIn')
                 )}
               </Button>
             </form>
@@ -158,7 +174,7 @@ const SignIn = () => {
               <div className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  جميع البيانات محمية بتشفير SSL. لأسباب أمنية، لا تشارك بيانات تسجيل الدخول الخاصة بك.
+                  {t('auth.securityNotice')}
                 </p>
               </div>
             </div>
@@ -168,9 +184,14 @@ const SignIn = () => {
           <div className="text-center mt-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             <a
               href="/"
-              className="text-sm text-white hover:text-accent transition-colors"
+              className="text-sm text-white hover:text-accent transition-colors inline-flex items-center gap-2"
             >
-              ← العودة إلى الموقع الرئيسي
+              <span>{t('auth.backToWebsite')}</span>
+              {i18n.language === 'ar' ? (
+                <span className="text-lg">→</span>
+              ) : (
+                <span className="text-lg">←</span>
+              )}
             </a>
           </div>
         </div>

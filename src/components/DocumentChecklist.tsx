@@ -2,120 +2,124 @@ import { useState } from "react";
 import { FileCheck, Download, CheckSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-const checklists = [
-  {
-    id: "dv-lottery",
-    title: "القرعة الأمريكية (DV Lottery)",
-    icon: "🇺🇸",
-    documents: [
-      "صورة شخصية حديثة (بمواصفات محددة)",
-      "جواز سفر ساري المفعول",
-      "شهادة الميلاد",
-      "شهادة الثانوية العامة أو ما يعادلها",
-      "شهادات الخبرة المهنية (إن وجدت)",
-      "معلومات الزوج/ة والأطفال (إن وجد)"
-    ]
-  },
-  {
-    id: "canada-express",
-    title: "الهجرة إلى كندا (Express Entry)",
-    icon: "🇨🇦",
-    documents: [
-      "جواز السفر ساري المفعول",
-      "شهادة الثانوية والشهادات الجامعية",
-      "تقييم الشهادات من WES أو ICAS",
-      "نتائج اختبار اللغة (IELTS أو TEF)",
-      "شهادات الخبرة المهنية",
-      "كشف حساب بنكي (Proof of Funds)",
-      "شهادة الميلاد وجواز سفر أفراد العائلة",
-      "شهادة عدم السوابق العدلية",
-      "الفحص الطبي"
-    ]
-  },
-  {
-    id: "work-visa",
-    title: "تأشيرة العمل",
-    icon: "💼",
-    documents: [
-      "جواز سفر ساري المفعول",
-      "عرض عمل من صاحب عمل معتمد",
-      "الشهادات الدراسية",
-      "شهادات الخبرة المهنية",
-      "السيرة الذاتية (CV)",
-      "رسائل التوصية",
-      "شهادة عدم السوابق العدلية",
-      "الفحص الطبي",
-      "إثبات القدرة المالية"
-    ]
-  },
-  {
-    id: "study",
-    title: "الدراسة في الخارج",
-    icon: "🎓",
-    documents: [
-      "جواز سفر ساري المفعول",
-      "قبول جامعي (Letter of Acceptance)",
-      "كشوفات الدرجات الأكاديمية",
-      "الشهادات الدراسية السابقة",
-      "نتائج اختبار اللغة (IELTS, TOEFL)",
-      "إثبات القدرة المالية لتغطية الرسوم",
-      "خطاب الدافع (Statement of Purpose)",
-      "رسائل التوصية",
-      "الفحص الطبي",
-      "تأمين صحي"
-    ]
-  },
-  {
-    id: "family",
-    title: "لم شمل العائلة",
-    icon: "👨‍👩‍👧",
-    documents: [
-      "جواز السفر لجميع أفراد العائلة",
-      "شهادات الميلاد",
-      "عقد الزواج (للزوج/ة)",
-      "إثبات العلاقة الأسرية",
-      "كشف حساب بنكي للكفيل",
-      "إثبات إقامة الكفيل",
-      "شهادة عدم السوابق العدلية",
-      "صور شخصية لجميع أفراد العائلة",
-      "الفحص الطبي"
-    ]
-  },
-  {
-    id: "sports",
-    title: "مواهب كرة القدم",
-    icon: "⚽",
-    documents: [
-      "جواز سفر ساري المفعول",
-      "السيرة الذاتية الرياضية",
-      "شهادات المشاركة في المسابقات",
-      "فيديوهات للأداء الرياضي",
-      "رسائل توصية من مدربين",
-      "الشهادة الدراسية",
-      "الفحص الطبي الرياضي",
-      "شهادة حسن السيرة والسلوك"
-    ]
-  }
-];
+import { useTranslation } from "react-i18next";
 
 const DocumentChecklist = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
+  const checklists = [
+    {
+      id: "dv-lottery",
+      titleKey: "documentChecklist.dvLottery.title",
+      icon: "🇺🇸",
+      documentKeys: [
+        "documentChecklist.dvLottery.doc1",
+        "documentChecklist.dvLottery.doc2",
+        "documentChecklist.dvLottery.doc3",
+        "documentChecklist.dvLottery.doc4",
+        "documentChecklist.dvLottery.doc5",
+        "documentChecklist.dvLottery.doc6"
+      ]
+    },
+    {
+      id: "canada-express",
+      titleKey: "documentChecklist.canadaExpress.title",
+      icon: "🇨🇦",
+      documentKeys: [
+        "documentChecklist.canadaExpress.doc1",
+        "documentChecklist.canadaExpress.doc2",
+        "documentChecklist.canadaExpress.doc3",
+        "documentChecklist.canadaExpress.doc4",
+        "documentChecklist.canadaExpress.doc5",
+        "documentChecklist.canadaExpress.doc6",
+        "documentChecklist.canadaExpress.doc7",
+        "documentChecklist.canadaExpress.doc8",
+        "documentChecklist.canadaExpress.doc9"
+      ]
+    },
+    {
+      id: "work-visa",
+      titleKey: "documentChecklist.workVisa.title",
+      icon: "💼",
+      documentKeys: [
+        "documentChecklist.workVisa.doc1",
+        "documentChecklist.workVisa.doc2",
+        "documentChecklist.workVisa.doc3",
+        "documentChecklist.workVisa.doc4",
+        "documentChecklist.workVisa.doc5",
+        "documentChecklist.workVisa.doc6",
+        "documentChecklist.workVisa.doc7",
+        "documentChecklist.workVisa.doc8",
+        "documentChecklist.workVisa.doc9"
+      ]
+    },
+    {
+      id: "study",
+      titleKey: "documentChecklist.study.title",
+      icon: "🎓",
+      documentKeys: [
+        "documentChecklist.study.doc1",
+        "documentChecklist.study.doc2",
+        "documentChecklist.study.doc3",
+        "documentChecklist.study.doc4",
+        "documentChecklist.study.doc5",
+        "documentChecklist.study.doc6",
+        "documentChecklist.study.doc7",
+        "documentChecklist.study.doc8",
+        "documentChecklist.study.doc9",
+        "documentChecklist.study.doc10"
+      ]
+    },
+    {
+      id: "family",
+      titleKey: "documentChecklist.family.title",
+      icon: "👨‍👩‍👧",
+      documentKeys: [
+        "documentChecklist.family.doc1",
+        "documentChecklist.family.doc2",
+        "documentChecklist.family.doc3",
+        "documentChecklist.family.doc4",
+        "documentChecklist.family.doc5",
+        "documentChecklist.family.doc6",
+        "documentChecklist.family.doc7",
+        "documentChecklist.family.doc8",
+        "documentChecklist.family.doc9"
+      ]
+    },
+    {
+      id: "sports",
+      titleKey: "documentChecklist.sports.title",
+      icon: "⚽",
+      documentKeys: [
+        "documentChecklist.sports.doc1",
+        "documentChecklist.sports.doc2",
+        "documentChecklist.sports.doc3",
+        "documentChecklist.sports.doc4",
+        "documentChecklist.sports.doc5",
+        "documentChecklist.sports.doc6",
+        "documentChecklist.sports.doc7",
+        "documentChecklist.sports.doc8"
+      ]
+    }
+  ];
+
   const [selectedChecklist, setSelectedChecklist] = useState(checklists[0].id);
   const activeChecklist = checklists.find(c => c.id === selectedChecklist) || checklists[0];
 
   return (
-    <section id="documents" dir="rtl" className="py-24 bg-muted/30">
+    <section id="documents" dir={isRTL ? 'rtl' : 'ltr'} className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
             <FileCheck className="w-5 h-5 text-primary" />
-            <span className="text-primary font-semibold">الوثائق المطلوبة</span>
+            <span className="text-primary font-semibold">{t('documentChecklist.badge')}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            قائمة الوثائق حسب الخدمة
+            {t('documentChecklist.heading')}
           </h2>
           <p className="text-xl text-muted-foreground">
-            تعرف على الوثائق المطلوبة لكل نوع من خدماتنا
+            {t('documentChecklist.subtitle')}
           </p>
         </div>
 
@@ -137,7 +141,7 @@ const DocumentChecklist = () => {
                 <div className={`text-sm font-semibold ${
                   selectedChecklist === checklist.id ? "text-primary" : "text-muted-foreground"
                 }`}>
-                  {checklist.title.split(" ")[0]}
+                  {t(checklist.titleKey).split(" ")[0]}
                 </div>
               </button>
             ))}
@@ -150,40 +154,40 @@ const DocumentChecklist = () => {
                 <div className="text-5xl">{activeChecklist.icon}</div>
                 <div>
                   <h3 className="text-2xl font-bold text-foreground mb-1">
-                    {activeChecklist.title}
+                    {t(activeChecklist.titleKey)}
                   </h3>
                   <p className="text-muted-foreground">
-                    {activeChecklist.documents.length} وثيقة مطلوبة
+                    {t('documentChecklist.documentsRequired', { count: activeChecklist.documentKeys.length })}
                   </p>
                 </div>
               </div>
               <Button
                 variant="outline"
                 className="gap-2"
-                onClick={() => alert("ستتم إضافة رابط التحميل قريباً")}
+                onClick={() => alert(t('documentChecklist.downloadAlert'))}
               >
                 <Download className="w-4 h-4" />
-                تحميل PDF
+                {t('documentChecklist.downloadPdf')}
               </Button>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              {activeChecklist.documents.map((doc, index) => (
+              {activeChecklist.documentKeys.map((docKey, index) => (
                 <div
                   key={index}
                   className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors animate-fade-in-up"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <CheckSquare className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">{doc}</span>
+                  <span className="text-foreground">{t(docKey)}</span>
                 </div>
               ))}
             </div>
 
             <div className="mt-8 p-6 bg-primary/10 rounded-xl">
-              <h4 className="font-bold text-foreground mb-2">ملاحظة هامة:</h4>
+              <h4 className="font-bold text-foreground mb-2">{t('documentChecklist.importantNote')}</h4>
               <p className="text-muted-foreground leading-relaxed">
-                جميع الوثائق يجب أن تكون أصلية أو نسخ مصدقة. الوثائق بلغات أخرى غير الإنجليزية أو الفرنسية تحتاج إلى ترجمة معتمدة. نحن نساعدك في إعداد وترجمة جميع الوثائق المطلوبة.
+                {t('documentChecklist.noteText')}
               </p>
             </div>
           </Card>
@@ -192,16 +196,16 @@ const DocumentChecklist = () => {
           <div className="text-center mt-12">
             <Card className="inline-block p-8 bg-gradient-to-br from-primary/10 to-accent/10">
               <h3 className="text-2xl font-bold text-foreground mb-4">
-                نساعدك في إعداد الوثائق
+                {t('documentChecklist.helpTitle')}
               </h3>
               <p className="text-muted-foreground mb-6 max-w-2xl">
-                لا تقلق بشأن الأوراق! فريقنا سيساعدك في جمع وإعداد وترجمة جميع الوثائق المطلوبة
+                {t('documentChecklist.helpDescription')}
               </p>
               <a
                 href="#contact-form"
                 className="inline-block px-8 py-4 bg-primary text-white rounded-full font-semibold hover:bg-primary-dark transition-colors"
               >
-                تواصل معنا للمساعدة
+                {t('documentChecklist.contactButton')}
               </a>
             </Card>
           </div>

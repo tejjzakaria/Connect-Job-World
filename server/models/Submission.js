@@ -22,6 +22,14 @@ const submissionSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Service is required'],
       enum: [
+        // New service keys (language-independent)
+        'us_lottery',
+        'canada_immigration',
+        'work_visa',
+        'study_abroad',
+        'family_reunion',
+        'soccer_talent',
+        // Old Arabic values for backward compatibility
         'القرعة الأمريكية',
         'الهجرة إلى كندا',
         'تأشيرة عمل',
@@ -37,13 +45,35 @@ const submissionSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ['جديد', 'تمت المعاينة', 'تم التواصل', 'مكتمل'],
-      default: 'جديد',
+      enum: [
+        // New status keys (language-independent)
+        'new',
+        'viewed',
+        'contacted',
+        'completed',
+        // Old Arabic values for backward compatibility
+        'جديد',
+        'تمت المعاينة',
+        'تم التواصل',
+        'مكتمل'
+      ],
+      default: 'new',
     },
     source: {
       type: String,
-      enum: ['نموذج الموقع', 'واتساب', 'مكالمة هاتفية', 'بريد إلكتروني'],
-      default: 'نموذج الموقع',
+      enum: [
+        // New source keys (language-independent)
+        'website',
+        'whatsapp',
+        'phone',
+        'email',
+        // Old Arabic values for backward compatibility
+        'نموذج الموقع',
+        'واتساب',
+        'مكالمة هاتفية',
+        'بريد إلكتروني'
+      ],
+      default: 'website',
     },
     timestamp: {
       type: Date,

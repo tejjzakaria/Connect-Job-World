@@ -12,6 +12,7 @@ import {
 import { notificationsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatRelativeTime } from "@/lib/dateUtils";
+import { useTranslation } from "react-i18next";
 
 interface Notification {
   _id: string;
@@ -26,6 +27,8 @@ interface Notification {
 export function NotificationsDropdown() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -101,13 +104,13 @@ export function NotificationsDropdown() {
       );
       setUnreadCount(0);
       toast({
-        title: "تم بنجاح",
-        description: "تم تحديد جميع الإشعارات كمقروءة",
+        title: t('notifications.success'),
+        description: t('notifications.markAllReadSuccess'),
       });
     } catch (error: any) {
       toast({
-        title: "خطأ",
-        description: "فشل تحديث الإشعارات",
+        title: t('notifications.error'),
+        description: t('notifications.markAllReadError'),
         variant: "destructive",
       });
     }
@@ -118,13 +121,13 @@ export function NotificationsDropdown() {
       await notificationsAPI.clearRead();
       setNotifications(prev => prev.filter(n => !n.read));
       toast({
-        title: "تم بنجاح",
-        description: "تم حذف جميع الإشعارات المقروءة",
+        title: t('notifications.success'),
+        description: t('notifications.clearReadSuccess'),
       });
     } catch (error: any) {
       toast({
-        title: "خطأ",
-        description: "فشل حذف الإشعارات",
+        title: t('notifications.error'),
+        description: t('notifications.clearReadError'),
         variant: "destructive",
       });
     }
@@ -145,6 +148,33 @@ export function NotificationsDropdown() {
     }
   };
 
+  const getTranslatedNotification = (notification: Notification) => {
+    const typeKey = `notifications.type.${notification.type}`;
+    const hasTranslation = t(`${typeKey}.title`, { defaultValue: '' });
+
+    // If translation exists for this type, use it
+    if (hasTranslation) {
+      // Map data fields to match translation keys
+      const translationData: any = { ...(notification.data || {}) };
+
+      // Map documentCount to count for translations
+      if (translationData.documentCount !== undefined) {
+        translationData.count = translationData.documentCount;
+      }
+
+      return {
+        title: t(`${typeKey}.title`),
+        message: t(`${typeKey}.message`, translationData),
+      };
+    }
+
+    // Otherwise, fallback to database values
+    return {
+      title: notification.title,
+      message: notification.message,
+    };
+  };
+
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -152,16 +182,16 @@ export function NotificationsDropdown() {
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="w-5 h-5" />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 max-h-[500px] overflow-y-auto" dir="rtl">
+      <DropdownMenuContent align="end" className="w-80 max-h-[500px] overflow-y-auto" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b">
-          <h3 className="font-semibold text-foreground">الإشعارات</h3>
+          <h3 className="font-semibold text-foreground">{t('notifications.title')}</h3>
           <div className="flex items-center gap-1">
             {unreadCount > 0 && (
               <Button
@@ -169,7 +199,7 @@ export function NotificationsDropdown() {
                 size="sm"
                 onClick={handleMarkAllRead}
                 className="h-8 px-2 text-xs"
-                title="تحديد الكل كمقروء"
+                title={t('notifications.markAllRead')}
               >
                 <CheckCheck className="w-4 h-4" />
               </Button>
@@ -179,7 +209,7 @@ export function NotificationsDropdown() {
               size="sm"
               onClick={handleClearRead}
               className="h-8 px-2 text-xs"
-              title="حذف المقروءة"
+              title={t('notifications.clearRead')}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -194,41 +224,44 @@ export function NotificationsDropdown() {
         ) : notifications.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground">
             <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">لا توجد إشعارات</p>
+            <p className="text-sm">{t('notifications.noNotifications')}</p>
           </div>
         ) : (
           <div className="divide-y">
-            {notifications.map((notification) => (
-              <DropdownMenuItem
-                key={notification._id}
-                onClick={() => handleNotificationClick(notification)}
-                className={`p-3 cursor-pointer hover:bg-muted/50 ${
-                  !notification.read ? 'bg-primary/5' : ''
-                }`}
-              >
-                <div className="flex items-start gap-3 w-full">
-                  <span className="text-2xl flex-shrink-0">
-                    {getNotificationIcon(notification.type)}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="font-semibold text-sm text-foreground">
-                        {notification.title}
+            {notifications.map((notification) => {
+              const { title, message } = getTranslatedNotification(notification);
+              return (
+                <DropdownMenuItem
+                  key={notification._id}
+                  onClick={() => handleNotificationClick(notification)}
+                  className={`p-3 cursor-pointer hover:bg-muted/50 ${
+                    !notification.read ? 'bg-primary/5' : ''
+                  }`}
+                >
+                  <div className="flex items-start gap-3 w-full">
+                    <span className="text-2xl flex-shrink-0">
+                      {getNotificationIcon(notification.type)}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="font-semibold text-sm text-foreground">
+                          {title}
+                        </p>
+                        {!notification.read && (
+                          <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1" />
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {message}
                       </p>
-                      {!notification.read && (
-                        <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1" />
-                      )}
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatRelativeTime(notification.createdAt)}
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {notification.message}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatRelativeTime(notification.createdAt)}
-                    </p>
                   </div>
-                </div>
-              </DropdownMenuItem>
-            ))}
+                </DropdownMenuItem>
+              );
+            })}
           </div>
         )}
       </DropdownMenuContent>

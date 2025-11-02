@@ -21,6 +21,7 @@ import DashboardLayout from "@/components/admin/DashboardLayout";
 import { clientsAPI, submissionsAPI, documentsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatShortDate } from "@/lib/dateUtils";
+import { useTranslation } from "react-i18next";
 
 interface Client {
   _id: string;
@@ -45,24 +46,39 @@ interface Document {
   createdAt: string;
 }
 
-const DOCUMENT_TYPES_AR: Record<string, string> = {
-  passport: "جواز السفر",
-  national_id: "بطاقة الهوية الوطنية",
-  birth_certificate: "شهادة الميلاد",
-  diploma: "الشهادة الدراسية",
-  work_contract: "عقد العمل",
-  bank_statement: "كشف حساب بنكي",
-  proof_of_address: "إثبات العنوان",
-  marriage_certificate: "عقد الزواج",
-  police_clearance: "السجل العدلي",
-  medical_report: "تقرير طبي",
-  other: "أخرى",
+// Helper function to get service translation from key
+const getServiceTranslation = (serviceKey: string, t: any) => {
+  const serviceMap: Record<string, string> = {
+    'us_lottery': t('submissions.serviceUSLottery'),
+    'canada_immigration': t('submissions.serviceCanadaImmigration'),
+    'work_visa': t('submissions.serviceWorkVisa'),
+    'study_abroad': t('submissions.serviceStudyAbroad'),
+    'family_reunion': t('submissions.serviceFamilyReunion'),
+    'soccer_talent': t('submissions.serviceSoccerTalent'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return serviceMap[serviceKey] || serviceKey;
+};
+
+// Helper function to get status translation from key (Client statuses)
+const getStatusTranslation = (statusKey: string, t: any) => {
+  const statusMap: Record<string, string> = {
+    'new': t('status.new'),
+    'in_review': t('status.inProgress'),
+    'completed': t('status.completed'),
+    'rejected': t('status.rejected'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return statusMap[statusKey] || statusKey;
 };
 
 const ClientDetail = () => {
   const { clientId } = useParams<{ clientId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [client, setClient] = useState<Client | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -109,7 +125,7 @@ const ClientDetail = () => {
     } catch (error: any) {
       console.error("Error fetching client data:", error);
       toast({
-        title: "خطأ في تحميل البيانات",
+        title: t('common.error'),
         description: error.message || "يرجى المحاولة مرة أخرى",
         variant: "destructive",
       });
@@ -120,16 +136,20 @@ const ClientDetail = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case "new":
       case "جديد":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return "bg-blue-50 text-blue-700 border-blue-300";
+      case "in_review":
       case "قيد المراجعة":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+        return "bg-yellow-50 text-yellow-700 border-yellow-300";
+      case "completed":
       case "مكتمل":
-        return "bg-green-100 text-green-700 border-green-200";
+        return "bg-green-50 text-green-700 border-green-300";
+      case "rejected":
       case "مرفوض":
-        return "bg-red-100 text-red-700 border-red-200";
+        return "bg-red-50 text-red-700 border-red-300";
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "bg-gray-50 text-gray-700 border-gray-300";
     }
   };
 
@@ -139,28 +159,28 @@ const ClientDetail = () => {
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
             <CheckCircle className="w-3 h-3" />
-            موثق
+            {t('clientDetail.verified')}
           </span>
         );
       case "rejected":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
             <XCircle className="w-3 h-3" />
-            مرفوض
+            {t('clientDetail.rejected')}
           </span>
         );
       case "needs_replacement":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">
             <AlertCircle className="w-3 h-3" />
-            يحتاج استبدال
+            {t('clientDetail.needsReplacement')}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
             <Clock className="w-3 h-3" />
-            قيد المراجعة
+            {t('clientDetail.underReview')}
           </span>
         );
     }
@@ -192,9 +212,9 @@ const ClientDetail = () => {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
-          <p className="text-muted-foreground">العميل غير موجود</p>
+          <p className="text-muted-foreground">{t('clientDetail.clientNotFound')}</p>
           <Button onClick={() => navigate("/admin/clients")} className="mt-4">
-            العودة إلى العملاء
+            {t('clientDetail.backToClients')}
           </Button>
         </div>
       </DashboardLayout>
@@ -214,11 +234,11 @@ const ClientDetail = () => {
               className="gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              رجوع
+              {t('common.back')}
             </Button>
             <div>
               <h2 className="text-3xl font-bold text-foreground">{client.name}</h2>
-              <p className="text-muted-foreground mt-1">تفاصيل العميل</p>
+              <p className="text-muted-foreground mt-1">{t('clientDetail.title')}</p>
             </div>
           </div>
           <Button
@@ -227,7 +247,7 @@ const ClientDetail = () => {
             onClick={() => navigate(`/admin/clients/${clientId}/edit`)}
           >
             <Edit className="w-4 h-4" />
-            تعديل
+            {t('common.edit')}
           </Button>
         </div>
 
@@ -237,7 +257,7 @@ const ClientDetail = () => {
             <div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <Phone className="w-4 h-4" />
-                <span>رقم الهاتف</span>
+                <span>{t('clientDetail.phoneNumber')}</span>
               </div>
               <p className="font-semibold text-foreground">{client.phone}</p>
             </div>
@@ -246,7 +266,7 @@ const ClientDetail = () => {
               <div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Mail className="w-4 h-4" />
-                  <span>البريد الإلكتروني</span>
+                  <span>{t('clients.email')}</span>
                 </div>
                 <p className="font-semibold text-foreground truncate">{client.email}</p>
               </div>
@@ -255,15 +275,15 @@ const ClientDetail = () => {
             <div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <Briefcase className="w-4 h-4" />
-                <span>الخدمة</span>
+                <span>{t('clients.service')}</span>
               </div>
-              <p className="font-semibold text-foreground">{client.service}</p>
+              <p className="font-semibold text-foreground">{getServiceTranslation(client.service, t)}</p>
             </div>
 
             <div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <Calendar className="w-4 h-4" />
-                <span>تاريخ التسجيل</span>
+                <span>{t('clientDetail.registrationDate')}</span>
               </div>
               <p className="font-semibold text-foreground">
                 {formatShortDate(client.date || client.createdAt)}
@@ -273,20 +293,20 @@ const ClientDetail = () => {
 
           <div className="mt-6 pt-6 border-t">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-foreground">الحالة</h3>
+              <h3 className="font-semibold text-foreground">{t('clientDetail.status')}</h3>
               <span
                 className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
                   client.status
                 )}`}
               >
-                {client.status}
+                {getStatusTranslation(client.status, t)}
               </span>
             </div>
           </div>
 
           {client.message && (
             <div className="mt-6 pt-6 border-t">
-              <h3 className="font-semibold text-foreground mb-3">الرسالة</h3>
+              <h3 className="font-semibold text-foreground mb-3">{t('clientDetail.message')}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {client.message}
               </p>
@@ -298,7 +318,7 @@ const ClientDetail = () => {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">
-              المستندات ({documents.length})
+              {t('clientDetail.documents')} ({documents.length})
             </h3>
             {submissionId && (
               <Button
@@ -306,7 +326,7 @@ const ClientDetail = () => {
                 size="sm"
                 onClick={() => navigate(`/admin/submissions/${submissionId}/documents`)}
               >
-                إدارة المستندات
+                {t('clientDetail.manageDocuments')}
               </Button>
             )}
           </div>
@@ -314,7 +334,7 @@ const ClientDetail = () => {
           {documents.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">لا توجد مستندات مرفوعة</p>
+              <p className="text-muted-foreground">{t('clientDetail.noDocuments')}</p>
             </div>
           ) : (
             <div className="grid gap-4">
@@ -331,7 +351,7 @@ const ClientDetail = () => {
                       </p>
                       <div className="flex items-center gap-4 mt-1">
                         <p className="text-sm text-muted-foreground">
-                          {DOCUMENT_TYPES_AR[document.documentType] || document.documentType}
+                          {t(`docTypes.${document.documentType}`, document.documentType)}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {formatFileSize(document.fileSize)}
@@ -347,7 +367,7 @@ const ClientDetail = () => {
                     onClick={() => handleDownload(document._id)}
                   >
                     <Download className="w-4 h-4" />
-                    تحميل
+                    {t('clientDetail.download')}
                   </Button>
                 </div>
               ))}

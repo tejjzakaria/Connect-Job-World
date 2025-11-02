@@ -6,6 +6,7 @@ import DashboardLayout from "@/components/admin/DashboardLayout";
 import { clientsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatShortDate, formatNumber } from "@/lib/dateUtils";
+import { useTranslation } from "react-i18next";
 
 interface DashboardStats {
   totalClients: number;
@@ -23,9 +24,38 @@ interface Submission {
   timestamp: string;
 }
 
+// Helper function to get service translation from key
+const getServiceTranslation = (serviceKey: string, t: any) => {
+  const serviceMap: Record<string, string> = {
+    'us_lottery': t('submissions.serviceUSLottery'),
+    'canada_immigration': t('submissions.serviceCanadaImmigration'),
+    'work_visa': t('submissions.serviceWorkVisa'),
+    'study_abroad': t('submissions.serviceStudyAbroad'),
+    'family_reunion': t('submissions.serviceFamilyReunion'),
+    'soccer_talent': t('submissions.serviceSoccerTalent'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return serviceMap[serviceKey] || serviceKey;
+};
+
+// Helper function to get status translation from key
+const getStatusTranslation = (statusKey: string, t: any) => {
+  const statusMap: Record<string, string> = {
+    'new': t('submissions.statusNew'),
+    'viewed': t('submissions.statusViewed'),
+    'contacted': t('submissions.statusContacted'),
+    'completed': t('submissions.statusCompleted'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return statusMap[statusKey] || statusKey;
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats>({
     totalClients: 0,
@@ -90,8 +120,8 @@ const Dashboard = () => {
     } catch (error: any) {
       console.error("Error fetching dashboard data:", error);
       toast({
-        title: "خطأ في تحميل البيانات",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('dashboard.errorLoading'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     } finally {
@@ -101,28 +131,28 @@ const Dashboard = () => {
 
   const statsCards = [
     {
-      title: "إجمالي العملاء",
+      title: t('dashboard.totalClients'),
       value: formatNumber(stats.totalClients),
       icon: Users,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50"
     },
     {
-      title: "طلبات جديدة",
+      title: t('dashboard.newSubmissions'),
       value: formatNumber(stats.newSubmissions),
       icon: FileText,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50"
     },
     {
-      title: "طلبات مكتملة",
+      title: t('dashboard.completedSubmissions'),
       value: formatNumber(stats.completedSubmissions),
       icon: CheckCircle,
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50"
     },
     {
-      title: "معدل النجاح",
+      title: t('dashboard.successRate'),
       value: `${stats.successRate}%`,
       icon: TrendingUp,
       color: "from-orange-500 to-orange-600",
@@ -133,14 +163,20 @@ const Dashboard = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case "new":
       case "جديد":
-        return "bg-blue-100 text-blue-700";
-      case "قيد المراجعة":
-        return "bg-yellow-100 text-yellow-700";
+        return "bg-blue-50 text-blue-700";
+      case "viewed":
+      case "تمت المعاينة":
+        return "bg-yellow-50 text-yellow-700";
+      case "contacted":
+      case "تم التواصل":
+        return "bg-purple-50 text-purple-700";
+      case "completed":
       case "مكتمل":
-        return "bg-green-100 text-green-700";
+        return "bg-green-50 text-green-700";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-gray-50 text-gray-700";
     }
   };
 
@@ -161,10 +197,10 @@ const Dashboard = () => {
         {/* Welcome Message */}
         <div className="animate-fade-in-up">
           <h2 className="text-3xl font-bold text-foreground mb-2">
-            مرحباً بك! 👋
+            {t('dashboard.welcome', { defaultValue: 'Welcome!' })} 👋
           </h2>
           <p className="text-muted-foreground">
-            إليك نظرة عامة على نشاط اليوم
+            {t('dashboard.todayOverview', { defaultValue: "Here's an overview of today's activity" })}
           </p>
         </div>
 
@@ -202,17 +238,17 @@ const Dashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
-                آخر الطلبات
+                {t('dashboard.recentSubmissions')}
               </h3>
               <button onClick={() => navigate("/admin/submissions")} className="text-sm text-primary hover:text-primary-dark transition-colors">
-                عرض الكل ←
+                {t('dashboard.viewAll')} {t('common.arrow', { defaultValue: '←' })}
               </button>
             </div>
 
             {recentSubmissions.length === 0 ? (
               <div className="text-center py-12">
                 <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">لا توجد طلبات حتى الآن</p>
+                <p className="text-muted-foreground">{t('dashboard.noRecentSubmissions')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -229,12 +265,12 @@ const Dashboard = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-foreground">{submission.name}</h4>
-                        <p className="text-sm text-muted-foreground">{submission.service}</p>
+                        <p className="text-sm text-muted-foreground">{getServiceTranslation(submission.service, t)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(submission.status)}`}>
-                        {submission.status}
+                        {getStatusTranslation(submission.status, t)}
                       </span>
                       <span className="text-sm text-muted-foreground hidden sm:block">
                         {formatShortDate(submission.timestamp)}
@@ -249,28 +285,28 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <Card className="p-6">
-          <h3 className="text-xl font-bold text-foreground mb-4">إجراءات سريعة</h3>
+          <h3 className="text-xl font-bold text-foreground mb-4">{t('dashboard.quickActions', { defaultValue: 'Quick Actions' })}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <button
               onClick={() => navigate("/admin/clients/add")}
               className="p-4 bg-gradient-to-br from-primary to-primary-dark text-white rounded-xl hover:shadow-lg transition-all hover:scale-105"
             >
               <Users className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">إضافة عميل</span>
+              <span className="text-sm font-medium">{t('clients.addClient')}</span>
             </button>
             <button
               onClick={() => navigate("/admin/submissions")}
               className="p-4 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all hover:scale-105"
             >
               <FileText className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">عرض الطلبات</span>
+              <span className="text-sm font-medium">{t('submissions.title')}</span>
             </button>
             <button
               onClick={() => navigate("/admin/analytics")}
               className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-xl hover:shadow-lg transition-all hover:scale-105"
             >
               <TrendingUp className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">التقارير</span>
+              <span className="text-sm font-medium">{t('menu.analytics')}</span>
             </button>
           </div>
         </Card>

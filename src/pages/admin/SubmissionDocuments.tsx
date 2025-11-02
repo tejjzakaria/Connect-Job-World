@@ -35,6 +35,7 @@ import { DocumentPreview } from "@/components/admin/DocumentPreview";
 import { documentsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatShortDate, formatDateTime } from "@/lib/dateUtils";
+import { useTranslation } from "react-i18next";
 
 interface Document {
   _id: string;
@@ -74,24 +75,27 @@ interface DocumentLink {
   createdAt: string;
 }
 
-const DOCUMENT_TYPES_AR: Record<string, string> = {
-  passport: "جواز السفر",
-  national_id: "بطاقة الهوية الوطنية",
-  birth_certificate: "شهادة الميلاد",
-  diploma: "الشهادة الدراسية",
-  work_contract: "عقد العمل",
-  bank_statement: "كشف حساب بنكي",
-  proof_of_address: "إثبات العنوان",
-  marriage_certificate: "عقد الزواج",
-  police_clearance: "السجل العدلي",
-  medical_report: "تقرير طبي",
-  other: "أخرى",
+// Helper function to get service translation from key
+const getServiceTranslation = (serviceKey: string, t: any) => {
+  const serviceMap: Record<string, string> = {
+    'us_lottery': t('submissions.serviceUSLottery'),
+    'canada_immigration': t('submissions.serviceCanadaImmigration'),
+    'work_visa': t('submissions.serviceWorkVisa'),
+    'study_abroad': t('submissions.serviceStudyAbroad'),
+    'family_reunion': t('submissions.serviceFamilyReunion'),
+    'soccer_talent': t('submissions.serviceSoccerTalent'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return serviceMap[serviceKey] || serviceKey;
 };
 
 const SubmissionDocuments = () => {
   const { submissionId } = useParams<{ submissionId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
 
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -137,8 +141,8 @@ const SubmissionDocuments = () => {
     } catch (error: any) {
       console.error("Error fetching data:", error);
       toast({
-        title: "خطأ في تحميل البيانات",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('submissionDocs.loadError'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive",
       });
     } finally {
@@ -166,21 +170,21 @@ const SubmissionDocuments = () => {
 
       if (response.success) {
         toast({
-          title: "تم المراجعة بنجاح",
+          title: t('submissionDocs.reviewSuccess'),
           description:
             reviewStatus === "verified"
-              ? "تم التحقق من المستند"
+              ? t('submissionDocs.verifiedSuccess')
               : reviewStatus === "rejected"
-              ? "تم رفض المستند"
-              : "يحتاج المستند إلى استبدال",
+              ? t('submissionDocs.rejectedSuccess')
+              : t('submissionDocs.needsReplacementSuccess'),
         });
         setReviewDialogOpen(false);
         fetchData();
       }
     } catch (error: any) {
       toast({
-        title: "خطأ في المراجعة",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('submissionDocs.reviewError'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive",
       });
     }
@@ -206,28 +210,28 @@ const SubmissionDocuments = () => {
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
             <CheckCircle className="w-3 h-3" />
-            موثق
+            {t('submissionDocs.statusVerified').split(' - ')[0]}
           </span>
         );
       case "rejected":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
             <XCircle className="w-3 h-3" />
-            مرفوض
+            {t('submissionDocs.statusRejected')}
           </span>
         );
       case "needs_replacement":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">
             <AlertCircle className="w-3 h-3" />
-            يحتاج استبدال
+            {t('submissionDocs.statusNeedsReplacement')}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
             <Clock className="w-3 h-3" />
-            قيد المراجعة
+            {t('submissionDocs.statusPending')}
           </span>
         );
     }
@@ -255,9 +259,9 @@ const SubmissionDocuments = () => {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
-          <p className="text-muted-foreground">الطلب غير موجود</p>
+          <p className="text-muted-foreground">{t('submissionDocs.notFound')}</p>
           <Button onClick={() => navigate("/admin/submissions")} className="mt-4">
-            العودة إلى الطلبات
+            {t('submissionDocs.backToSubmissions')}
           </Button>
         </div>
       </DashboardLayout>
@@ -278,12 +282,12 @@ const SubmissionDocuments = () => {
             className="gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            رجوع
+            {t('submissionDocs.back')}
           </Button>
           <div className="flex-1">
-            <h2 className="text-3xl font-bold text-foreground">مستندات {submission.name}</h2>
+            <h2 className="text-3xl font-bold text-foreground">{t('submissionDocs.title', { name: submission.name })}</h2>
             <p className="text-muted-foreground mt-1">
-              الخدمة: {submission.service}
+              {t('submissionDocs.service')}: {getServiceTranslation(submission.service, t)}
             </p>
           </div>
         </div>
@@ -292,16 +296,16 @@ const SubmissionDocuments = () => {
         <Card className="p-6 bg-gradient-to-br from-primary/5 to-accent/5">
           <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">الاسم</p>
+              <p className="text-sm text-muted-foreground">{t('submissionDocs.name')}</p>
               <p className="font-semibold text-foreground">{submission.name}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">الهاتف</p>
+              <p className="text-sm text-muted-foreground">{t('submissionDocs.phone')}</p>
               <p className="font-semibold text-foreground">{submission.phone}</p>
             </div>
             {submission.email && (
               <div>
-                <p className="text-sm text-muted-foreground">البريد الإلكتروني</p>
+                <p className="text-sm text-muted-foreground">{t('submissionDocs.email')}</p>
                 <p className="font-semibold text-foreground">{submission.email}</p>
               </div>
             )}
@@ -311,7 +315,7 @@ const SubmissionDocuments = () => {
         {/* Document Links */}
         {documentLinks.length > 0 && (
           <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">روابط رفع المستندات</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('submissionDocs.uploadLinksTitle')}</h3>
             <div className="space-y-3">
               {documentLinks.map((link) => (
                 <div
@@ -322,10 +326,10 @@ const SubmissionDocuments = () => {
                     <LinkIcon className="w-5 h-5 text-primary" />
                     <div>
                       <p className="text-sm font-medium">
-                        {link.isActive ? "رابط نشط" : "رابط معطل"}
+                        {link.isActive ? t('submissionDocs.activeLink') : t('submissionDocs.inactiveLink')}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        تم الاستخدام: {link.uploadCount} / {link.maxUploads} | ينتهي في:{" "}
+                        {t('submissionDocs.used')}: {link.uploadCount} / {link.maxUploads} | {t('submissionDocs.expiresAt')}:{" "}
                         {formatShortDate(link.expiresAt)}
                       </p>
                     </div>
@@ -338,10 +342,10 @@ const SubmissionDocuments = () => {
                         onClick={() => {
                           const url = `${window.location.origin}/upload/${link.token}`;
                           navigator.clipboard.writeText(url);
-                          toast({ title: "تم النسخ", description: "تم نسخ الرابط إلى الحافظة" });
+                          toast({ title: t('submissionDocs.linkCopied'), description: t('submissionDocs.linkCopiedDesc') });
                         }}
                       >
-                        نسخ الرابط
+                        {t('submissionDocs.copyLink')}
                       </Button>
                     )}
                   </div>
@@ -355,12 +359,12 @@ const SubmissionDocuments = () => {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold">
-              المستندات المرفوعة ({documents.length})
+              {t('submissionDocs.uploadedDocuments')} ({documents.length})
             </h3>
             {allDocumentsVerified && (
               <div className="flex items-center gap-2 text-green-600">
                 <CheckCircle className="w-5 h-5" />
-                <span className="font-semibold">جميع المستندات موثقة</span>
+                <span className="font-semibold">{t('submissionDocs.allDocumentsVerified')}</span>
               </div>
             )}
           </div>
@@ -368,7 +372,7 @@ const SubmissionDocuments = () => {
           {documents.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">لا توجد مستندات مرفوعة بعد</p>
+              <p className="text-muted-foreground">{t('submissionDocs.noDocuments')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -383,11 +387,11 @@ const SubmissionDocuments = () => {
                             {document.fileName}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {DOCUMENT_TYPES_AR[document.documentType] || document.documentType}
+                            {t(`docTypes.${document.documentType}`, { defaultValue: document.documentType })}
                           </p>
                           {document.originalName !== document.fileName && (
                             <p className="text-xs text-muted-foreground italic">
-                              الاسم الأصلي: {document.originalName}
+                              {t('submissionDocs.originalName')}: {document.originalName}
                             </p>
                           )}
                         </div>
@@ -396,7 +400,7 @@ const SubmissionDocuments = () => {
 
                       <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
                         <span>{formatFileSize(document.fileSize)}</span>
-                        <span>تم الرفع: {formatShortDate(document.createdAt)}</span>
+                        <span>{t('submissionDocs.uploadedOn')}: {formatShortDate(document.createdAt)}</span>
                       </div>
 
                       {/* Verification Info */}
@@ -415,7 +419,11 @@ const SubmissionDocuments = () => {
                               ? 'text-red-900'
                               : 'text-yellow-900'
                           }`}>
-                            {document.status === 'verified' ? '✓ تم التوثيق' : document.status === 'rejected' ? '✗ تم الرفض' : '⚠ يحتاج استبدال'}
+                            {document.status === 'verified'
+                              ? `✓ ${t('submissionDocs.verified')}`
+                              : document.status === 'rejected'
+                              ? `✗ ${t('submissionDocs.rejected')}`
+                              : `⚠ ${t('submissionDocs.needsReplacement')}`}
                           </p>
                           <p className={`${
                             document.status === 'verified'
@@ -424,21 +432,21 @@ const SubmissionDocuments = () => {
                               ? 'text-red-800'
                               : 'text-yellow-800'
                           }`}>
-                            بواسطة: {document.verifiedBy.name} • {formatDateTime(document.verifiedAt)}
+                            {t('submissionDocs.verifiedBy')}: {document.verifiedBy.name} • {formatDateTime(document.verifiedAt)}
                           </p>
                         </div>
                       )}
 
                       {document.rejectionReason && (
                         <div className="bg-red-50 border border-red-200 rounded p-3 mb-3">
-                          <p className="text-sm text-red-900 font-semibold">سبب الرفض:</p>
+                          <p className="text-sm text-red-900 font-semibold">{t('submissionDocs.rejectionReason')}:</p>
                           <p className="text-sm text-red-800">{document.rejectionReason}</p>
                         </div>
                       )}
 
                       {document.notes && (
                         <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-3">
-                          <p className="text-sm text-blue-900 font-semibold">ملاحظات:</p>
+                          <p className="text-sm text-blue-900 font-semibold">{t('submissionDocs.notes')}:</p>
                           <p className="text-sm text-blue-800">{document.notes}</p>
                         </div>
                       )}
@@ -451,7 +459,7 @@ const SubmissionDocuments = () => {
                           onClick={() => openPreview(document)}
                         >
                           <Eye className="w-4 h-4" />
-                          معاينة
+                          {t('submissionDocs.preview')}
                         </Button>
                         <Button
                           variant="outline"
@@ -460,7 +468,7 @@ const SubmissionDocuments = () => {
                           onClick={() => handleDownload(document._id)}
                         >
                           <Download className="w-4 h-4" />
-                          تحميل
+                          {t('submissionDocs.download')}
                         </Button>
                         {document.status !== "verified" && (
                           <Button
@@ -470,7 +478,7 @@ const SubmissionDocuments = () => {
                             onClick={() => openReviewDialog(document)}
                           >
                             <CheckCircle className="w-4 h-4" />
-                            مراجعة
+                            {t('submissionDocs.review')}
                           </Button>
                         )}
                       </div>
@@ -497,56 +505,56 @@ const SubmissionDocuments = () => {
 
       {/* Review Dialog */}
       <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-        <DialogContent dir="rtl" className="sm:max-w-md">
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>مراجعة المستند</DialogTitle>
+            <DialogTitle>{t('submissionDocs.reviewDialogTitle')}</DialogTitle>
             <DialogDescription>
               {selectedDocument?.originalName}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm font-semibold">الحالة</label>
+              <label className="text-sm font-semibold">{t('submissionDocs.statusLabel')}</label>
               <Select value={reviewStatus} onValueChange={(value: any) => setReviewStatus(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="verified">موثق - مقبول</SelectItem>
-                  <SelectItem value="rejected">مرفوض</SelectItem>
-                  <SelectItem value="needs_replacement">يحتاج استبدال</SelectItem>
+                  <SelectItem value="verified">{t('submissionDocs.statusVerified')}</SelectItem>
+                  <SelectItem value="rejected">{t('submissionDocs.statusRejected')}</SelectItem>
+                  <SelectItem value="needs_replacement">{t('submissionDocs.statusNeedsReplacement')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {reviewStatus === "rejected" && (
               <div className="space-y-2">
-                <label className="text-sm font-semibold">سبب الرفض</label>
+                <label className="text-sm font-semibold">{t('submissionDocs.rejectionReason')}</label>
                 <Textarea
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
-                  placeholder="اشرح سبب رفض المستند..."
+                  placeholder={t('submissionDocs.rejectionReasonPlaceholder')}
                   className="min-h-24"
                 />
               </div>
             )}
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold">ملاحظات (اختياري)</label>
+              <label className="text-sm font-semibold">{t('submissionDocs.notesLabel')}</label>
               <Textarea
                 value={reviewNotes}
                 onChange={(e) => setReviewNotes(e.target.value)}
-                placeholder="أضف أي ملاحظات..."
+                placeholder={t('submissionDocs.notesPlaceholder')}
                 className="min-h-24"
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setReviewDialogOpen(false)}>
-              إلغاء
+              {t('submissionDocs.cancel')}
             </Button>
             <Button onClick={handleReview}>
-              {reviewStatus === "verified" ? "موافقة" : "رفض"}
+              {reviewStatus === "verified" ? t('submissionDocs.approve') : t('submissionDocs.reject')}
             </Button>
           </DialogFooter>
         </DialogContent>

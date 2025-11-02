@@ -1,52 +1,55 @@
 import { MessageSquare, FileSearch, FileCheck, Plane, CheckCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
-const steps = [
-  {
-    id: 1,
-    icon: MessageSquare,
-    title: "الاستشارة المجانية",
-    description: "نبدأ بجلسة استشارية مجانية لفهم احتياجاتك وتقييم أهليتك للهجرة",
-    duration: "30 دقيقة",
-    color: "from-primary to-primary-dark"
-  },
-  {
-    id: 2,
-    icon: FileSearch,
-    title: "تقييم الملف",
-    description: "نقوم بتحليل شامل لملفك وتحديد أفضل المسارات والبرامج المناسبة لك",
-    duration: "2-3 أيام",
-    color: "from-primary-dark to-secondary"
-  },
-  {
-    id: 3,
-    icon: FileCheck,
-    title: "إعداد الوثائق",
-    description: "نساعدك في جمع وإعداد وترجمة جميع الوثائق المطلوبة بطريقة احترافية",
-    duration: "1-2 أسبوع",
-    color: "from-secondary to-accent"
-  },
-  {
-    id: 4,
-    icon: Plane,
-    title: "تقديم الطلب",
-    description: "نتولى تقديم الطلب بشكل صحيح والمتابعة مع الجهات المعنية",
-    duration: "يوم واحد",
-    color: "from-accent to-primary"
-  },
-  {
-    id: 5,
-    icon: CheckCircle,
-    title: "النجاح والمتابعة",
-    description: "نستمر معك حتى الحصول على الموافقة ونقدم الدعم في الخطوات اللاحقة",
-    duration: "حسب البرنامج",
-    color: "from-primary to-accent"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 const Process = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
+  const steps = [
+    {
+      id: 1,
+      icon: MessageSquare,
+      titleKey: "process.step1.title",
+      descriptionKey: "process.step1.description",
+      durationKey: "process.step1.duration",
+      color: "from-primary to-primary-dark"
+    },
+    {
+      id: 2,
+      icon: FileSearch,
+      titleKey: "process.step2.title",
+      descriptionKey: "process.step2.description",
+      durationKey: "process.step2.duration",
+      color: "from-primary-dark to-secondary"
+    },
+    {
+      id: 3,
+      icon: FileCheck,
+      titleKey: "process.step3.title",
+      descriptionKey: "process.step3.description",
+      durationKey: "process.step3.duration",
+      color: "from-secondary to-accent"
+    },
+    {
+      id: 4,
+      icon: Plane,
+      titleKey: "process.step4.title",
+      descriptionKey: "process.step4.description",
+      durationKey: "process.step4.duration",
+      color: "from-accent to-primary"
+    },
+    {
+      id: 5,
+      icon: CheckCircle,
+      titleKey: "process.step5.title",
+      descriptionKey: "process.step5.description",
+      durationKey: "process.step5.duration",
+      color: "from-primary to-accent"
+    }
+  ];
   return (
-    <section dir="rtl" className="py-24 bg-gradient-to-b from-background to-muted/30 relative overflow-hidden">
+    <section dir={isRTL ? 'rtl' : 'ltr'} className="py-24 bg-gradient-to-b from-background to-muted/30 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-6xl">
         <div className="absolute top-0 right-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
@@ -57,13 +60,13 @@ const Process = () => {
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
             <CheckCircle className="w-5 h-5 text-primary" />
-            <span className="text-primary font-semibold">خطوات العمل</span>
+            <span className="text-primary font-semibold">{t('process.badge')}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            رحلتك معنا خطوة بخطوة
+            {t('process.heading')}
           </h2>
           <p className="text-xl text-muted-foreground">
-            نسير معك في كل مرحلة من رحلة الهجرة حتى تحقيق حلمك
+            {t('process.subtitle')}
           </p>
         </div>
 
@@ -97,13 +100,13 @@ const Process = () => {
 
                     {/* Content */}
                     <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                      {step.title}
+                      {t(step.titleKey)}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                      {step.description}
+                      {t(step.descriptionKey)}
                     </p>
                     <div className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full inline-block">
-                      {step.duration}
+                      {t(step.durationKey)}
                     </div>
                   </Card>
                 </div>
@@ -137,13 +140,13 @@ const Process = () => {
                     {/* Content */}
                     <div className="flex-1">
                       <h3 className="text-xl font-bold text-foreground mb-2">
-                        {step.title}
+                        {t(step.titleKey)}
                       </h3>
                       <p className="text-muted-foreground mb-3 leading-relaxed">
-                        {step.description}
+                        {t(step.descriptionKey)}
                       </p>
                       <div className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full inline-block">
-                        {step.duration}
+                        {t(step.durationKey)}
                       </div>
                     </div>
                   </div>
@@ -162,16 +165,16 @@ const Process = () => {
         <div className="text-center mt-16 animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
           <div className="inline-flex flex-col items-center gap-4 p-8 bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 rounded-3xl max-w-2xl">
             <h3 className="text-2xl font-bold text-foreground">
-              جاهز لبدء رحلتك؟
+              {t('process.ctaHeading')}
             </h3>
             <p className="text-muted-foreground">
-              احجز استشارتك المجانية اليوم ودعنا نساعدك في تحقيق حلمك
+              {t('process.ctaDescription')}
             </p>
             <a
               href="#contact-form"
               className="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
-              احجز استشارة مجانية
+              {t('process.ctaButton')}
             </a>
           </div>
         </div>

@@ -13,6 +13,7 @@ import DashboardLayout from "@/components/admin/DashboardLayout";
 import { clientsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatShortDate, formatDateForExport, formatDateForFilename, formatNumber } from "@/lib/dateUtils";
+import { useTranslation } from "react-i18next";
 
 interface ServiceStat {
   name: string;
@@ -30,6 +31,7 @@ interface StatusStat {
 
 const Analytics = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState("month");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -123,7 +125,7 @@ const Analytics = () => {
     } catch (error: any) {
       console.error("Error fetching analytics data:", error);
       toast({
-        title: "خطأ في تحميل البيانات",
+        title: t('common.error'),
         description: error.message || "يرجى المحاولة مرة أخرى",
         variant: "destructive"
       });
@@ -134,28 +136,28 @@ const Analytics = () => {
 
   const overallStats = [
     {
-      title: "إجمالي العملاء",
+      title: t('analytics.totalClients'),
       value: formatNumber(totalClients),
       icon: Users,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50"
     },
     {
-      title: "إجمالي الطلبات",
+      title: t('analytics.totalSubmissions'),
       value: formatNumber(totalSubmissions),
       icon: FileText,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50"
     },
     {
-      title: "طلبات مكتملة",
+      title: t('analytics.completedSubmissions'),
       value: formatNumber(completedSubmissions),
       icon: CheckCircle,
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50"
     },
     {
-      title: "معدل النجاح",
+      title: t('analytics.successRate'),
       value: `${successRate}%`,
       icon: Award,
       color: "from-orange-500 to-orange-600",
@@ -166,7 +168,7 @@ const Analytics = () => {
   const exportReport = async () => {
     try {
       toast({
-        title: "جاري تصدير التقرير...",
+        title: t('common.loading'),
         description: "يرجى الانتظار",
       });
 
@@ -254,13 +256,13 @@ const Analytics = () => {
       window.URL.revokeObjectURL(url);
 
       toast({
-        title: "تم تصدير التقرير بنجاح",
+        title: t('common.success'),
         description: "تم تنزيل التقرير الشامل",
       });
     } catch (error: any) {
       console.error("Error exporting report:", error);
       toast({
-        title: "خطأ في التصدير",
+        title: t('common.error'),
         description: error.message || "حدث خطأ أثناء تصدير التقرير",
         variant: "destructive"
       });
@@ -287,9 +289,9 @@ const Analytics = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-foreground">التقارير والإحصائيات</h2>
+            <h2 className="text-3xl font-bold text-foreground">{t('analytics.title')}</h2>
             <p className="text-muted-foreground mt-1">
-              نظرة شاملة على أداء الأعمال
+              {t('analytics.subtitle')}
             </p>
           </div>
           <div className="flex gap-3">
@@ -298,15 +300,15 @@ const Analytics = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="week">هذا الأسبوع</SelectItem>
-                <SelectItem value="month">هذا الشهر</SelectItem>
-                <SelectItem value="quarter">هذا الربع</SelectItem>
-                <SelectItem value="year">هذا العام</SelectItem>
+                <SelectItem value="week">{t('analytics.thisWeek')}</SelectItem>
+                <SelectItem value="month">{t('analytics.thisMonth')}</SelectItem>
+                <SelectItem value="quarter">{t('analytics.thisQuarter')}</SelectItem>
+                <SelectItem value="year">{t('analytics.thisYear')}</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={exportReport} className="gap-2 bg-primary hover:bg-primary-dark">
               <Download className="w-4 h-4" />
-              تصدير التقرير
+              {t('analytics.exportReport')}
             </Button>
           </div>
         </div>
@@ -340,7 +342,7 @@ const Analytics = () => {
           <Card className="p-6">
             <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary" />
-              توزيع الخدمات
+              {t('analytics.serviceDistribution')}
             </h3>
             <div className="space-y-4">
               {serviceStats.map((service, index) => (
@@ -366,7 +368,7 @@ const Analytics = () => {
           <Card className="p-6">
             <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-primary" />
-              توزيع الحالات
+              {t('analytics.statusDistribution')}
             </h3>
             <div className="space-y-4">
               {statusBreakdown.map((status, index) => (
@@ -391,11 +393,11 @@ const Analytics = () => {
             <div className="mt-6 pt-6 border-t border-border grid grid-cols-2 gap-4">
               <div className="text-center p-3 bg-green-50 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">{completedStat?.percentage || 0}%</p>
-                <p className="text-xs text-muted-foreground mt-1">معدل الإكمال</p>
+                <p className="text-xs text-muted-foreground mt-1">{t('analytics.completionRate')}</p>
               </div>
               <div className="text-center p-3 bg-red-50 rounded-lg">
                 <p className="text-2xl font-bold text-red-600">{rejectedStat?.percentage || 0}%</p>
-                <p className="text-xs text-muted-foreground mt-1">معدل الرفض</p>
+                <p className="text-xs text-muted-foreground mt-1">{t('analytics.rejectionRate')}</p>
               </div>
             </div>
           </Card>
@@ -409,9 +411,9 @@ const Analytics = () => {
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-bold text-foreground mb-1">الطلبات المكتملة</h4>
+                <h4 className="font-bold text-foreground mb-1">{t('analytics.completedRequests')}</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  {completedSubmissions} طلب تم إنجازه بنجاح من أصل {totalSubmissions} طلب
+                  {completedSubmissions} {t('analytics.completedDesc')} {totalSubmissions}
                 </p>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
@@ -432,9 +434,9 @@ const Analytics = () => {
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h4 className="font-bold text-foreground mb-1">إجمالي العملاء</h4>
+                <h4 className="font-bold text-foreground mb-1">{t('analytics.totalClients')}</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  {totalClients} عميل مسجل في النظام حتى الآن
+                  {totalClients} {t('analytics.totalClientsDesc')}
                 </p>
                 <div className="text-2xl font-bold text-blue-600">{totalClients}</div>
               </div>

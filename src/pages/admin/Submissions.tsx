@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "react-i18next";
 import {
   Select,
   SelectContent,
@@ -53,9 +54,52 @@ interface Submission {
   convertedToClient?: boolean;
 }
 
+// Helper function to get service translation from key
+const getServiceTranslation = (serviceKey: string, t: any) => {
+  const serviceMap: Record<string, string> = {
+    'us_lottery': t('submissions.serviceUSLottery'),
+    'canada_immigration': t('submissions.serviceCanadaImmigration'),
+    'work_visa': t('submissions.serviceWorkVisa'),
+    'study_abroad': t('submissions.serviceStudyAbroad'),
+    'family_reunion': t('submissions.serviceFamilyReunion'),
+    'soccer_talent': t('submissions.serviceSoccerTalent'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return serviceMap[serviceKey] || serviceKey;
+};
+
+// Helper function to get status translation from key
+const getStatusTranslation = (statusKey: string, t: any) => {
+  const statusMap: Record<string, string> = {
+    'new': t('submissions.statusNew'),
+    'viewed': t('submissions.statusViewed'),
+    'contacted': t('submissions.statusContacted'),
+    'completed': t('submissions.statusCompleted'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return statusMap[statusKey] || statusKey;
+};
+
+// Helper function to get source translation from key
+const getSourceTranslation = (sourceKey: string, t: any) => {
+  const sourceMap: Record<string, string> = {
+    'website': t('submissions.sourceWebsite'),
+    'whatsapp': t('submissions.sourceWhatsApp'),
+    'phone': t('submissions.sourcePhone'),
+    'email': t('submissions.sourceEmail'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return sourceMap[sourceKey] || sourceKey;
+};
+
 const Submissions = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const [searchQuery, setSearchQuery] = useState("");
   const [filterService, setFilterService] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -105,8 +149,8 @@ const Submissions = () => {
     } catch (error: any) {
       console.error("Error fetching submissions:", error);
       toast({
-        title: "خطأ في تحميل البيانات",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('dashboard.errorLoading'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     } finally {
@@ -140,8 +184,8 @@ const Submissions = () => {
       const response = await submissionsAPI.delete(submissionToDelete.id);
       if (response.success) {
         toast({
-          title: "تم الحذف بنجاح",
-          description: `تم حذف الطلب من "${submissionToDelete.name}"`,
+          title: t('common.success'),
+          description: t('submissions.deleteSuccess', { name: submissionToDelete.name, defaultValue: `Submission from "${submissionToDelete.name}" deleted` }),
         });
         setDeleteDialogOpen(false);
         setSubmissionToDelete(null);
@@ -150,8 +194,8 @@ const Submissions = () => {
     } catch (error: any) {
       console.error("Error deleting submission:", error);
       toast({
-        title: "خطأ في الحذف",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     }
@@ -163,15 +207,15 @@ const Submissions = () => {
       const response = await submissionsAPI.validate(id);
       if (response.success) {
         toast({
-          title: "تم التحقق بنجاح",
-          description: "تم التحقق من البيانات",
+          title: t('common.success'),
+          description: t('submissions.validateSuccess'),
         });
         fetchSubmissions();
       }
     } catch (error: any) {
       toast({
-        title: "خطأ في التحقق",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     }
@@ -190,16 +234,16 @@ const Submissions = () => {
       const response = await submissionsAPI.confirmCall(selectedSubmission._id, callNotes);
       if (response.success) {
         toast({
-          title: "تم تأكيد المكالمة",
-          description: "تم تسجيل ملاحظات المكالمة بنجاح",
+          title: t('common.success'),
+          description: t('submissions.callSuccess'),
         });
         setCallDialogOpen(false);
         fetchSubmissions();
       }
     } catch (error: any) {
       toast({
-        title: "خطأ في تأكيد المكالمة",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     }
@@ -217,15 +261,15 @@ const Submissions = () => {
         setGeneratedLink(response.uploadUrl);
         setLinkDialogOpen(true);
         toast({
-          title: "تم إنشاء الرابط",
-          description: "تم إنشاء رابط رفع المستندات بنجاح",
+          title: t('common.success'),
+          description: t('submissions.linkSuccess'),
         });
         fetchSubmissions();
       }
     } catch (error: any) {
       toast({
-        title: "خطأ في إنشاء الرابط",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     }
@@ -234,8 +278,8 @@ const Submissions = () => {
   const copyLinkToClipboard = () => {
     navigator.clipboard.writeText(generatedLink);
     toast({
-      title: "تم النسخ",
-      description: "تم نسخ الرابط إلى الحافظة",
+      title: t('common.copied', { defaultValue: 'Copied' }),
+      description: t('submissions.linkCopied'),
     });
   };
 
@@ -251,8 +295,8 @@ const Submissions = () => {
       const response = await submissionsAPI.convertToClient(submissionToConvert.id);
       if (response.success) {
         toast({
-          title: "تم التحويل بنجاح",
-          description: `تم تحويل "${submissionToConvert.name}" إلى عميل`,
+          title: t('common.success'),
+          description: t('submissions.convertSuccess', { name: submissionToConvert.name }),
         });
         setConvertDialogOpen(false);
         setSubmissionToConvert(null);
@@ -260,8 +304,8 @@ const Submissions = () => {
       }
     } catch (error: any) {
       toast({
-        title: "خطأ في التحويل",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     }
@@ -272,23 +316,35 @@ const Submissions = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case "new":
       case "جديد":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return "bg-blue-50 text-blue-700 border-blue-300";
+      case "viewed":
       case "تمت المعاينة":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+        return "bg-yellow-50 text-yellow-700 border-yellow-300";
+      case "contacted":
       case "تم التواصل":
-        return "bg-purple-100 text-purple-700 border-purple-200";
+        return "bg-purple-50 text-purple-700 border-purple-300";
+      case "completed":
       case "مكتمل":
-        return "bg-green-100 text-green-700 border-green-200";
+        return "bg-green-50 text-green-700 border-green-300";
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "bg-gray-50 text-gray-700 border-gray-300";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case "new":
       case "جديد":
         return <Clock className="w-3 h-3" />;
+      case "viewed":
+      case "تمت المعاينة":
+        return <Eye className="w-3 h-3" />;
+      case "contacted":
+      case "تم التواصل":
+        return <Phone className="w-3 h-3" />;
+      case "completed":
       case "مكتمل":
         return <CheckCircle className="w-3 h-3" />;
       default:
@@ -300,8 +356,8 @@ const Submissions = () => {
     try {
       setIsLoading(true);
       toast({
-        title: "جاري تصدير البيانات...",
-        description: "يرجى الانتظار",
+        title: t('common.exporting', { defaultValue: 'Exporting data...' }),
+        description: t('submissions.exportWait'),
       });
 
       // Fetch all submissions without pagination
@@ -315,8 +371,8 @@ const Submissions = () => {
 
       if (!response.success || !response.data || response.data.length === 0) {
         toast({
-          title: "لا توجد بيانات للتصدير",
-          description: "لا توجد طلبات مطابقة للفلاتر المحددة",
+          title: t('common.noDataToExport', { defaultValue: 'No data to export' }),
+          description: t('submissions.noDataToExport'),
           variant: "destructive"
         });
         return;
@@ -326,16 +382,16 @@ const Submissions = () => {
 
       // Define CSV headers
       const headers = [
-        "الاسم",
-        "البريد الإلكتروني",
-        "رقم الهاتف",
-        "الخدمة",
-        "الحالة",
-        "المصدر",
-        "الرسالة",
-        "التاريخ",
-        "حالة سير العمل",
-        "تم التحويل إلى عميل"
+        t('submissions.csvHeaderName'),
+        t('submissions.csvHeaderEmail'),
+        t('submissions.csvHeaderPhone'),
+        t('submissions.csvHeaderService'),
+        t('submissions.csvHeaderStatus'),
+        t('submissions.csvHeaderSource'),
+        t('submissions.csvHeaderMessage'),
+        t('submissions.csvHeaderDate'),
+        t('submissions.csvHeaderWorkflowStatus'),
+        t('submissions.csvHeaderConverted')
       ];
 
       // Convert data to CSV rows
@@ -344,13 +400,13 @@ const Submissions = () => {
           submission.name || "",
           submission.email || "",
           submission.phone || "",
-          submission.service || "",
+          getServiceTranslation(submission.service || "", t),
           submission.status || "",
           submission.source || "",
           `"${(submission.message || "").replace(/"/g, '""')}"`, // Escape quotes in message
           formatDateForExport(submission.timestamp || submission.createdAt || ""),
           submission.workflowStatus || "",
-          submission.convertedToClient ? "نعم" : "لا"
+          submission.convertedToClient ? t('submissions.csvYes') : t('submissions.csvNo')
         ];
       });
 
@@ -375,14 +431,14 @@ const Submissions = () => {
       window.URL.revokeObjectURL(url);
 
       toast({
-        title: "تم التصدير بنجاح",
-        description: `تم تصدير ${data.length} طلب إلى ملف CSV`,
+        title: t('common.exportSuccess', { defaultValue: 'Export successful' }),
+        description: t('submissions.exportedCount', { count: data.length }),
       });
     } catch (error: any) {
       console.error("Error exporting to CSV:", error);
       toast({
-        title: "خطأ في التصدير",
-        description: error.message || "حدث خطأ أثناء تصدير البيانات",
+        title: t('common.exportError', { defaultValue: 'Export error' }),
+        description: error.message || t('submissions.exportError'),
         variant: "destructive"
       });
     } finally {
@@ -396,15 +452,15 @@ const Submissions = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-foreground">الطلبات</h2>
+            <h2 className="text-3xl font-bold text-foreground">{t('submissions.title')}</h2>
             <p className="text-muted-foreground mt-1">
-              جميع طلبات النموذج وواتساب ({filteredSubmissions.length} طلب)
+              {t('submissions.manageAll', { count: filteredSubmissions.length, defaultValue: `All form and WhatsApp submissions (${filteredSubmissions.length} submissions)` })}
             </p>
           </div>
           <div className="flex gap-3">
             <Button onClick={exportToCSV} variant="outline" className="gap-2">
               <Download className="w-4 h-4" />
-              تصدير CSV
+              {t('common.exportCSV', { defaultValue: 'Export CSV' })}
             </Button>
           </div>
         </div>
@@ -417,9 +473,9 @@ const Submissions = () => {
                 <Clock className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">جديد</p>
+                <p className="text-sm text-muted-foreground">{t('submissions.statusNew')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === "جديد").length}
+                  {submissions.filter(s => s.status === t('submissions.statusNew')).length}
                 </p>
               </div>
             </div>
@@ -430,9 +486,9 @@ const Submissions = () => {
                 <Eye className="w-5 h-5 text-yellow-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">تمت المعاينة</p>
+                <p className="text-sm text-muted-foreground">{t('submissions.statusViewed')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === "تمت المعاينة").length}
+                  {submissions.filter(s => s.status === t('submissions.statusViewed')).length}
                 </p>
               </div>
             </div>
@@ -443,9 +499,9 @@ const Submissions = () => {
                 <Phone className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">تم التواصل</p>
+                <p className="text-sm text-muted-foreground">{t('submissions.statusContacted')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === "تم التواصل").length}
+                  {submissions.filter(s => s.status === t('submissions.statusContacted')).length}
                 </p>
               </div>
             </div>
@@ -456,9 +512,9 @@ const Submissions = () => {
                 <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">مكتمل</p>
+                <p className="text-sm text-muted-foreground">{t('submissions.statusCompleted')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === "مكتمل").length}
+                  {submissions.filter(s => s.status === t('submissions.statusCompleted')).length}
                 </p>
               </div>
             </div>
@@ -472,7 +528,7 @@ const Submissions = () => {
             <div className="md:col-span-2 relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
-                placeholder="ابحث بالاسم، البريد، الهاتف، أو الرسالة..."
+                placeholder={t('submissions.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pr-10"
@@ -483,16 +539,16 @@ const Submissions = () => {
             <Select value={filterService} onValueChange={setFilterService}>
               <SelectTrigger>
                 <Filter className="w-4 h-4 ml-2" />
-                <SelectValue placeholder="جميع الخدمات" />
+                <SelectValue placeholder={t('submissions.allServices')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الخدمات</SelectItem>
-                <SelectItem value="القرعة الأمريكية">القرعة الأمريكية</SelectItem>
-                <SelectItem value="الهجرة إلى كندا">الهجرة إلى كندا</SelectItem>
-                <SelectItem value="تأشيرة عمل">تأشيرة عمل</SelectItem>
-                <SelectItem value="الدراسة في الخارج">الدراسة في الخارج</SelectItem>
-                <SelectItem value="لم شمل العائلة">لم شمل العائلة</SelectItem>
-                <SelectItem value="مواهب كرة القدم">مواهب كرة القدم</SelectItem>
+                <SelectItem value="all">{t('submissions.allServices')}</SelectItem>
+                <SelectItem value="us_lottery">{t('submissions.serviceUSLottery')}</SelectItem>
+                <SelectItem value="canada_immigration">{t('submissions.serviceCanadaImmigration')}</SelectItem>
+                <SelectItem value="work_visa">{t('submissions.serviceWorkVisa')}</SelectItem>
+                <SelectItem value="study_abroad">{t('submissions.serviceStudyAbroad')}</SelectItem>
+                <SelectItem value="family_reunion">{t('submissions.serviceFamilyReunion')}</SelectItem>
+                <SelectItem value="soccer_talent">{t('submissions.serviceSoccerTalent')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -500,14 +556,14 @@ const Submissions = () => {
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger>
                 <Filter className="w-4 h-4 ml-2" />
-                <SelectValue placeholder="جميع الحالات" />
+                <SelectValue placeholder={t('submissions.allStatuses')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الحالات</SelectItem>
-                <SelectItem value="جديد">جديد</SelectItem>
-                <SelectItem value="تمت المعاينة">تمت المعاينة</SelectItem>
-                <SelectItem value="تم التواصل">تم التواصل</SelectItem>
-                <SelectItem value="مكتمل">مكتمل</SelectItem>
+                <SelectItem value="all">{t('submissions.allStatuses')}</SelectItem>
+                <SelectItem value={t('submissions.statusNew')}>{t('submissions.statusNew')}</SelectItem>
+                <SelectItem value={t('submissions.statusViewed')}>{t('submissions.statusViewed')}</SelectItem>
+                <SelectItem value={t('submissions.statusContacted')}>{t('submissions.statusContacted')}</SelectItem>
+                <SelectItem value={t('submissions.statusCompleted')}>{t('submissions.statusCompleted')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -517,12 +573,12 @@ const Submissions = () => {
             <Select value={filterSource} onValueChange={setFilterSource}>
               <SelectTrigger className="w-full md:w-64">
                 <Filter className="w-4 h-4 ml-2" />
-                <SelectValue placeholder="جميع المصادر" />
+                <SelectValue placeholder={t('submissions.allSources')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع المصادر</SelectItem>
-                <SelectItem value="نموذج الموقع">نموذج الموقع</SelectItem>
-                <SelectItem value="واتساب">واتساب</SelectItem>
+                <SelectItem value="all">{t('submissions.allSources')}</SelectItem>
+                <SelectItem value={t('submissions.sourceWebsite')}>{t('submissions.sourceWebsite')}</SelectItem>
+                <SelectItem value={t('submissions.sourceWhatsApp')}>{t('submissions.sourceWhatsApp')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -538,7 +594,7 @@ const Submissions = () => {
         ) : filteredSubmissions.length === 0 ? (
           <Card className="p-12 text-center">
             <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">لا توجد نتائج مطابقة للبحث</p>
+            <p className="text-muted-foreground">{t('submissions.noResults')}</p>
           </Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -558,7 +614,7 @@ const Submissions = () => {
                     <div className="flex items-center gap-2 mt-1">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(submission.status)}`}>
                         {getStatusIcon(submission.status)}
-                        {submission.status}
+                        {getStatusTranslation(submission.status, t)}
                       </span>
                     </div>
                   </div>
@@ -581,10 +637,10 @@ const Submissions = () => {
                 {/* Service & Source */}
                 <div className="flex flex-wrap items-center gap-2 mb-4">
                   <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-lg text-xs font-medium">
-                    {submission.service}
+                    {getServiceTranslation(submission.service, t)}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {submission.source}
+                    {getSourceTranslation(submission.source, t)}
                   </span>
                 </div>
 
@@ -599,7 +655,7 @@ const Submissions = () => {
                 {/* Timestamp */}
                 <div className="text-xs text-muted-foreground mb-4 flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  تم التقديم: {formatDateForExport(submission.timestamp || submission.createdAt || '')}
+                  {t('submissions.submittedAt')}: {formatDateForExport(submission.timestamp || submission.createdAt || '')}
                 </div>
 
                 {/* Audit Trail */}
@@ -607,20 +663,20 @@ const Submissions = () => {
                   <div className="space-y-2 mb-4">
                     {submission.validatedBy && submission.validatedAt && (
                       <div className="bg-green-50 border border-green-200 rounded p-2 text-xs">
-                        <p className="font-semibold text-green-900">✓ تم التحقق من البيانات</p>
+                        <p className="font-semibold text-green-900">✓ {t('submissions.validatedLabel')}</p>
                         <p className="text-green-800">
-                          بواسطة: {submission.validatedBy.name} • {formatDateTime(submission.validatedAt)}
+                          {t('submissions.validatedBy')}: {submission.validatedBy.name} • {formatDateTime(submission.validatedAt)}
                         </p>
                       </div>
                     )}
                     {submission.callConfirmedBy && submission.callConfirmedAt && (
                       <div className="bg-blue-50 border border-blue-200 rounded p-2 text-xs">
-                        <p className="font-semibold text-blue-900">📞 تم التواصل</p>
+                        <p className="font-semibold text-blue-900">📞 {t('submissions.contactedLabel')}</p>
                         <p className="text-blue-800">
-                          بواسطة: {submission.callConfirmedBy.name} • {formatDateTime(submission.callConfirmedAt)}
+                          {t('submissions.validatedBy')}: {submission.callConfirmedBy.name} • {formatDateTime(submission.callConfirmedAt)}
                         </p>
                         {submission.callNotes && (
-                          <p className="text-blue-700 mt-1 italic">ملاحظات: {submission.callNotes}</p>
+                          <p className="text-blue-700 mt-1 italic">{t('submissions.notesLabel')}: {submission.callNotes}</p>
                         )}
                       </div>
                     )}
@@ -636,10 +692,10 @@ const Submissions = () => {
                       size="sm"
                       className="gap-2 text-green-600 hover:text-green-700 hover:bg-green-50 flex-1"
                       onClick={() => handleValidate(submission._id)}
-                      title="تحقق من البيانات"
+                      title={t('submissions.validateTooltip')}
                     >
                       <UserCheck className="w-4 h-4" />
-                      تحقق
+                      {t('submissions.validateButton')}
                     </Button>
                   )}
 
@@ -649,10 +705,10 @@ const Submissions = () => {
                       size="sm"
                       className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 flex-1"
                       onClick={() => openCallDialog(submission)}
-                      title="تأكيد المكالمة"
+                      title={t('submissions.callTooltip')}
                     >
                       <PhoneCall className="w-4 h-4" />
-                      مكالمة
+                      {t('submissions.callButton')}
                     </Button>
                   )}
 
@@ -662,10 +718,10 @@ const Submissions = () => {
                       size="sm"
                       className="gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 flex-1"
                       onClick={() => handleGenerateLink(submission)}
-                      title="إنشاء رابط رفع المستندات"
+                      title={t('submissions.linkTooltip')}
                     >
                       <LinkIcon className="w-4 h-4" />
-                      رابط
+                      {t('submissions.linkButton')}
                     </Button>
                   )}
 
@@ -675,10 +731,10 @@ const Submissions = () => {
                       size="sm"
                       className="gap-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50 flex-1"
                       onClick={() => openConvertDialog(submission._id, submission.name)}
-                      title="تحويل إلى عميل"
+                      title={t('submissions.clientTooltip')}
                     >
                       <UserCheck className="w-4 h-4" />
-                      عميل
+                      {t('submissions.clientButton')}
                     </Button>
                   )}
 
@@ -691,10 +747,10 @@ const Submissions = () => {
                       size="sm"
                       className="gap-2 flex-1"
                       onClick={() => navigate(`/admin/submissions/${submission._id}/documents`)}
-                      title="عرض المستندات"
+                      title={t('submissions.documentsTooltip')}
                     >
                       <FileText className="w-4 h-4" />
-                      مستندات
+                      {t('submissions.documentsButton')}
                     </Button>
                   )}
 
@@ -703,7 +759,7 @@ const Submissions = () => {
                     variant="ghost"
                     size="sm"
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    title="حذف"
+                    title={t('submissions.deleteTooltip')}
                     onClick={() => openDeleteDialog(submission._id, submission.name)}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -718,7 +774,11 @@ const Submissions = () => {
         {filteredSubmissions.length > 0 && totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              عرض {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalCount)} من {totalCount} طلب
+              {t('submissions.showing', {
+                from: ((currentPage - 1) * itemsPerPage) + 1,
+                to: Math.min(currentPage * itemsPerPage, totalCount),
+                total: totalCount
+              })}
             </p>
             <div className="flex gap-2">
               <Button
@@ -727,7 +787,7 @@ const Submissions = () => {
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
               >
-                السابق
+                {t('submissions.previous')}
               </Button>
 
               {/* Page numbers */}
@@ -762,7 +822,7 @@ const Submissions = () => {
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(currentPage + 1)}
               >
-                التالي
+                {t('submissions.next')}
               </Button>
             </div>
           </div>
@@ -771,30 +831,30 @@ const Submissions = () => {
 
       {/* Call Confirmation Dialog */}
       <Dialog open={callDialogOpen} onOpenChange={setCallDialogOpen}>
-        <DialogContent dir="rtl" className="sm:max-w-md">
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>تأكيد المكالمة</DialogTitle>
+            <DialogTitle>{t('submissions.callDialogTitle')}</DialogTitle>
             <DialogDescription>
-              تأكيد المكالمة مع {selectedSubmission?.name}
+              {t('submissions.callDialogDescription', { name: selectedSubmission?.name })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm font-semibold">ملاحظات المكالمة</label>
+              <label className="text-sm font-semibold">{t('submissions.callNotesLabel')}</label>
               <Textarea
                 value={callNotes}
                 onChange={(e) => setCallNotes(e.target.value)}
-                placeholder="أدخل ملاحظات حول المكالمة..."
+                placeholder={t('submissions.callNotesPlaceholder')}
                 className="min-h-32"
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setCallDialogOpen(false)}>
-              إلغاء
+              {t('common.cancel')}
             </Button>
             <Button onClick={handleConfirmCall}>
-              تأكيد المكالمة
+              {t('submissions.confirmCallButton')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -802,16 +862,16 @@ const Submissions = () => {
 
       {/* Generated Link Dialog */}
       <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>
-        <DialogContent dir="rtl" className="sm:max-w-lg">
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>رابط رفع المستندات</DialogTitle>
+            <DialogTitle>{t('submissions.linkDialogTitle')}</DialogTitle>
             <DialogDescription>
-              تم إنشاء الرابط بنجاح. يمكنك نسخه وإرساله للعميل
+              {t('submissions.linkDialogDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-sm font-semibold">الرابط</label>
+              <label className="text-sm font-semibold">{t('submissions.linkLabel')}</label>
               <div className="flex gap-2">
                 <Input
                   value={generatedLink}
@@ -819,22 +879,22 @@ const Submissions = () => {
                   className="font-mono text-sm"
                 />
                 <Button onClick={copyLinkToClipboard} variant="outline">
-                  نسخ
+                  {t('submissions.copyButton')}
                 </Button>
               </div>
             </div>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-900">
-              <p className="font-semibold mb-2">معلومات الرابط:</p>
+              <p className="font-semibold mb-2">{t('submissions.linkInfoTitle')}</p>
               <ul className="space-y-1">
-                <li>• صالح لمدة 7 أيام</li>
-                <li>• الحد الأقصى: 10 ملفات</li>
-                <li>• يمكن إنشاء روابط إضافية عند الحاجة</li>
+                <li>{t('submissions.linkValidDays')}</li>
+                <li>{t('submissions.linkMaxFiles')}</li>
+                <li>{t('submissions.linkAdditional')}</li>
               </ul>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button onClick={() => setLinkDialogOpen(false)}>
-              إغلاق
+              {t('common.close')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -842,30 +902,30 @@ const Submissions = () => {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent dir="rtl" className="sm:max-w-md">
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>تأكيد الحذف</DialogTitle>
+            <DialogTitle>{t('submissions.deleteDialogTitle')}</DialogTitle>
             <DialogDescription>
-              هل أنت متأكد من حذف هذا الطلب؟
+              {t('submissions.deleteDialogDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-sm text-red-900">
-                سيتم حذف الطلب من <span className="font-bold">"{submissionToDelete?.name}"</span> نهائياً. لا يمكن التراجع عن هذا الإجراء.
+                {t('submissions.deleteWarning', { name: submissionToDelete?.name })}
               </p>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              إلغاء
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               className="bg-red-600 hover:bg-red-700"
             >
-              حذف
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -873,26 +933,26 @@ const Submissions = () => {
 
       {/* Convert to Client Confirmation Dialog */}
       <Dialog open={convertDialogOpen} onOpenChange={setConvertDialogOpen}>
-        <DialogContent dir="rtl" className="sm:max-w-md">
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>تحويل إلى عميل</DialogTitle>
+            <DialogTitle>{t('submissions.convertDialogTitle')}</DialogTitle>
             <DialogDescription>
-              هل أنت متأكد من تحويل هذا الطلب إلى عميل؟
+              {t('submissions.convertDialogDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-900">
-                سيتم تحويل <span className="font-bold">"{submissionToConvert?.name}"</span> إلى عميل وإضافته إلى قائمة العملاء.
+                {t('submissions.convertWarning', { name: submissionToConvert?.name })}
               </p>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setConvertDialogOpen(false)}>
-              إلغاء
+              {t('common.cancel')}
             </Button>
             <Button onClick={handleConvertConfirm}>
-              تحويل إلى عميل
+              {t('submissions.convertConfirmButton')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -13,6 +13,7 @@ import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import CTACard from "@/components/CTACard";
 import ScrollToTop from "@/components/ScrollToTop";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Index = () => {
   return (
@@ -39,6 +40,7 @@ const Index = () => {
       <ContactForm />
       <Footer />
       <ScrollToTop />
+      <LanguageSwitcher />
     </div>
   );
 };

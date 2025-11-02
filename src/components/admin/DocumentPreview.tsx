@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -27,6 +28,9 @@ export function DocumentPreview({
   onClose,
   onDownload,
 }: DocumentPreviewProps) {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
   const [zoom, setZoom] = useState(100);
   const [rotation, setRotation] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +66,7 @@ export function DocumentPreview({
       });
 
       if (!response.ok) {
-        throw new Error('فشل تحميل المستند');
+        throw new Error(t('docPreview.loadError'));
       }
 
       const blob = await response.blob();
@@ -71,7 +75,7 @@ export function DocumentPreview({
       setIsLoading(false);
     } catch (err) {
       console.error('Error loading document:', err);
-      setError('فشل تحميل المستند');
+      setError(t('docPreview.loadError'));
       setIsLoading(false);
     }
   };
@@ -97,7 +101,7 @@ export function DocumentPreview({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        dir="rtl"
+        dir={isRTL ? 'rtl' : 'ltr'}
         className="max-w-6xl h-[90vh] flex flex-col p-0"
       >
         {/* Header */}
@@ -147,7 +151,7 @@ export function DocumentPreview({
                 className="gap-2"
               >
                 <Download className="w-4 h-4" />
-                تحميل
+                {t('docPreview.download')}
               </Button>
               <Button
                 variant="ghost"
@@ -168,14 +172,14 @@ export function DocumentPreview({
                 <Download className="w-10 h-10 text-primary" />
               </div>
               <p className="text-foreground font-semibold mb-2">
-                لا يمكن معاينة هذا النوع من الملفات
+                {t('docPreview.cannotPreview')}
               </p>
               <p className="text-sm text-muted-foreground mb-4">
-                نوع الملف: {fileType}
+                {t('docPreview.fileType')}: {fileType}
               </p>
               <Button onClick={onDownload} className="gap-2">
                 <Download className="w-4 h-4" />
-                تحميل الملف
+                {t('docPreview.downloadFile')}
               </Button>
             </div>
           ) : (
@@ -190,7 +194,7 @@ export function DocumentPreview({
                   <p className="text-destructive font-semibold mb-2">{error}</p>
                   <Button onClick={onDownload} variant="outline" className="gap-2">
                     <Download className="w-4 h-4" />
-                    تحميل الملف بدلاً من ذلك
+                    {t('docPreview.downloadInstead')}
                   </Button>
                 </div>
               )}

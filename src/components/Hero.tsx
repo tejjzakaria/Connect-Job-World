@@ -1,7 +1,11 @@
 import { ArrowRight, Users, Award, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const Hero = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
   const scrollToForm = () => {
     document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -35,16 +39,16 @@ const Hero = () => {
           </div>
 
           {/* Main heading */}
-          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
-            حلمك بالهجرة
+          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight" dir={isRTL ? 'rtl' : 'ltr'}>
+            {t('hero.heading1')}
             <br />
-            <span className="text-accent">يبدأ من هنا</span>
+            <span className="text-accent">{t('hero.heading2')}</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-            خدمات استشارية احترافية للهجرة إلى أمريكا وكندا
+          <p className="text-xl md:text-2xl text-white/90 max-w-2xl mx-auto leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>
+            {t('hero.subtitle1')}
             <br />
-            نحن معك في كل خطوة حتى النجاح
+            {t('hero.subtitle2')}
           </p>
 
           {/* Stats */}
@@ -52,17 +56,17 @@ const Hero = () => {
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
               <Users className="w-8 h-8 text-accent mx-auto mb-3" />
               <div className="text-3xl font-bold text-white">5000+</div>
-              <div className="text-white/80">عميل راضٍ</div>
+              <div className="text-white/80">{t('hero.statClients')}</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
               <Award className="w-8 h-8 text-accent mx-auto mb-3" />
               <div className="text-3xl font-bold text-white">98%</div>
-              <div className="text-white/80">نسبة نجاح</div>
+              <div className="text-white/80">{t('hero.statSuccess')}</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
               <Globe2 className="w-8 h-8 text-accent mx-auto mb-3" />
               <div className="text-3xl font-bold text-white">15+</div>
-              <div className="text-white/80">سنة خبرة</div>
+              <div className="text-white/80">{t('hero.statExperience')}</div>
             </div>
           </div>
 
@@ -73,8 +77,8 @@ const Hero = () => {
               onClick={scrollToForm}
               className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
             >
-              ابدأ رحلتك الآن
-              <ArrowRight className="mr-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              {t('hero.ctaStart')}
+              <ArrowRight className={`${isRTL ? 'mr-2' : 'ml-2'} h-5 w-5 group-hover:${isRTL ? 'translate-x-1' : '-translate-x-1'} transition-transform`} />
             </Button>
             <Button
               size="lg"
@@ -82,7 +86,7 @@ const Hero = () => {
               onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })}
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 rounded-full transition-all duration-300 hover:scale-105"
             >
-              اكتشف خدماتنا
+              {t('hero.ctaDiscover')}
             </Button>
           </div>
         </div>

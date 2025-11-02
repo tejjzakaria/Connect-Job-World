@@ -1,8 +1,11 @@
 import { Facebook, Instagram, Linkedin, Mail, Phone } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   return (
-    <footer dir="rtl" className="bg-primary from-foreground via-foreground/95 to-foreground text-white py-12">
+    <footer dir={isRTL ? 'rtl' : 'ltr'} className="bg-primary from-foreground via-foreground/95 to-foreground text-white py-12">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-12 mb-8">
           {/* Brand */}
@@ -13,7 +16,7 @@ const Footer = () => {
                 className="h-16"
               />
             <p className="text-white/70 leading-relaxed">
-              Connect Job World هي وكالة هجرة وتوظيف تساعد العملاء الناطقين باللغة العربية في العثور على فرص عمل والانتقال إلى الولايات المتحدة وكندا، وتقدم التوجيه بشأن التأشيرات وتصاريح العمل والاستقرار.
+              {t('footer.brandDescription')}
             </p>
             <div className="flex gap-4">
               
@@ -29,26 +32,26 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-bold">روابط سريعة</h4>
+            <h4 className="text-lg font-bold">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2">
               <li>
                 <a href="#services" className="text-white/70 hover:text-white transition-colors">
-                  خدماتنا
+                  {t('footer.services')}
                 </a>
               </li>
               <li>
                 <a href="#contact-form" className="text-white/70 hover:text-white transition-colors">
-                  تواصل معنا
+                  {t('footer.contact')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-white transition-colors">
-                  من نحن
+                  {t('footer.aboutUs')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-white transition-colors">
-                  الأسئلة الشائعة
+                  {t('footer.faq')}
                 </a>
               </li>
             </ul>
@@ -56,7 +59,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div className="space-y-4">
-            <h4 className="text-lg font-bold">تواصل معنا</h4>
+            <h4 className="text-lg font-bold">{t('footer.contactHeading')}</h4>
             <div className="space-y-3">
               <a
                 href="tel:+212764724608"
@@ -77,7 +80,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-white/10 pt-8 text-center text-white/60 text-sm">
-          <p>© 2025 Connect Job World. جميع الحقوق محفوظة.</p>
+          <p>{t('footer.copyright')}</p>
         </div>
       </div>
     </footer>

@@ -4,6 +4,7 @@ import { Search, Filter, Eye, Edit, Trash2, Phone, Mail, Download, Plus } from "
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import {
   Select,
   SelectContent,
@@ -36,9 +37,39 @@ interface Client {
   createdAt?: string;
 }
 
+// Helper function to get service translation from key
+const getServiceTranslation = (serviceKey: string, t: any) => {
+  const serviceMap: Record<string, string> = {
+    'us_lottery': t('submissions.serviceUSLottery'),
+    'canada_immigration': t('submissions.serviceCanadaImmigration'),
+    'work_visa': t('submissions.serviceWorkVisa'),
+    'study_abroad': t('submissions.serviceStudyAbroad'),
+    'family_reunion': t('submissions.serviceFamilyReunion'),
+    'soccer_talent': t('submissions.serviceSoccerTalent'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return serviceMap[serviceKey] || serviceKey;
+};
+
+// Helper function to get status translation from key (Client statuses)
+const getStatusTranslation = (statusKey: string, t: any) => {
+  const statusMap: Record<string, string> = {
+    'new': t('status.new'),
+    'in_review': t('status.inProgress'),
+    'completed': t('status.completed'),
+    'rejected': t('status.rejected'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return statusMap[statusKey] || statusKey;
+};
+
 const Clients = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const [searchQuery, setSearchQuery] = useState("");
   const [filterService, setFilterService] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -74,8 +105,8 @@ const Clients = () => {
     } catch (error: any) {
       console.error("Error fetching clients:", error);
       toast({
-        title: "خطأ في تحميل البيانات",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('dashboard.errorLoading'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     } finally {
@@ -115,8 +146,8 @@ const Clients = () => {
       const response = await clientsAPI.delete(clientToDelete.id);
       if (response.success) {
         toast({
-          title: "تم الحذف بنجاح",
-          description: `تم حذف العميل "${clientToDelete.name}"`,
+          title: t('common.success'),
+          description: t('clients.deleteSuccess', { name: clientToDelete.name, defaultValue: `Client "${clientToDelete.name}" deleted` }),
         });
         setDeleteDialogOpen(false);
         setClientToDelete(null);
@@ -125,8 +156,8 @@ const Clients = () => {
     } catch (error: any) {
       console.error("Error deleting client:", error);
       toast({
-        title: "خطأ في الحذف",
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
         variant: "destructive"
       });
     }
@@ -141,16 +172,20 @@ const Clients = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
+      case "new":
       case "جديد":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return "bg-blue-50 text-blue-700 border-blue-300";
+      case "in_review":
       case "قيد المراجعة":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+        return "bg-yellow-50 text-yellow-700 border-yellow-300";
+      case "completed":
       case "مكتمل":
-        return "bg-green-100 text-green-700 border-green-200";
+        return "bg-green-50 text-green-700 border-green-300";
+      case "rejected":
       case "مرفوض":
-        return "bg-red-100 text-red-700 border-red-200";
+        return "bg-red-50 text-red-700 border-red-300";
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "bg-gray-50 text-gray-700 border-gray-300";
     }
   };
 
@@ -158,8 +193,8 @@ const Clients = () => {
     try {
       setIsLoading(true);
       toast({
-        title: "جاري تصدير البيانات...",
-        description: "يرجى الانتظار",
+        title: t('common.exporting', { defaultValue: 'Exporting data...' }),
+        description: t('common.pleaseWait', { defaultValue: 'Please wait' }),
       });
 
       // Fetch all clients without pagination
@@ -172,8 +207,8 @@ const Clients = () => {
 
       if (!response.success || !response.data || response.data.length === 0) {
         toast({
-          title: "لا توجد بيانات للتصدير",
-          description: "لا توجد عملاء مطابقة للفلاتر المحددة",
+          title: t('common.noDataToExport', { defaultValue: 'No data to export' }),
+          description: t('clients.noMatchingClients', { defaultValue: 'No clients match the selected filters' }),
           variant: "destructive"
         });
         return;
@@ -183,13 +218,13 @@ const Clients = () => {
 
       // Define CSV headers
       const headers = [
-        "الاسم",
-        "البريد الإلكتروني",
-        "رقم الهاتف",
-        "الخدمة",
-        "الحالة",
-        "الرسالة",
-        "التاريخ"
+        t('clients.name'),
+        t('clients.email'),
+        t('clients.phone'),
+        t('clients.service'),
+        t('clients.status'),
+        t('client.message'),
+        t('submissions.date')
       ];
 
       // Convert data to CSV rows
@@ -198,7 +233,7 @@ const Clients = () => {
           client.name || "",
           client.email || "",
           client.phone || "",
-          client.service || "",
+          getServiceTranslation(client.service || "", t),
           client.status || "",
           `"${(client.message || "").replace(/"/g, '""')}"`, // Escape quotes in message
           formatDateForExport(client.date || client.createdAt || "")
@@ -226,14 +261,14 @@ const Clients = () => {
       window.URL.revokeObjectURL(url);
 
       toast({
-        title: "تم التصدير بنجاح",
-        description: `تم تصدير ${data.length} عميل إلى ملف CSV`,
+        title: t('common.exportSuccess', { defaultValue: 'Export successful' }),
+        description: t('clients.exportedCount', { count: data.length, defaultValue: `Exported ${data.length} clients to CSV` }),
       });
     } catch (error: any) {
       console.error("Error exporting to CSV:", error);
       toast({
-        title: "خطأ في التصدير",
-        description: error.message || "حدث خطأ أثناء تصدير البيانات",
+        title: t('common.exportError', { defaultValue: 'Export error' }),
+        description: error.message || t('common.exportErrorDesc', { defaultValue: 'An error occurred while exporting data' }),
         variant: "destructive"
       });
     } finally {
@@ -247,19 +282,19 @@ const Clients = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-foreground">العملاء</h2>
+            <h2 className="text-3xl font-bold text-foreground">{t('clients.title')}</h2>
             <p className="text-muted-foreground mt-1">
-              إدارة جميع العملاء والطلبات ({totalCount} عميل)
+              {t('clients.manageAll', { count: totalCount, defaultValue: `Manage all clients and requests (${totalCount} clients)` })}
             </p>
           </div>
           <div className="flex gap-3">
             <Button onClick={exportToCSV} variant="outline" className="gap-2">
               <Download className="w-4 h-4" />
-              تصدير CSV
+              {t('common.exportCSV', { defaultValue: 'Export CSV' })}
             </Button>
             <Button onClick={() => navigate("/admin/clients/add")} className="gap-2 bg-primary hover:bg-primary-dark">
               <Plus className="w-4 h-4" />
-              إضافة عميل
+              {t('clients.addClient')}
             </Button>
           </div>
         </div>
@@ -271,7 +306,7 @@ const Clients = () => {
             <div className="md:col-span-2 relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
-                placeholder="ابحث بالاسم، البريد، أو الهاتف..."
+                placeholder={t('clients.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pr-10"
@@ -282,10 +317,10 @@ const Clients = () => {
             <Select value={filterService} onValueChange={setFilterService}>
               <SelectTrigger>
                 <Filter className="w-4 h-4 ml-2" />
-                <SelectValue placeholder="جميع الخدمات" />
+                <SelectValue placeholder={t('clients.filterByService')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الخدمات</SelectItem>
+                <SelectItem value="all">{t('clients.allServices', { defaultValue: 'All Services' })}</SelectItem>
                 <SelectItem value="القرعة الأمريكية">القرعة الأمريكية</SelectItem>
                 <SelectItem value="الهجرة إلى كندا">الهجرة إلى كندا</SelectItem>
                 <SelectItem value="تأشيرة عمل">تأشيرة عمل</SelectItem>
@@ -299,14 +334,14 @@ const Clients = () => {
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger>
                 <Filter className="w-4 h-4 ml-2" />
-                <SelectValue placeholder="جميع الحالات" />
+                <SelectValue placeholder={t('clients.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">جميع الحالات</SelectItem>
-                <SelectItem value="جديد">جديد</SelectItem>
-                <SelectItem value="قيد المراجعة">قيد المراجعة</SelectItem>
-                <SelectItem value="مكتمل">مكتمل</SelectItem>
-                <SelectItem value="مرفوض">مرفوض</SelectItem>
+                <SelectItem value="all">{t('clients.allStatuses', { defaultValue: 'All Statuses' })}</SelectItem>
+                <SelectItem value="جديد">{t('status.new')}</SelectItem>
+                <SelectItem value="قيد المراجعة">{t('status.inProgress')}</SelectItem>
+                <SelectItem value="مكتمل">{t('status.completed')}</SelectItem>
+                <SelectItem value="مرفوض">{t('status.rejected')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -318,11 +353,11 @@ const Clients = () => {
             <table className="w-full">
               <thead className="bg-muted/50 border-b">
                 <tr>
-                  <th className="text-right p-4 font-semibold text-foreground">العميل</th>
-                  <th className="text-right p-4 font-semibold text-foreground">الخدمة</th>
-                  <th className="text-right p-4 font-semibold text-foreground">الحالة</th>
-                  <th className="text-right p-4 font-semibold text-foreground">التاريخ</th>
-                  <th className="text-right p-4 font-semibold text-foreground">الإجراءات</th>
+                  <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('clients.client', { defaultValue: 'Client' })}</th>
+                  <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('clients.service')}</th>
+                  <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('clients.status')}</th>
+                  <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('submissions.date')}</th>
+                  <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('clients.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -337,7 +372,7 @@ const Clients = () => {
                 ) : filteredClients.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center p-8 text-muted-foreground">
-                      لا توجد نتائج مطابقة للبحث
+                      {t('clients.noResults', { defaultValue: 'No results match your search' })}
                     </td>
                   </tr>
                 ) : (
@@ -347,7 +382,7 @@ const Clients = () => {
                       className="border-b hover:bg-muted/30 transition-colors animate-fade-in-up"
                       style={{ animationDelay: `${index * 0.03}s` }}
                     >
-                      <td className="p-4">
+                      <td className={`${isRTL ? 'text-right' : 'text-left'} p-4`}>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold flex-shrink-0">
                             {client.name.charAt(0)}
@@ -369,28 +404,28 @@ const Clients = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="p-4">
+                      <td className={`${isRTL ? 'text-right' : 'text-left'} p-4`}>
                         <span className="text-sm font-medium text-foreground">
-                          {client.service}
+                          {getServiceTranslation(client.service, t)}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className={`${isRTL ? 'text-right' : 'text-left'} p-4`}>
                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(client.status)}`}>
-                          {client.status}
+                          {getStatusTranslation(client.status, t)}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className={`${isRTL ? 'text-right' : 'text-left'} p-4`}>
                         <span className="text-sm text-muted-foreground">
                           {formatShortDate(client.date || client.createdAt || '')}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className={`${isRTL ? 'text-right' : 'text-left'} p-4`}>
                         <div className="flex items-center gap-2">
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0"
-                            title="عرض التفاصيل"
+                            title={t('common.view')}
                             onClick={() => navigate(`/admin/clients/${client._id}`)}
                           >
                             <Eye className="w-4 h-4" />
@@ -399,7 +434,7 @@ const Clients = () => {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0"
-                            title="تعديل"
+                            title={t('common.edit')}
                             onClick={() => navigate(`/admin/clients/${client._id}/edit`)}
                           >
                             <Edit className="w-4 h-4" />
@@ -408,7 +443,7 @@ const Clients = () => {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                            title="حذف"
+                            title={t('common.delete')}
                             onClick={() => openDeleteDialog(client._id, client.name)}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -427,7 +462,7 @@ const Clients = () => {
         {totalCount > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              عرض {startIndex} - {endIndex} من {totalCount} عميل
+              {t('clients.showing', { start: startIndex, end: endIndex, total: totalCount, defaultValue: `Showing ${startIndex} - ${endIndex} of ${totalCount} clients` })}
             </p>
             <div className="flex gap-2">
               <Button
@@ -436,7 +471,7 @@ const Clients = () => {
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                السابق
+                {t('common.previous')}
               </Button>
 
               {/* Page Numbers */}
@@ -471,7 +506,7 @@ const Clients = () => {
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                التالي
+                {t('common.next')}
               </Button>
             </div>
           </div>
@@ -480,30 +515,30 @@ const Clients = () => {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent dir="rtl" className="sm:max-w-md">
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>تأكيد الحذف</DialogTitle>
+            <DialogTitle>{t('clients.confirmDelete', { defaultValue: 'Confirm Delete' })}</DialogTitle>
             <DialogDescription>
-              هل أنت متأكد من حذف هذا العميل؟
+              {t('clients.deleteConfirm')}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-sm text-red-900">
-                سيتم حذف العميل <span className="font-bold">"{clientToDelete?.name}"</span> نهائياً. لا يمكن التراجع عن هذا الإجراء.
+                {t('clients.deleteWarning', { name: clientToDelete?.name, defaultValue: `Client "${clientToDelete?.name}" will be permanently deleted. This action cannot be undone.` })}
               </p>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              إلغاء
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               className="bg-red-600 hover:bg-red-700"
             >
-              حذف
+              {t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

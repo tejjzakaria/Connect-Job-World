@@ -13,8 +13,10 @@ const router = express.Router();
 // @access  Public
 router.post('/', async (req, res) => {
   try {
+    console.log('📥 Received submission request:', req.body);
     const { name, email, phone, service, message, source } = req.body;
 
+    console.log('🔄 Attempting to create submission with service:', service);
     const submission = await Submission.create({
       name,
       email,
@@ -23,6 +25,7 @@ router.post('/', async (req, res) => {
       message,
       source: source || 'نموذج الموقع',
     });
+    console.log('✅ Submission created successfully:', submission._id);
 
     // Create notification for new submission
     await createNotification({
@@ -45,7 +48,12 @@ router.post('/', async (req, res) => {
       data: submission,
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('❌ Submission creation error:', error);
+    console.error('Error details:', error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
   }
 });
 
@@ -288,7 +296,7 @@ router.post('/:id/validate', authorize('admin', 'agent'), async (req, res) => {
     submission.workflowStatus = 'validated';
     submission.validatedBy = req.user._id;
     submission.validatedAt = new Date();
-    submission.status = 'تمت المعاينة';
+    submission.status = 'viewed';
     await submission.save();
 
     // Log activity
@@ -330,7 +338,7 @@ router.post('/:id/confirm-call', authorize('admin', 'agent'), async (req, res) =
     submission.callConfirmedBy = req.user._id;
     submission.callConfirmedAt = new Date();
     submission.callNotes = callNotes;
-    submission.status = 'تم التواصل';
+    submission.status = 'contacted';
     await submission.save();
 
     // Log activity
@@ -386,13 +394,13 @@ router.post('/:id/convert', authorize('admin'), async (req, res) => {
       phone: submission.phone,
       service: submission.service,
       message: submission.message,
-      status: 'جديد',
+      status: 'new',
     });
 
     // Update submission
     submission.convertedToClient = true;
     submission.clientId = client._id;
-    submission.status = 'مكتمل';
+    submission.status = 'completed';
     submission.workflowStatus = 'converted_to_client';
     await submission.save();
 
