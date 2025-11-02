@@ -13,6 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface LinkData {
   isValid: boolean;
@@ -33,24 +35,41 @@ interface UploadFile {
   documentType: string;
 }
 
-const DOCUMENT_TYPES = [
-  { value: "passport", label: "جواز السفر" },
-  { value: "national_id", label: "بطاقة الهوية الوطنية" },
-  { value: "birth_certificate", label: "شهادة الميلاد" },
-  { value: "diploma", label: "الشهادة الدراسية" },
-  { value: "work_contract", label: "عقد العمل" },
-  { value: "bank_statement", label: "كشف حساب بنكي" },
-  { value: "proof_of_address", label: "إثبات العنوان" },
-  { value: "marriage_certificate", label: "عقد الزواج" },
-  { value: "police_clearance", label: "السجل العدلي" },
-  { value: "medical_report", label: "تقرير طبي" },
-  { value: "other", label: "أخرى" },
-];
+// Helper function to get service translation from key
+const getServiceTranslation = (serviceKey: string, t: any) => {
+  const serviceMap: Record<string, string> = {
+    'us_lottery': t('submissions.serviceUSLottery'),
+    'canada_immigration': t('submissions.serviceCanadaImmigration'),
+    'work_visa': t('submissions.serviceWorkVisa'),
+    'study_abroad': t('submissions.serviceStudyAbroad'),
+    'family_reunion': t('submissions.serviceFamilyReunion'),
+    'soccer_talent': t('submissions.serviceSoccerTalent'),
+  };
+
+  // Return translated value if key exists, otherwise return the original (for backwards compatibility)
+  return serviceMap[serviceKey] || serviceKey;
+};
 
 const DocumentUpload = () => {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
+
+  const DOCUMENT_TYPES = [
+    { value: "passport", label: t('docTypes.passport') },
+    { value: "national_id", label: t('docTypes.national_id') },
+    { value: "birth_certificate", label: t('docTypes.birth_certificate') },
+    { value: "diploma", label: t('docTypes.diploma') },
+    { value: "work_contract", label: t('docTypes.work_contract') },
+    { value: "bank_statement", label: t('docTypes.bank_statement') },
+    { value: "proof_of_address", label: t('docTypes.proof_of_address') },
+    { value: "marriage_certificate", label: t('docTypes.marriage_certificate') },
+    { value: "police_clearance", label: t('docTypes.police_clearance') },
+    { value: "medical_report", label: t('docTypes.medical_report') },
+    { value: "other", label: t('docTypes.other') },
+  ];
 
   const [linkData, setLinkData] = useState<LinkData | null>(null);
   const [isValidating, setIsValidating] = useState(true);
@@ -70,8 +89,8 @@ const DocumentUpload = () => {
     } catch (error: any) {
       console.error("Error validating link:", error);
       toast({
-        title: "رابط غير صالح",
-        description: error.message || "هذا الرابط غير صالح أو منتهي الصلاحية",
+        title: t('docUpload.invalidLinkTitle'),
+        description: error.message || t('docUpload.invalidLinkToast'),
         variant: "destructive",
       });
     } finally {
@@ -87,8 +106,8 @@ const DocumentUpload = () => {
 
     if (files.length > remainingSlots) {
       toast({
-        title: "تجاوز الحد الأقصى",
-        description: `يمكنك رفع ${remainingSlots} ملف فقط`,
+        title: t('docUpload.maxExceeded'),
+        description: t('docUpload.maxExceededDesc', { remaining: remainingSlots }),
         variant: "destructive",
       });
       return;
@@ -116,8 +135,8 @@ const DocumentUpload = () => {
   const handleUpload = async () => {
     if (uploadFiles.length === 0) {
       toast({
-        title: "لم يتم اختيار ملفات",
-        description: "يرجى اختيار ملف واحد على الأقل للرفع",
+        title: t('docUpload.noFiles'),
+        description: t('docUpload.noFilesDesc'),
         variant: "destructive",
       });
       return;
@@ -132,8 +151,8 @@ const DocumentUpload = () => {
 
       setUploadSuccess(true);
       toast({
-        title: "تم الرفع بنجاح!",
-        description: `تم رفع ${uploadFiles.length} ملف بنجاح`,
+        title: t('docUpload.uploadSuccessToast'),
+        description: t('docUpload.uploadSuccessToastDesc', { count: uploadFiles.length }),
       });
 
       // Refresh link data to update upload count
@@ -144,8 +163,8 @@ const DocumentUpload = () => {
     } catch (error: any) {
       console.error("Error uploading documents:", error);
       toast({
-        title: "فشل الرفع",
-        description: error.message || "حدث خطأ أثناء رفع الملفات",
+        title: t('docUpload.uploadFailed'),
+        description: error.message || t('docUpload.uploadFailedDesc'),
         variant: "destructive",
       });
     } finally {
@@ -166,8 +185,9 @@ const DocumentUpload = () => {
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
         <Card className="p-12 max-w-md w-full text-center">
           <Loader2 className="w-12 h-12 text-primary mx-auto mb-4 animate-spin" />
-          <p className="text-lg text-muted-foreground">جاري التحقق من الرابط...</p>
+          <p className="text-lg text-muted-foreground">{t('docUpload.validating')}</p>
         </Card>
+        <LanguageSwitcher />
       </div>
     );
   }
@@ -177,14 +197,15 @@ const DocumentUpload = () => {
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
         <Card className="p-12 max-w-md w-full text-center">
           <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">رابط غير صالح</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">{t('docUpload.invalidLink')}</h2>
           <p className="text-muted-foreground mb-6">
-            هذا الرابط غير صالح أو منتهي الصلاحية
+            {t('docUpload.invalidLinkDesc')}
           </p>
           <Button onClick={() => navigate("/")} variant="outline">
-            العودة إلى الصفحة الرئيسية
+            {t('docUpload.backToHome')}
           </Button>
         </Card>
+        <LanguageSwitcher />
       </div>
     );
   }
@@ -194,19 +215,20 @@ const DocumentUpload = () => {
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
         <Card className="p-12 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-foreground mb-2">تم الرفع بنجاح!</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">{t('docUpload.uploadSuccess')}</h2>
           <p className="text-muted-foreground mb-6">
-            تم رفع مستنداتك بنجاح. سيتم مراجعتها قريباً
+            {t('docUpload.uploadSuccessDesc')}
           </p>
           <div className="space-y-3">
             <Button onClick={() => setUploadSuccess(false)} className="w-full">
-              رفع ملفات إضافية
+              {t('docUpload.uploadMoreFiles')}
             </Button>
             <Button onClick={() => navigate("/")} variant="outline" className="w-full">
-              العودة إلى الصفحة الرئيسية
+              {t('docUpload.backToHome')}
             </Button>
           </div>
         </Card>
+        <LanguageSwitcher />
       </div>
     );
   }
@@ -216,19 +238,19 @@ const DocumentUpload = () => {
   const isExpiringSoon = expiresAt.getTime() - Date.now() < 24 * 60 * 60 * 1000; // Less than 24 hours
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 px-4">
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
             <Upload className="w-5 h-5 text-primary" />
-            <span className="text-primary font-semibold">رفع المستندات</span>
+            <span className="text-primary font-semibold">{t('docUpload.title')}</span>
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-3">
-            مرحباً {linkData.submission.name}
+            {t('docUpload.welcome', { name: linkData.submission.name })}
           </h1>
           <p className="text-xl text-muted-foreground">
-            يرجى رفع المستندات المطلوبة للخدمة: {linkData.submission.service}
+            {t('docUpload.uploadRequiredDocs', { service: getServiceTranslation(linkData.submission.service, t) })}
           </p>
         </div>
 
@@ -237,14 +259,14 @@ const DocumentUpload = () => {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="space-y-2 text-sm">
-              <p className="text-blue-900 font-semibold">معلومات الرابط:</p>
+              <p className="text-blue-900 font-semibold">{t('docUpload.linkInfo')}</p>
               <ul className="text-blue-800 space-y-1">
-                <li>• الحد الأقصى للرفع: {linkData.maxUploads} ملف</li>
-                <li>• المستخدم: {linkData.uploadCount} / {linkData.maxUploads}</li>
-                <li>• المتبقي: {remainingUploads} ملف</li>
+                <li>• {t('docUpload.maxUploads', { max: linkData.maxUploads })}</li>
+                <li>• {t('docUpload.used', { used: linkData.uploadCount, max: linkData.maxUploads })}</li>
+                <li>• {t('docUpload.remaining', { remaining: remainingUploads })}</li>
                 <li className={isExpiringSoon ? "text-red-600 font-semibold" : ""}>
-                  • ينتهي في: {formatFullDateTime(expiresAt)}
-                  {isExpiringSoon && " (ينتهي قريباً!)"}
+                  • {t('docUpload.expiresAt', { date: formatFullDateTime(expiresAt) })}
+                  {isExpiringSoon && ` ${t('docUpload.expiringSoon')}`}
                 </li>
               </ul>
             </div>
@@ -262,10 +284,10 @@ const DocumentUpload = () => {
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Upload className="w-12 h-12 text-primary mb-3" />
                 <p className="mb-2 text-lg font-semibold text-foreground">
-                  اضغط لاختيار الملفات
+                  {t('docUpload.clickToSelect')}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  PDF, صور, Word, Excel (حد أقصى 10 ميجا للملف الواحد)
+                  {t('docUpload.fileFormats')}
                 </p>
               </div>
               <input
@@ -284,7 +306,7 @@ const DocumentUpload = () => {
           {uploadFiles.length > 0 && (
             <div className="space-y-3 mb-6">
               <h3 className="text-lg font-semibold text-foreground">
-                الملفات المحددة ({uploadFiles.length})
+                {t('docUpload.selectedFiles', { count: uploadFiles.length })}
               </h3>
               {uploadFiles.map((uploadFile, index) => (
                 <Card key={index} className="p-4">
@@ -299,7 +321,7 @@ const DocumentUpload = () => {
                       </p>
                       <div className="mt-3">
                         <label className="text-sm font-medium text-foreground mb-2 block">
-                          نوع المستند
+                          {t('docUpload.documentType')}
                         </label>
                         <Select
                           value={uploadFile.documentType}
@@ -341,46 +363,47 @@ const DocumentUpload = () => {
             {isUploading ? (
               <span className="flex items-center gap-3">
                 <Loader2 className="w-5 h-5 animate-spin" />
-                جاري الرفع...
+                {t('docUpload.uploading')}
               </span>
             ) : (
               <span className="flex items-center gap-3">
                 <Upload className="w-5 h-5" />
-                رفع {uploadFiles.length} ملف
+                {t('docUpload.uploadButton', { count: uploadFiles.length })}
               </span>
             )}
           </Button>
 
           {/* Help Text */}
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>تأكد من أن جميع المستندات واضحة وقابلة للقراءة</p>
-            <p className="mt-1">في حالة وجود مشاكل، يرجى التواصل معنا</p>
+            <p>{t('docUpload.helpText1')}</p>
+            <p className="mt-1">{t('docUpload.helpText2')}</p>
           </div>
         </Card>
 
         {/* Contact Info */}
         <Card className="mt-6 p-6 bg-gradient-to-br from-primary/10 to-accent/10">
           <div className="text-center">
-            <p className="text-foreground font-semibold mb-2">هل تحتاج مساعدة؟</p>
+            <p className="text-foreground font-semibold mb-2">{t('docUpload.needHelp')}</p>
             <div className="flex flex-wrap justify-center gap-4 text-sm">
               <a
                 href={`tel:${linkData.submission.phone}`}
                 className="text-primary hover:underline"
               >
-                الهاتف: {linkData.submission.phone}
+                {t('docUpload.phone', { phone: linkData.submission.phone })}
               </a>
               {linkData.submission.email && (
                 <a
                   href={`mailto:${linkData.submission.email}`}
                   className="text-primary hover:underline"
                 >
-                  البريد: {linkData.submission.email}
+                  {t('docUpload.email', { email: linkData.submission.email })}
                 </a>
               )}
             </div>
           </div>
         </Card>
       </div>
+      <LanguageSwitcher />
     </div>
   );
 };

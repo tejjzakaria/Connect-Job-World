@@ -80,7 +80,7 @@ const Header = () => {
               onClick={() => navigate('/track')}
               className={`gap-2 shadow-md hover:shadow-lg transition-all duration-300 ${
                 isScrolled
-                  ? "bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark text-white"
+                  ? "bg-primary hover:from-primary-dark hover:to-accent-dark text-white"
                   : "bg-white text-primary hover:bg-white/90"
               }`}
             >
@@ -92,7 +92,7 @@ const Header = () => {
               size="icon"
               className={`shadow-md hover:shadow-lg transition-all duration-300 ${
                 isScrolled
-                  ? "bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark text-white"
+                  ? "bg-primary hover:from-primary-dark hover:to-accent-dark text-white"
                   : "bg-white text-primary hover:bg-white/90"
               }`}
               title={t('header.login')}
@@ -146,7 +146,7 @@ const Header = () => {
                       setMobileMenuOpen(false);
                       navigate('/track');
                     }}
-                    className="flex-1 gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark"
+                    className="flex-1 gap-2 bg-white text-primary hover:bg-white/90 shadow-md hover:shadow-lg transition-all duration-300"
                   >
                     <Search className="w-4 h-4" />
                     {t('header.trackApplication')}
@@ -157,7 +157,7 @@ const Header = () => {
                       navigate('/admin/login');
                     }}
                     size="icon"
-                    className="shadow-md hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark"
+                    className="bg-white text-primary hover:bg-white/90 shadow-md hover:shadow-lg transition-all duration-300"
                     title={t('header.login')}
                   >
                     <LogIn className="w-5 h-5" />
