@@ -186,12 +186,13 @@ const SignIn = () => {
               href="/"
               className="text-sm text-white hover:text-accent transition-colors inline-flex items-center gap-2"
             >
-              <span>{t('auth.backToWebsite')}</span>
               {i18n.language === 'ar' ? (
                 <span className="text-lg">→</span>
               ) : (
                 <span className="text-lg">←</span>
               )}
+              <span>{t('auth.backToWebsite')}</span>
+              
             </a>
           </div>
         </div>
