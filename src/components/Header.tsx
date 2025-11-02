@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, Menu, X, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import TrackApplicationDialog from "./TrackApplicationDialog";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const Header = () => {
   const isRTL = i18n.language === 'ar';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [trackDialogOpen, setTrackDialogOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,11 +40,12 @@ const Header = () => {
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled
-        ? "bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm"
-        : "bg-transparent"
-    }`}>
+    <>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm"
+          : "bg-transparent"
+      }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20 relative" dir={isRTL ? 'rtl' : 'ltr'}>
           {/* Logo - First element */}
@@ -77,7 +80,7 @@ const Header = () => {
           {/* Track Application & Login Buttons - Last element */}
           <div className="hidden lg:flex items-center gap-4">
             <Button
-              onClick={() => navigate('/track')}
+              onClick={() => setTrackDialogOpen(true)}
               className={`gap-2 shadow-md hover:shadow-lg transition-all duration-300 ${
                 isScrolled
                   ? "bg-primary hover:from-primary-dark hover:to-accent-dark text-white"
@@ -144,7 +147,7 @@ const Header = () => {
                   <Button
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      navigate('/track');
+                      setTrackDialogOpen(true);
                     }}
                     className="flex-1 gap-2 bg-white text-primary hover:bg-white/90 shadow-md hover:shadow-lg transition-all duration-300"
                   >
@@ -168,7 +171,9 @@ const Header = () => {
           </div>
         )}
       </div>
-    </header>
+      </header>
+      <TrackApplicationDialog isOpen={trackDialogOpen} onClose={() => setTrackDialogOpen(false)} />
+    </>
   );
 };
 
