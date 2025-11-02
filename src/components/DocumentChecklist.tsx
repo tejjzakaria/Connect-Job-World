@@ -3,6 +3,7 @@ import { FileCheck, Download, CheckSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import jsPDF from "jspdf";
 
 const DocumentChecklist = () => {
   const { t, i18n } = useTranslation();
@@ -107,6 +108,80 @@ const DocumentChecklist = () => {
   const [selectedChecklist, setSelectedChecklist] = useState(checklists[0].id);
   const activeChecklist = checklists.find(c => c.id === selectedChecklist) || checklists[0];
 
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 20;
+    let yPosition = 20;
+
+    // Add title
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    const title = t(activeChecklist.titleKey);
+    doc.text(title, pageWidth / 2, yPosition, { align: "center" });
+
+    yPosition += 15;
+
+    // Add subtitle
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    const subtitle = t('documentChecklist.documentsRequired', { count: activeChecklist.documentKeys.length });
+    doc.text(subtitle, pageWidth / 2, yPosition, { align: "center" });
+
+    yPosition += 20;
+
+    // Add checklist items
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+
+    activeChecklist.documentKeys.forEach((docKey, index) => {
+      // Check if we need a new page
+      if (yPosition > 270) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      const text = t(docKey);
+      const checkbox = "☐";
+      const itemNumber = `${index + 1}.`;
+
+      // Add checkbox and text
+      doc.text(checkbox, margin, yPosition);
+      doc.text(itemNumber, margin + 7, yPosition);
+
+      // Split long text into multiple lines if needed
+      const maxWidth = pageWidth - margin * 2 - 15;
+      const splitText = doc.splitTextToSize(text, maxWidth);
+
+      doc.text(splitText, margin + 15, yPosition);
+
+      // Calculate the height of the text block
+      const textHeight = splitText.length * 6;
+      yPosition += Math.max(textHeight, 8);
+    });
+
+    // Add footer note
+    yPosition += 10;
+    if (yPosition > 250) {
+      doc.addPage();
+      yPosition = 20;
+    }
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text(t('documentChecklist.importantNote'), margin, yPosition);
+    yPosition += 7;
+
+    doc.setFont("helvetica", "normal");
+    const noteText = t('documentChecklist.noteText');
+    const splitNote = doc.splitTextToSize(noteText, pageWidth - margin * 2);
+    doc.text(splitNote, margin, yPosition);
+
+    // Save the PDF
+    const fileName = `${title.replace(/\s+/g, '_')}_Checklist.pdf`;
+    doc.save(fileName);
+  };
+
   return (
     <section id="documents" dir={isRTL ? 'rtl' : 'ltr'} className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -164,7 +239,7 @@ const DocumentChecklist = () => {
               <Button
                 variant="outline"
                 className="gap-2"
-                onClick={() => alert(t('documentChecklist.downloadAlert'))}
+                onClick={generatePDF}
               >
                 <Download className="w-4 h-4" />
                 {t('documentChecklist.downloadPdf')}
