@@ -7,7 +7,7 @@ const connectDB = async () => {
     const dbName = dbUri?.split('/').pop()?.split('?')[0] || 'unknown';
     console.log(`🔄 Attempting to connect to MongoDB database: ${dbName}`);
 
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    const conn = await mongoose.connect(process.env.MONGODB_URI_STAGING);
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     console.log(`📊 Database: ${conn.connection.name}`);
