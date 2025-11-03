@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Eye, Trash2, Phone, Mail, MessageSquare, Download, CheckCircle, Clock, Link as LinkIcon, FileText, UserCheck, PhoneCall } from "lucide-react";
+import { Search, Filter, Eye, Trash2, Phone, Mail, MessageSquare, Download, CheckCircle, Clock, Link as LinkIcon, FileText, UserCheck, PhoneCall, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -106,6 +106,7 @@ const Submissions = () => {
   const [filterSource, setFilterSource] = useState("all");
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -126,12 +127,24 @@ const Submissions = () => {
 
   // Fetch submissions from MongoDB
   useEffect(() => {
-    fetchSubmissions();
+    const renderStartTime = performance.now();
+    fetchSubmissions().then(() => {
+      // Performance monitoring - Measure total render time
+      requestAnimationFrame(() => {
+        const renderEndTime = performance.now();
+        const totalTime = renderEndTime - renderStartTime;
+        console.log(`   Total Load Time (API + Render): ${totalTime.toFixed(2)}ms`);
+      });
+    });
   }, []);
 
   const fetchSubmissions = async () => {
     try {
       setIsLoading(true);
+
+      // Performance monitoring - Start API call timer
+      const apiStartTime = performance.now();
+
       const response = await submissionsAPI.getAll({
         search: searchQuery || undefined,
         service: filterService !== "all" ? filterService : undefined,
@@ -141,10 +154,22 @@ const Submissions = () => {
         limit: itemsPerPage,
       });
 
+      // Performance monitoring - End API call timer
+      const apiEndTime = performance.now();
+      const apiDuration = apiEndTime - apiStartTime;
+
       if (response.success && response.data) {
         setSubmissions(response.data);
         setTotalPages(response.totalPages || 1);
         setTotalCount(response.total || 0);
+
+        // Performance monitoring - Log metrics
+        console.log('📊 [Submissions Performance Metrics]');
+        console.log(`   API Response Time: ${apiDuration.toFixed(2)}ms`);
+        console.log(`   Records Fetched: ${response.data.length}`);
+        console.log(`   Total Records: ${response.total || 0}`);
+        console.log(`   Page: ${currentPage}/${response.totalPages || 1}`);
+        console.log(`   Throughput: ${((response.data.length / apiDuration) * 1000).toFixed(2)} records/sec`);
       }
     } catch (error: any) {
       console.error("Error fetching submissions:", error);
@@ -352,6 +377,26 @@ const Submissions = () => {
     }
   };
 
+  const handleRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await fetchSubmissions();
+      toast({
+        title: t('common.refreshed', { defaultValue: 'Refreshed' }),
+        description: t('submissions.dataRefreshed', { defaultValue: 'Submission data has been refreshed' }),
+      });
+    } catch (error) {
+      console.error("Error refreshing submissions:", error);
+      toast({
+        title: t('common.error', { defaultValue: 'Error' }),
+        description: t('common.refreshError', { defaultValue: 'Failed to refresh data' }),
+        variant: "destructive"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const exportToCSV = async () => {
     try {
       setIsLoading(true);
@@ -458,6 +503,10 @@ const Submissions = () => {
             </p>
           </div>
           <div className="flex gap-3">
+            <Button onClick={handleRefresh} variant="outline" className="gap-2" disabled={isRefreshing}>
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {t('common.refresh', { defaultValue: 'Refresh' })}
+            </Button>
             <Button onClick={exportToCSV} variant="outline" className="gap-2">
               <Download className="w-4 h-4" />
               {t('common.exportCSV', { defaultValue: 'Export CSV' })}

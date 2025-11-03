@@ -488,8 +488,14 @@ router.patch('/:id/verify', protect, authorize('admin', 'agent'), async (req, re
     const allDocuments = await Document.find({ submission: document.submission });
     const allVerified = allDocuments.every(doc => doc.status === 'verified');
 
+    console.log(`📋 Document verification check for submission ${document.submission}:`);
+    console.log(`   Total documents: ${allDocuments.length}`);
+    console.log(`   All verified: ${allVerified}`);
+    console.log(`   Document statuses:`, allDocuments.map(d => ({ file: d.fileName, status: d.status })));
+
     // Update submission workflow status if all documents are verified
     if (allVerified && allDocuments.length > 0) {
+      console.log(`   ✅ Setting workflowStatus to 'documents_verified'`);
       await Submission.findByIdAndUpdate(
         document.submission,
         { workflowStatus: 'documents_verified' },

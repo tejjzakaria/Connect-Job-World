@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Eye, Edit, Trash2, Phone, Mail, Download, Plus } from "lucide-react";
+import { Search, Filter, Eye, Edit, Trash2, Phone, Mail, Download, Plus, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -75,6 +75,7 @@ const Clients = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,6 +90,10 @@ const Clients = () => {
   const fetchClients = async () => {
     try {
       setIsLoading(true);
+
+      // Performance monitoring - Start API call timer
+      const apiStartTime = performance.now();
+
       const response = await clientsAPI.getAll({
         search: searchQuery || undefined,
         service: filterService !== "all" ? filterService : undefined,
@@ -97,10 +102,22 @@ const Clients = () => {
         limit: itemsPerPage,
       });
 
+      // Performance monitoring - End API call timer
+      const apiEndTime = performance.now();
+      const apiDuration = apiEndTime - apiStartTime;
+
       if (response.success && response.data) {
         setClients(response.data);
         setTotalPages(response.totalPages || 1);
         setTotalCount(response.total || 0);
+
+        // Performance monitoring - Log metrics
+        console.log('📊 [Clients Performance Metrics]');
+        console.log(`   API Response Time: ${apiDuration.toFixed(2)}ms`);
+        console.log(`   Records Fetched: ${response.data.length}`);
+        console.log(`   Total Records: ${response.total || 0}`);
+        console.log(`   Page: ${currentPage}/${response.totalPages || 1}`);
+        console.log(`   Throughput: ${((response.data.length / apiDuration) * 1000).toFixed(2)} records/sec`);
       }
     } catch (error: any) {
       console.error("Error fetching clients:", error);
@@ -116,7 +133,15 @@ const Clients = () => {
 
   // Fetch clients when page changes
   useEffect(() => {
-    fetchClients();
+    const renderStartTime = performance.now();
+    fetchClients().then(() => {
+      // Performance monitoring - Measure total render time
+      requestAnimationFrame(() => {
+        const renderEndTime = performance.now();
+        const totalTime = renderEndTime - renderStartTime;
+        console.log(`   Total Load Time (API + Render): ${totalTime.toFixed(2)}ms`);
+      });
+    });
   }, [currentPage]);
 
   // Re-fetch when filters change and reset to page 1
@@ -186,6 +211,26 @@ const Clients = () => {
         return "bg-red-50 text-red-700 border-red-300";
       default:
         return "bg-gray-50 text-gray-700 border-gray-300";
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await fetchClients();
+      toast({
+        title: t('common.refreshed', { defaultValue: 'Refreshed' }),
+        description: t('clients.dataRefreshed', { defaultValue: 'Client data has been refreshed' }),
+      });
+    } catch (error) {
+      console.error("Error refreshing clients:", error);
+      toast({
+        title: t('common.error', { defaultValue: 'Error' }),
+        description: t('common.refreshError', { defaultValue: 'Failed to refresh data' }),
+        variant: "destructive"
+      });
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -288,6 +333,10 @@ const Clients = () => {
             </p>
           </div>
           <div className="flex gap-3">
+            <Button onClick={handleRefresh} variant="outline" className="gap-2" disabled={isRefreshing}>
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {t('common.refresh', { defaultValue: 'Refresh' })}
+            </Button>
             <Button onClick={exportToCSV} variant="outline" className="gap-2">
               <Download className="w-4 h-4" />
               {t('common.exportCSV', { defaultValue: 'Export CSV' })}
