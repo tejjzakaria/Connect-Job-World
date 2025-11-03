@@ -69,9 +69,25 @@ export function DocumentPreview({
         throw new Error(t('docPreview.loadError'));
       }
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setPreviewUrl(url);
+      const contentType = response.headers.get('content-type');
+
+      // Check if this is a JSON response (S3 file)
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        if (data.storageType === 's3' && data.url) {
+          console.log('S3 file detected, using presigned URL directly');
+          setPreviewUrl(data.url);
+        } else {
+          throw new Error('Invalid S3 response');
+        }
+      } else {
+        // For local files, create a blob URL
+        console.log('Local file detected, creating blob URL');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setPreviewUrl(url);
+      }
+
       setIsLoading(false);
     } catch (err) {
       console.error('Error loading document:', err);

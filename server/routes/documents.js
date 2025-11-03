@@ -2,11 +2,12 @@ import express from 'express';
 import DocumentLink from '../models/DocumentLink.js';
 import Document from '../models/Document.js';
 import Submission from '../models/Submission.js';
-import upload from '../config/multer.js';
+import upload, { isS3Configured } from '../config/multer.js';
 import { protect, authorize } from '../middleware/auth.js';
 import { createNotification } from '../utils/notifications.js';
 import whatsappService from '../services/whatsapp.js';
 import { logActivity } from '../utils/activityLogger.js';
+import { uploadToS3, getPresignedUrl, deleteFromS3 } from '../services/s3.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -141,27 +142,33 @@ router.post('/upload/:token', upload.array('documents', 10), async (req, res) =>
       .populate('submission', 'name');
 
     if (!documentLink) {
-      // Delete uploaded files if link is invalid
-      req.files.forEach(file => {
-        fs.unlinkSync(file.path);
-      });
+      // Delete uploaded files if link is invalid (only for local storage)
+      if (!isS3Configured && req.files) {
+        req.files.forEach(file => {
+          if (file.path) fs.unlinkSync(file.path);
+        });
+      }
       return res.status(404).json({ success: false, message: 'الرابط غير صالح' });
     }
 
     if (!documentLink.isValid()) {
-      // Delete uploaded files if link is invalid
-      req.files.forEach(file => {
-        fs.unlinkSync(file.path);
-      });
+      // Delete uploaded files if link is invalid (only for local storage)
+      if (!isS3Configured && req.files) {
+        req.files.forEach(file => {
+          if (file.path) fs.unlinkSync(file.path);
+        });
+      }
       return res.status(400).json({ success: false, message: 'الرابط غير صالح أو منتهي الصلاحية' });
     }
 
     // Check if upload count will exceed limit
     if (documentLink.uploadCount + req.files.length > documentLink.maxUploads) {
-      // Delete uploaded files
-      req.files.forEach(file => {
-        fs.unlinkSync(file.path);
-      });
+      // Delete uploaded files (only for local storage)
+      if (!isS3Configured && req.files) {
+        req.files.forEach(file => {
+          if (file.path) fs.unlinkSync(file.path);
+        });
+      }
       return res.status(400).json({
         success: false,
         message: `لا يمكن رفع ${req.files.length} ملفات. المتبقي: ${documentLink.maxUploads - documentLink.uploadCount}`
@@ -183,7 +190,7 @@ router.post('/upload/:token', upload.array('documents', 10), async (req, res) =>
     // Get user name for filename
     const userName = documentLink.submission?.name?.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '') || 'Unknown';
 
-    // Create document records and rename files
+    // Create document records and upload files
     const documents = [];
     for (let i = 0; i < req.files.length; i++) {
       const file = req.files[i];
@@ -193,14 +200,38 @@ router.post('/upload/:token', upload.array('documents', 10), async (req, res) =>
 
       // Create structured filename: UserName_DocumentType_Timestamp.ext
       const newFileName = `${userName}_${docType}_${timestamp}_${i}${fileExtension}`;
-      const newFilePath = path.join(path.dirname(file.path), newFileName);
 
-      // Rename the file from temp name to structured name
-      try {
-        fs.renameSync(file.path, newFilePath);
-      } catch (renameError) {
-        console.error('Error renaming file:', renameError);
-        // If rename fails, keep the original temp name
+      let filePath, s3Key, s3Url;
+
+      if (isS3Configured) {
+        // Upload to S3
+        try {
+          // Use submission ID to organize files in S3
+          const submissionId = documentLink.submission._id.toString();
+          s3Key = `documents/${submissionId}/${newFileName}`;
+
+          const s3Result = await uploadToS3(file.buffer, s3Key, file.mimetype);
+          s3Url = s3Result.url;
+          filePath = s3Key; // Store S3 key in filePath field for compatibility
+
+          console.log(`✅ Uploaded to S3: ${s3Key}`);
+        } catch (s3Error) {
+          console.error('S3 upload error:', s3Error);
+          throw new Error(`Failed to upload ${file.originalname} to S3: ${s3Error.message}`);
+        }
+      } else {
+        // Local file storage
+        const newFilePath = path.join(path.dirname(file.path), newFileName);
+
+        // Rename the file from temp name to structured name
+        try {
+          fs.renameSync(file.path, newFilePath);
+          filePath = newFilePath;
+        } catch (renameError) {
+          console.error('Error renaming file:', renameError);
+          // If rename fails, keep the original temp name
+          filePath = file.path;
+        }
       }
 
       const document = await Document.create({
@@ -210,9 +241,12 @@ router.post('/upload/:token', upload.array('documents', 10), async (req, res) =>
         originalName: file.originalname,
         fileType: file.mimetype,
         fileSize: file.size,
-        filePath: fs.existsSync(newFilePath) ? newFilePath : file.path,
+        filePath: filePath, // S3 key or local path
+        s3Key: s3Key || null, // Store S3 key separately for clarity
+        s3Url: s3Url || null,
         documentType: docType,
-        status: 'pending'
+        status: 'pending',
+        storageType: isS3Configured ? 's3' : 'local', // Track storage type
       });
       documents.push(document);
     }
@@ -247,11 +281,11 @@ router.post('/upload/:token', upload.array('documents', 10), async (req, res) =>
     });
   } catch (error) {
     console.error('Error uploading documents:', error);
-    // Clean up uploaded files on error
-    if (req.files) {
+    // Clean up uploaded files on error (only for local storage)
+    if (!isS3Configured && req.files) {
       req.files.forEach(file => {
         try {
-          fs.unlinkSync(file.path);
+          if (file.path) fs.unlinkSync(file.path);
         } catch (e) {
           console.error('Error deleting file:', e);
         }
@@ -309,13 +343,41 @@ router.get('/:id/preview', protect, authorize('admin', 'agent'), async (req, res
       return res.status(404).json({ success: false, message: 'المستند غير موجود' });
     }
 
-    // Check if file exists
+    console.log('📄 Previewing document:', document.fileName);
+    console.log('   Storage type:', document.storageType || 'undefined');
+    console.log('   S3 Key:', document.s3Key || 'none');
+    console.log('   File path:', document.filePath);
+
+    // Handle S3 files
+    if (document.storageType === 's3' || document.s3Key) {
+      try {
+        console.log('   → Generating presigned URL for S3...');
+        const presignedUrl = await getPresignedUrl(document.s3Key || document.filePath, 3600); // 1 hour
+        console.log('   ✅ Presigned URL generated');
+
+        // For S3 files, return a JSON response with the presigned URL
+        // This avoids CORS issues when the frontend tries to fetch
+        return res.json({
+          success: true,
+          storageType: 's3',
+          url: presignedUrl,
+          fileName: document.fileName,
+          fileType: document.fileType
+        });
+      } catch (s3Error) {
+        console.error('   ❌ Error generating presigned URL:', s3Error.message);
+        return res.status(500).json({ success: false, message: 'فشل في إنشاء رابط الملف' });
+      }
+    }
+
+    // Handle local files
+    console.log('   → Checking local file...');
     if (!fs.existsSync(document.filePath)) {
+      console.error('   ❌ Local file not found at:', document.filePath);
       return res.status(404).json({ success: false, message: 'الملف غير موجود على الخادم' });
     }
 
-    console.log('Previewing document:', document.fileName);
-
+    console.log('   ✅ Local file found, sending...');
     // Set content type based on file type
     res.setHeader('Content-Type', document.fileType);
     res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(document.fileName)}"`);
@@ -323,7 +385,7 @@ router.get('/:id/preview', protect, authorize('admin', 'agent'), async (req, res
     // Send the file
     res.sendFile(path.resolve(document.filePath));
   } catch (error) {
-    console.error('Error previewing document:', error);
+    console.error('❌ Error previewing document:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -339,17 +401,33 @@ router.get('/:id/download', protect, authorize('admin', 'agent'), async (req, re
       return res.status(404).json({ success: false, message: 'المستند غير موجود' });
     }
 
-    // Check if file exists
+    console.log('📥 Downloading document:', document.fileName);
+
+    // Handle S3 files
+    if (document.storageType === 's3' || document.s3Key) {
+      try {
+        console.log('   → Generating presigned URL for S3 download...');
+        const presignedUrl = await getPresignedUrl(document.s3Key || document.filePath, 3600); // 1 hour
+        console.log('   ✅ Redirecting to S3...');
+        // Redirect directly - browser will handle the download
+        return res.redirect(presignedUrl);
+      } catch (s3Error) {
+        console.error('   ❌ Error generating presigned URL:', s3Error);
+        return res.status(500).json({ success: false, message: 'فشل في إنشاء رابط الملف' });
+      }
+    }
+
+    // Handle local files
+    console.log('   → Serving local file...');
     if (!fs.existsSync(document.filePath)) {
+      console.error('   ❌ Local file not found');
       return res.status(404).json({ success: false, message: 'الملف غير موجود على الخادم' });
     }
 
-    // Use the fileName which is already structured (UserName_DocumentType_Timestamp.ext)
-    console.log('Downloading document:', document.fileName);
-
+    console.log('   ✅ Sending file...');
     res.download(document.filePath, document.fileName);
   } catch (error) {
-    console.error('Error downloading document:', error);
+    console.error('❌ Error downloading document:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -471,9 +549,20 @@ router.delete('/:id', protect, authorize('admin'), async (req, res) => {
       req,
     });
 
-    // Delete file from filesystem
-    if (fs.existsSync(document.filePath)) {
-      fs.unlinkSync(document.filePath);
+    // Delete file from storage
+    if (document.storageType === 's3' || document.s3Key) {
+      // Delete from S3
+      try {
+        await deleteFromS3(document.s3Key || document.filePath);
+      } catch (s3Error) {
+        console.error('Error deleting from S3:', s3Error);
+        // Continue with document deletion even if S3 deletion fails
+      }
+    } else {
+      // Delete from local filesystem
+      if (fs.existsSync(document.filePath)) {
+        fs.unlinkSync(document.filePath);
+      }
     }
 
     // Delete document record
