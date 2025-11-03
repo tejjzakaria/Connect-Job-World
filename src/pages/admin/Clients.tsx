@@ -370,12 +370,12 @@ const Clients = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('clients.allServices', { defaultValue: 'All Services' })}</SelectItem>
-                <SelectItem value="القرعة الأمريكية">القرعة الأمريكية</SelectItem>
-                <SelectItem value="الهجرة إلى كندا">الهجرة إلى كندا</SelectItem>
-                <SelectItem value="تأشيرة عمل">تأشيرة عمل</SelectItem>
-                <SelectItem value="الدراسة في الخارج">الدراسة في الخارج</SelectItem>
-                <SelectItem value="لم شمل العائلة">لم شمل العائلة</SelectItem>
-                <SelectItem value="مواهب كرة القدم">مواهب كرة القدم</SelectItem>
+                <SelectItem value="us_lottery">{t('submissions.serviceUSLottery')}</SelectItem>
+                <SelectItem value="canada_immigration">{t('submissions.serviceCanadaImmigration')}</SelectItem>
+                <SelectItem value="work_visa">{t('submissions.serviceWorkVisa')}</SelectItem>
+                <SelectItem value="study_abroad">{t('submissions.serviceStudyAbroad')}</SelectItem>
+                <SelectItem value="family_reunion">{t('submissions.serviceFamilyReunion')}</SelectItem>
+                <SelectItem value="soccer_talent">{t('submissions.serviceSoccerTalent')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -387,10 +387,10 @@ const Clients = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('clients.allStatuses', { defaultValue: 'All Statuses' })}</SelectItem>
-                <SelectItem value="جديد">{t('status.new')}</SelectItem>
-                <SelectItem value="قيد المراجعة">{t('status.inProgress')}</SelectItem>
-                <SelectItem value="مكتمل">{t('status.completed')}</SelectItem>
-                <SelectItem value="مرفوض">{t('status.rejected')}</SelectItem>
+                <SelectItem value="new">{t('status.new')}</SelectItem>
+                <SelectItem value="in_review">{t('status.inProgress')}</SelectItem>
+                <SelectItem value="completed">{t('status.completed')}</SelectItem>
+                <SelectItem value="rejected">{t('status.rejected')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

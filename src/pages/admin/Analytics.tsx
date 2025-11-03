@@ -29,6 +29,34 @@ interface StatusStat {
   color: string;
 }
 
+// Helper function to get service translation from key
+const getServiceTranslation = (serviceKey: string, t: any) => {
+  const serviceMap: Record<string, string> = {
+    'us_lottery': t('submissions.serviceUSLottery'),
+    'canada_immigration': t('submissions.serviceCanadaImmigration'),
+    'work_visa': t('submissions.serviceWorkVisa'),
+    'study_abroad': t('submissions.serviceStudyAbroad'),
+    'family_reunion': t('submissions.serviceFamilyReunion'),
+    'soccer_talent': t('submissions.serviceSoccerTalent'),
+  };
+
+  return serviceMap[serviceKey] || serviceKey;
+};
+
+// Helper function to get status translation from key
+const getStatusTranslation = (statusKey: string, t: any) => {
+  const statusMap: Record<string, string> = {
+    'new': t('submissions.statusNew'),
+    'viewed': t('submissions.statusViewed'),
+    'contacted': t('submissions.statusContacted'),
+    'completed': t('submissions.statusCompleted'),
+    'in_review': t('status.inProgress'),
+    'rejected': t('status.rejected'),
+  };
+
+  return statusMap[statusKey] || statusKey;
+};
+
 const Analytics = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -66,7 +94,7 @@ const Analytics = () => {
 
         // Calculate completed submissions and success rate
         const completed = submissionData.byStatus.find(
-          (item: any) => item._id === "مكتمل"
+          (item: any) => item._id === "completed"
         )?.count || 0;
         setCompletedSubmissions(completed);
 
@@ -81,17 +109,17 @@ const Analytics = () => {
             ? Math.round((item.count / submissionData.total) * 100)
             : 0;
 
-          // Assign colors based on service name
+          // Assign colors based on service key
           let color = "bg-blue-500";
-          if (item._id === "القرعة الأمريكية") color = "bg-blue-500";
-          else if (item._id === "الهجرة إلى كندا") color = "bg-green-500";
-          else if (item._id === "تأشيرة عمل") color = "bg-purple-500";
-          else if (item._id === "الدراسة في الخارج") color = "bg-orange-500";
-          else if (item._id === "لم شمل العائلة") color = "bg-pink-500";
-          else if (item._id === "مواهب كرة القدم") color = "bg-yellow-500";
+          if (item._id === "us_lottery") color = "bg-blue-500";
+          else if (item._id === "canada_immigration") color = "bg-green-500";
+          else if (item._id === "work_visa") color = "bg-purple-500";
+          else if (item._id === "study_abroad") color = "bg-orange-500";
+          else if (item._id === "family_reunion") color = "bg-pink-500";
+          else if (item._id === "soccer_talent") color = "bg-yellow-500";
 
           return {
-            name: item._id,
+            name: getServiceTranslation(item._id, t),
             count: item.count,
             percentage,
             color
@@ -105,15 +133,15 @@ const Analytics = () => {
             ? Math.round((item.count / submissionData.total) * 100)
             : 0;
 
-          // Assign colors based on status
+          // Assign colors based on status key
           let color = "bg-gray-500";
-          if (item._id === "مكتمل") color = "bg-green-500";
-          else if (item._id === "قيد المراجعة" || item._id === "تمت المعاينة" || item._id === "تم التواصل") color = "bg-yellow-500";
-          else if (item._id === "جديد") color = "bg-blue-500";
-          else if (item._id === "مرفوض") color = "bg-red-500";
+          if (item._id === "completed") color = "bg-green-500";
+          else if (item._id === "in_review" || item._id === "viewed" || item._id === "contacted") color = "bg-yellow-500";
+          else if (item._id === "new") color = "bg-blue-500";
+          else if (item._id === "rejected") color = "bg-red-500";
 
           return {
-            status: item._id,
+            status: getStatusTranslation(item._id, t),
             count: item.count,
             percentage,
             color
@@ -207,8 +235,8 @@ const Analytics = () => {
       reportLines.push("");
 
       // Summary Statistics
-      const completedStat = statusBreakdown.find(s => s.status === "مكتمل");
-      const rejectedStat = statusBreakdown.find(s => s.status === "مرفوض");
+      const completedStat = statusBreakdown.find(s => s.status === t('submissions.statusCompleted'));
+      const rejectedStat = statusBreakdown.find(s => s.status === t('status.rejected'));
       reportLines.push("=== ملخص الأداء ===");
       reportLines.push(`معدل الإكمال,${completedStat?.percentage || 0}%`);
       reportLines.push(`معدل الرفض,${rejectedStat?.percentage || 0}%`);
@@ -280,8 +308,8 @@ const Analytics = () => {
   }
 
   // Get completed and rejected percentages for summary
-  const completedStat = statusBreakdown.find(s => s.status === "مكتمل");
-  const rejectedStat = statusBreakdown.find(s => s.status === "مرفوض");
+  const completedStat = statusBreakdown.find(s => s.status === t('submissions.statusCompleted'));
+  const rejectedStat = statusBreakdown.find(s => s.status === t('status.rejected'));
 
   return (
     <DashboardLayout>

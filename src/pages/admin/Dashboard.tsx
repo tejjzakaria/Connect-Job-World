@@ -88,14 +88,14 @@ const Dashboard = () => {
         // Total clients
         const totalClients = clientData.total || 0;
 
-        // New submissions (status: "جديد")
+        // New submissions (status: "new")
         const newSubmissions = submissionData.byStatus.find(
-          (item: any) => item._id === "جديد"
+          (item: any) => item._id === "new"
         )?.count || 0;
 
-        // Completed submissions (status: "مكتمل")
+        // Completed submissions (status: "completed")
         const completedSubmissions = submissionData.byStatus.find(
-          (item: any) => item._id === "مكتمل"
+          (item: any) => item._id === "completed"
         )?.count || 0;
 
         // Success rate: completed submissions / total submissions * 100

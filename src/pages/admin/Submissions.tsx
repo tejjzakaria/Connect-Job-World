@@ -524,7 +524,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusNew')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === t('submissions.statusNew')).length}
+                  {submissions.filter(s => s.status === 'new').length}
                 </p>
               </div>
             </div>
@@ -537,7 +537,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusViewed')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === t('submissions.statusViewed')).length}
+                  {submissions.filter(s => s.status === 'viewed').length}
                 </p>
               </div>
             </div>
@@ -550,7 +550,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusContacted')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === t('submissions.statusContacted')).length}
+                  {submissions.filter(s => s.status === 'contacted').length}
                 </p>
               </div>
             </div>
@@ -563,7 +563,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusCompleted')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === t('submissions.statusCompleted')).length}
+                  {submissions.filter(s => s.status === 'completed').length}
                 </p>
               </div>
             </div>
@@ -609,10 +609,10 @@ const Submissions = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('submissions.allStatuses')}</SelectItem>
-                <SelectItem value={t('submissions.statusNew')}>{t('submissions.statusNew')}</SelectItem>
-                <SelectItem value={t('submissions.statusViewed')}>{t('submissions.statusViewed')}</SelectItem>
-                <SelectItem value={t('submissions.statusContacted')}>{t('submissions.statusContacted')}</SelectItem>
-                <SelectItem value={t('submissions.statusCompleted')}>{t('submissions.statusCompleted')}</SelectItem>
+                <SelectItem value="new">{t('submissions.statusNew')}</SelectItem>
+                <SelectItem value="viewed">{t('submissions.statusViewed')}</SelectItem>
+                <SelectItem value="contacted">{t('submissions.statusContacted')}</SelectItem>
+                <SelectItem value="completed">{t('submissions.statusCompleted')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -626,8 +626,10 @@ const Submissions = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('submissions.allSources')}</SelectItem>
-                <SelectItem value={t('submissions.sourceWebsite')}>{t('submissions.sourceWebsite')}</SelectItem>
-                <SelectItem value={t('submissions.sourceWhatsApp')}>{t('submissions.sourceWhatsApp')}</SelectItem>
+                <SelectItem value="website">{t('submissions.sourceWebsite')}</SelectItem>
+                <SelectItem value="whatsapp">{t('submissions.sourceWhatsApp')}</SelectItem>
+                <SelectItem value="phone">{t('submissions.sourcePhone')}</SelectItem>
+                <SelectItem value="email">{t('submissions.sourceEmail')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
