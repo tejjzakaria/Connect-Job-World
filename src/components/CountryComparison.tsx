@@ -1,3 +1,19 @@
+/**
+ * CountryComparison.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Side-by-side country comparison table component for USA, Canada, and Australia immigration
+ * options. Presents detailed comparison across multiple criteria including cost of living,
+ * processing time, job market, education quality, healthcare system, family immigration,
+ * language requirements, and climate. Uses check/cross icons for visual clarity and color-coded
+ * cells for quick scanning. Helps clients evaluate which destination best matches their needs
+ * and preferences. Features responsive table design and multi-language support.
+ */
+
 import { Check, X, DollarSign, Clock, Users, Briefcase, GraduationCap, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";

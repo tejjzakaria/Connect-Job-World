@@ -1,3 +1,20 @@
+/**
+ * DocumentPreview.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Advanced document preview modal component supporting multiple file formats (PDF, images).
+ * Provides zoom controls (zoom in/out), rotation functionality, download capability, and
+ * loading states for document retrieval. Integrates with AWS S3 to fetch presigned URLs for
+ * secure document access. Features fullscreen modal dialog with controls overlay, responsive
+ * image rendering, and proper handling of different document types. Implements error handling
+ * for failed document loads and provides user-friendly controls for document manipulation.
+ * Used throughout admin panel for previewing client and submission documents.
+ */
+
 import { useEffect, useState } from "react";
 import { X, ZoomIn, ZoomOut, RotateCw, Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

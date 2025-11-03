@@ -1,3 +1,18 @@
+/**
+ * EditClient.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Client information editing page for updating existing client records. Fetches current
+ * client data from the database and presents it in an editable form. Allows modification
+ * of all client fields including personal information, contact details, service type,
+ * status, and notes. Features pre-populated form fields, validation, loading states,
+ * and error handling. Maintains data integrity while providing flexible update capabilities.
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowRight, User, Mail, Phone, FileText, MessageSquare, Calendar, Save, Loader2 } from "lucide-react";

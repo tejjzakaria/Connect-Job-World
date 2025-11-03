@@ -1,3 +1,18 @@
+/**
+ * Profile.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * User profile management page allowing administrators and employees to view and update
+ * their personal information. Features include name and email updates, password change
+ * functionality with validation, and display of account metadata (role, creation date,
+ * last login). Implements secure password requirements and proper form validation.
+ * Provides a personalized account management interface for all authenticated users.
+ */
+
 import { useState, useEffect } from "react";
 import { User, Mail, Lock, Shield, Calendar } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

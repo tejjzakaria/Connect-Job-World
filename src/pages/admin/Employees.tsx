@@ -1,3 +1,18 @@
+/**
+ * Employees.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Employee management page for system user administration. Allows admins to create, edit,
+ * and manage employee accounts with role-based access control (admin/agent/viewer).
+ * Features include employee activation/deactivation, role management, search functionality,
+ * and secure user account operations. Tracks employee information, last login times, and
+ * account status. Implements proper authorization checks to ensure secure access control.
+ */
+
 import { useState, useEffect } from "react";
 import { Search, Plus, Edit, UserX, UserCheck, Trash2, Mail, Shield, User } from "lucide-react";
 import { Card } from "@/components/ui/card";

@@ -1,3 +1,18 @@
+/**
+ * NotFound.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Custom 404 error page displayed when users navigate to non-existent routes. Provides
+ * a user-friendly error message with helpful suggestions and navigation options to return
+ * to the home page or use the search functionality. Features animated illustrations, clear
+ * error messaging, and quick action buttons. Logs the attempted path for debugging purposes
+ * and maintains consistent branding with the rest of the application.
+ */
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Home, ArrowRight, FileQuestion, Search } from "lucide-react";

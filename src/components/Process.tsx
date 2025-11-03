@@ -1,3 +1,18 @@
+/**
+ * Process.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Step-by-step process visualization component explaining the application workflow to clients.
+ * Displays a 5-step journey from initial consultation through document preparation, application
+ * submission, visa interview, and final travel. Each step features an icon, title, and description
+ * in a visually appealing timeline layout. Uses numbered badges and connecting lines to show
+ * progression. Supports multi-language content and provides clear expectations for potential clients.
+ */
+
 import { MessageSquare, FileSearch, FileCheck, Plane, CheckCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";

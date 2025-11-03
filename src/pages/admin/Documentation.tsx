@@ -1,3 +1,18 @@
+/**
+ * Documentation.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Comprehensive system documentation and user guide page. Provides detailed instructions
+ * for all platform features including dashboard navigation, client management, submission
+ * handling, analytics usage, employee management, and profile settings. Organized in an
+ * expandable accordion interface with role-based content visibility. Serves as an in-app
+ * reference guide to help users understand and effectively utilize all system capabilities.
+ */
+
 import {
   BookOpen,
   FileText,

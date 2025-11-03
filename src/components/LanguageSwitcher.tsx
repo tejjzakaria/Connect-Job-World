@@ -1,3 +1,20 @@
+/**
+ * LanguageSwitcher.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Multi-language selection dropdown component supporting English, Arabic, and French.
+ * Features globe icon button that opens language selection menu with flag emojis for each
+ * language option. Handles language switching via i18next, updates document direction (RTL
+ * for Arabic), and persists language preference in localStorage. Implements smooth transitions
+ * and maintains user's language choice across sessions. Integrated into both public website
+ * header and admin dashboard header for consistent language switching experience throughout
+ * the entire application.
+ */
+
 import { useEffect } from "react";
 import { Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";

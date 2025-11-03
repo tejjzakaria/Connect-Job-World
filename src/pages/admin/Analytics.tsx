@@ -1,3 +1,19 @@
+/**
+ * Analytics.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Advanced analytics and reporting page displaying business intelligence insights.
+ * Features conversion funnel analysis showing progression through workflow stages,
+ * service performance comparison with completion rates, service distribution pie charts,
+ * and comprehensive statistics. Provides data visualization using Recharts library with
+ * interactive charts for trend analysis and performance monitoring. Includes PDF export
+ * functionality for generating professional reports.
+ */
+
 import { useState, useEffect } from "react";
 import { TrendingUp, Users, FileText, CheckCircle, XCircle, Calendar, Award, Download, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";

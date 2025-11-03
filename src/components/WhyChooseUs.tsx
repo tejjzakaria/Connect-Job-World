@@ -1,3 +1,18 @@
+/**
+ * WhyChooseUs.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Value proposition section highlighting key advantages of choosing Connect Job World.
+ * Features four main benefits: professional expertise, guaranteed security, fast processing,
+ * and 24/7 support. Each benefit is presented in a card format with icons, titles, and
+ * descriptions. Implements gradient backgrounds, hover effects, and responsive grid layout.
+ * Helps build trust and credibility with potential clients by showcasing company strengths.
+ */
+
 import { CheckCircle2, Shield, Clock, Headphones } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

@@ -1,3 +1,20 @@
+/**
+ * TrackApplicationDialog.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Modal dialog component for application tracking accessible from the main header.
+ * Provides quick search interface where clients can enter phone number or email to check
+ * their submission status without leaving the current page. Displays results in dialog with
+ * status indicators, service information, submission date, and contact details. Features
+ * loading states, error handling, and links to document upload functionality. Implements
+ * responsive design and smooth animations for seamless user experience. Supports multi-language
+ * interface for international clients.
+ */
+
 import { useState } from "react";
 import { Search, CheckCircle, Clock, FileText, Phone, Mail } from "lucide-react";
 import { Card } from "@/components/ui/card";

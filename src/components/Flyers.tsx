@@ -1,3 +1,18 @@
+/**
+ * Flyers.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Downloadable flyers and promotional materials section component. Displays available
+ * marketing materials and informational brochures that clients can download for reference.
+ * Features card-based layout with file icons, titles, and descriptions. Provides quick
+ * access to service information in PDF format for offline viewing. Supports multi-language
+ * content and helps clients share service information with friends and family.
+ */
+
 import { FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";

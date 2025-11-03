@@ -1,3 +1,19 @@
+/**
+ * TrackApplication.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Public application tracking page allowing clients to check their submission status.
+ * Provides a search interface where clients can enter their phone number or email to
+ * retrieve their application information. Displays submission details including current
+ * status, service type, submission date, and contact information. Features status indicators
+ * with color-coded badges and includes links to document upload functionality. Helps clients
+ * stay informed about their application progress without requiring admin panel access.
+ */
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, CheckCircle, Clock, FileText, ArrowLeft, Phone, Mail } from "lucide-react";

@@ -1,3 +1,18 @@
+/**
+ * Submissions.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Submissions management page for handling all client applications from website forms and
+ * WhatsApp. Features workflow tracking with status management (new, viewed, contacted, completed),
+ * advanced filtering by service/status/source, bulk actions, CSV export, and real-time statistics.
+ * Displays submissions in a card-based layout with status indicators, source badges, and quick
+ * actions. Supports conversion to full clients and document management integration.
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, Eye, Trash2, Phone, Mail, MessageSquare, Download, CheckCircle, Clock, Link as LinkIcon, FileText, UserCheck, PhoneCall, RefreshCw, Square, CheckSquare } from "lucide-react";

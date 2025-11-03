@@ -1,3 +1,19 @@
+/**
+ * Footer.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Main website footer component providing comprehensive site information and navigation.
+ * Organized in multiple columns featuring quick links to services, useful links for tracking
+ * and document upload, contact information (email, phone, address), and social media integration.
+ * Displays company branding, description, copyright notice, and links to social platforms
+ * (Facebook, Instagram, LinkedIn). Supports multi-language content and RTL layout for Arabic.
+ * Includes location information and office hours for client convenience.
+ */
+
 import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

@@ -1,3 +1,19 @@
+/**
+ * DocumentChecklist.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Interactive document requirements checklist helping clients prepare necessary paperwork
+ * for their applications. Displays comprehensive list of required and optional documents
+ * with checkboxes for tracking preparation progress. Includes download button for PDF
+ * checklist export. Features collapsible sections organized by document category with
+ * visual indicators for completion status. Helps clients stay organized throughout the
+ * application process and ensures no documents are forgotten. Supports multi-language content.
+ */
+
 import { useState } from "react";
 import { FileCheck, Download, CheckSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";

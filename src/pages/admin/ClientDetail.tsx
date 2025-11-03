@@ -1,3 +1,18 @@
+/**
+ * ClientDetail.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Detailed client view page displaying comprehensive information about a specific client.
+ * Shows client profile with contact information, service details, status, appointment dates,
+ * and complete message history. Provides action buttons for editing client information,
+ * managing documents, and viewing activity timeline. Features a clean, organized layout
+ * with status indicators and quick access to related functionality.
+ */
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {

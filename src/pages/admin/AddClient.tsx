@@ -1,3 +1,18 @@
+/**
+ * AddClient.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Client creation form page allowing administrators to manually add new clients to the system.
+ * Features a comprehensive form with validation for collecting client information including
+ * name, contact details (email, phone), preferred service, initial status, appointment date,
+ * and notes. Implements form validation, error handling, and provides real-time feedback
+ * on submission success or failure. Redirects to client list upon successful creation.
+ */
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, User, Mail, Phone, FileText, MessageSquare, Calendar, Save } from "lucide-react";

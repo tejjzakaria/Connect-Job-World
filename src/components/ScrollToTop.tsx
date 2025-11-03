@@ -1,3 +1,19 @@
+/**
+ * ScrollToTop.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Floating "scroll to top" button component providing quick navigation back to page top.
+ * Appears when user scrolls down past a threshold (400px) with smooth fade-in animation.
+ * Features fixed positioning in bottom-right corner with circular button design and up arrow
+ * icon. Implements smooth scrolling behavior on click for better user experience. Commonly
+ * used on long pages to improve navigation and reduce scrolling effort. Includes responsive
+ * positioning and hover effects for visual feedback.
+ */
+
 import { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";

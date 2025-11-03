@@ -1,3 +1,19 @@
+/**
+ * FooterDash.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Footer component specifically designed for the admin dashboard pages. Displays copyright
+ * information, developer credit, and branding in a compact format suitable for dashboard
+ * layouts. Features gradient background with subtle animations and multi-language support.
+ * Includes icons for visual appeal and professional acknowledgment. Positioned at the bottom
+ * of admin pages providing consistent branding across the admin panel. Implements RTL support
+ * for Arabic language and responsive design for various screen sizes.
+ */
+
 import { Code2, Heart, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

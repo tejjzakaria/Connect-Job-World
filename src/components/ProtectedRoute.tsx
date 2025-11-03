@@ -1,3 +1,19 @@
+/**
+ * ProtectedRoute.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Route protection wrapper component implementing authentication and authorization guards.
+ * Validates user authentication status before allowing access to protected admin routes.
+ * Supports role-based access control with optional role restrictions (admin, agent, viewer).
+ * Redirects unauthenticated users to the sign-in page and unauthorized users to appropriate
+ * error pages. Integrates with AuthContext for centralized authentication state management.
+ * Essential security component ensuring only authorized users can access admin functionality.
+ */
+
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { ReactNode } from "react";

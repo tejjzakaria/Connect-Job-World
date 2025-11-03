@@ -1,3 +1,19 @@
+/**
+ * Testimonials.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Client testimonials and reviews showcase component building social proof and credibility.
+ * Displays success stories from satisfied clients in a card-based carousel layout with
+ * 5-star ratings, client names, countries, and detailed feedback. Features quote icons,
+ * gradient backgrounds, and staggered animations. Helps potential clients trust the service
+ * by showing real experiences from previous customers. Supports multi-language testimonials
+ * and responsive design for optimal viewing on all devices.
+ */
+
 import { Star, Quote } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";

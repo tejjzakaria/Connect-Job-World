@@ -1,3 +1,20 @@
+/**
+ * DashboardLayout.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Main layout wrapper component for the admin dashboard providing consistent structure across
+ * all admin pages. Features collapsible sidebar navigation with role-based menu items, top
+ * header bar with user profile, notifications dropdown, language switcher, and logout functionality.
+ * Implements responsive design with mobile-friendly collapsed sidebar, active route highlighting,
+ * and smooth transitions. Manages authentication state and provides navigation to Dashboard,
+ * Clients, Submissions, Employees, Analytics, Documentation, Profile, and Settings pages.
+ * Includes user welcome message and role-based access control integration.
+ */
+
 import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";

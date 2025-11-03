@@ -1,3 +1,19 @@
+/**
+ * Signature.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Developer signature banner component displaying credit for website development.
+ * Features gradient background with animated effects and developer information including
+ * name, social media links, and branding. Positioned at the bottom of pages as a subtle
+ * acknowledgment of the development work. Includes hover effects, icon animations, and
+ * links to developer's GitHub and LinkedIn profiles. Serves as professional attribution
+ * while maintaining aesthetic harmony with the overall design.
+ */
+
 import { Code2, Coffee, Zap } from 'lucide-react';
 
 const Signature = () => {

@@ -1,3 +1,19 @@
+/**
+ * Hero.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Main hero section component serving as the landing page banner. Features compelling headline,
+ * call-to-action buttons for starting applications and contacting the company, and key statistics
+ * showcasing years of experience, successful cases, and global partnerships. Implements animated
+ * elements with floating effect, gradient background, and responsive design. Provides immediate
+ * value proposition emphasizing visa and immigration consultation services. Includes smooth
+ * scrolling navigation to services and contact sections. Multi-language support with dynamic text.
+ */
+
 import { ArrowRight, Users, Award, Globe2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";

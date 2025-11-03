@@ -1,3 +1,20 @@
+/**
+ * Countries.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Destination countries showcase component displaying immigration opportunities available
+ * through Connect Job World. Features detailed cards for USA, Canada, and Australia with
+ * key statistics including population, job opportunities, education institutions, cost of
+ * living, average salary, and processing time. Each country card includes flag emoji,
+ * compelling description, and call-to-action button. Provides at-a-glance comparison of
+ * immigration destinations to help clients make informed decisions. Supports multi-language
+ * content and responsive grid layout.
+ */
+
 import { MapPin, Users, Briefcase, GraduationCap, Home, TrendingUp, DollarSign, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

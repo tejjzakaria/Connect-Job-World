@@ -1,3 +1,19 @@
+/**
+ * FAQ.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Frequently Asked Questions component providing answers to common client inquiries.
+ * Features collapsible accordion interface with smooth animations for expanding/collapsing
+ * questions. Covers topics like processing times, required documents, service costs, and
+ * success rates. Each FAQ item includes a question header with chevron indicator and detailed
+ * answer content. Helps reduce support inquiries by proactively addressing common concerns.
+ * Supports multi-language content for international audience.
+ */
+
 import { useState } from "react";
 import { HelpCircle, ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";

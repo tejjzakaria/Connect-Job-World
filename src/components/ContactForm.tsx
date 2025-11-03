@@ -1,3 +1,19 @@
+/**
+ * ContactForm.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Interactive contact form component for collecting client inquiries and consultation requests.
+ * Features form validation, service selection dropdown, message text area, and contact information
+ * fields (name, email, phone). Submits data to backend API creating new submission records with
+ * "website" source tag. Displays company contact details including office hours, phone, email,
+ * and address. Provides success/error feedback via toast notifications and resets form after
+ * successful submission. Integrates with submission tracking system for follow-up.
+ */
+
 import { useState } from "react";
 import { Phone, Mail, MapPin, Send, User, Briefcase, MessageSquare, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";

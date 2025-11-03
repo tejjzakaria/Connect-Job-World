@@ -1,3 +1,19 @@
+/**
+ * DocumentUpload.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Public-facing document upload interface for clients to submit required documents for
+ * their applications. Features secure file upload with AWS S3 integration, document checklist
+ * showing required and optional documents, upload progress tracking, and multi-file support.
+ * Validates submission access via unique submission ID and provides visual feedback on
+ * upload status. Includes document preview functionality and submission completion tracking.
+ * Supports multiple document types with file size validation and format checking.
+ */
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Upload, FileText, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";

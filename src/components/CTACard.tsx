@@ -1,3 +1,19 @@
+/**
+ * CTACard.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Call-to-action card component encouraging users to take action. Features prominent
+ * messaging prompting visitors to contact the company or start their application process.
+ * Includes action buttons for WhatsApp contact and application tracking. Uses gradient
+ * backgrounds and eye-catching design to drive conversions. Strategic placement throughout
+ * the landing page to maximize user engagement and lead generation. Supports multi-language
+ * content for international audience.
+ */
+
 import { MessageCircle, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

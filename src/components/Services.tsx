@@ -1,3 +1,19 @@
+/**
+ * Services.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Services showcase component displaying all available immigration and visa services offered
+ * by Connect Job World. Features card-based layout with icons for each service including US
+ * Lottery/Green Card, Canada Immigration, Work Visas, Study Abroad programs, Family Reunion
+ * visas, and Soccer Talent recruitment. Each service card includes title, description, and
+ * visual icon with hover effects. Implements responsive grid layout adapting to different
+ * screen sizes. Supports multi-language content with automatic translation.
+ */
+
 import { Flag, Plane, Briefcase, GraduationCap, Heart, FileCheck, Trophy } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";

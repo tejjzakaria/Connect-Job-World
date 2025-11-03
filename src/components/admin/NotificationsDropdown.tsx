@@ -1,3 +1,20 @@
+/**
+ * NotificationsDropdown.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Real-time notifications dropdown component integrated into the admin dashboard header.
+ * Displays unread notifications with badge counter, supports marking individual notifications
+ * as read, bulk "mark all as read" functionality, and notification deletion. Shows notification
+ * details including title, message, timestamp, and category icons (submissions, clients, system).
+ * Implements auto-refresh polling for new notifications, visual indicators for unread status,
+ * and clickable notifications that navigate to relevant pages. Features empty state messaging
+ * when no notifications exist and smooth animations for dropdown interactions.
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, Check, CheckCheck, Trash2, X } from "lucide-react";

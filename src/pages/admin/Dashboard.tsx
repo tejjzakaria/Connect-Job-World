@@ -1,3 +1,17 @@
+/**
+ * Dashboard.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Main dashboard page for the admin panel. Displays key metrics including total clients,
+ * new submissions, completed submissions, and success rate. Features interactive charts
+ * showing submission status distribution, workflow progress visualization, and recent
+ * activity overview. Provides quick navigation to detailed views of clients and submissions.
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, FileText, CheckCircle, TrendingUp, Loader2 } from "lucide-react";

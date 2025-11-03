@@ -1,3 +1,18 @@
+/**
+ * Settings.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * System settings and configuration page for platform administration. Provides centralized
+ * control over security settings, language preferences, notification preferences, and database
+ * configuration. Displays current user information, system status, and allows administrators
+ * to manage platform-wide settings. Features comprehensive system information display and
+ * configuration options for optimal platform operation.
+ */
+
 import { Shield, Globe, Bell, Database, Loader2, User as UserIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";

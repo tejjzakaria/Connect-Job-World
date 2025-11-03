@@ -1,3 +1,19 @@
+/**
+ * Index.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Main landing page for Connect Job World showcasing immigration and visa services.
+ * Combines multiple sections including hero banner, services overview, process explanation,
+ * reasons to choose the company, country comparisons, testimonials, FAQ, and contact form.
+ * Features multi-language support (English, Arabic, French), smooth scrolling, and responsive
+ * design. Serves as the primary entry point for potential clients to learn about services
+ * and submit inquiries through the integrated contact form.
+ */
+
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";

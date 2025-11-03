@@ -1,3 +1,19 @@
+/**
+ * Header.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Main navigation header component for the public website. Features responsive design with
+ * mobile hamburger menu, language switcher supporting English/Arabic/French, navigation links
+ * to different sections (Services, Countries, Process, Testimonials, Contact), admin login
+ * button, and application tracking functionality. Implements smooth scrolling, sticky positioning
+ * on scroll, and RTL support for Arabic. Displays company logo and branding consistently across
+ * all pages. Includes mobile-optimized menu overlay with animation effects.
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Menu, X, LogIn } from "lucide-react";

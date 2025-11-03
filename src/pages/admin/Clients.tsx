@@ -1,3 +1,18 @@
+/**
+ * Clients.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Client management page displaying all registered clients in a paginated table view.
+ * Features include advanced search, filtering by service and status, bulk delete operations,
+ * individual client actions (view, edit, delete), and CSV export functionality. Supports
+ * performance monitoring and real-time data refresh. Provides comprehensive client management
+ * with server-side pagination for scalability.
+ */
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, Eye, Edit, Trash2, Phone, Mail, Download, Plus, RefreshCw, Square, CheckSquare } from "lucide-react";

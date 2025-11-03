@@ -1,3 +1,18 @@
+/**
+ * SubmissionDocuments.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Document management page for handling submission-related files. Allows administrators
+ * to view, upload, and manage documents associated with client submissions. Features
+ * document preview functionality, file download capabilities, upload progress tracking,
+ * and organized document listing. Supports multiple file formats with visual previews.
+ * Integrates with AWS S3 for secure document storage and retrieval.
+ */
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {

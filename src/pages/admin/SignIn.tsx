@@ -1,3 +1,19 @@
+/**
+ * SignIn.tsx
+ *
+ * Author: Zakaria TEJJANI
+ * Email: contact@tejjzakaria.com
+ * Date: 2025-11-03
+ *
+ * Description:
+ * Secure authentication page for admin panel access. Provides login functionality with
+ * email and password authentication, featuring password visibility toggle, form validation,
+ * error handling, and JWT token management. Implements security best practices including
+ * SSL encryption notice and credential protection warnings. Redirects authenticated users
+ * to the dashboard and provides navigation back to the main website. Supports multi-language
+ * interface and displays animated background elements for visual appeal.
+ */
+
 import { useState, useEffect } from "react";
 import { Eye, EyeOff, Lock, Mail, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
