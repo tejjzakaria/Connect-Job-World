@@ -7,6 +7,7 @@ import { clientsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatShortDate, formatNumber } from "@/lib/dateUtils";
 import { useTranslation } from "react-i18next";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line, ComposedChart, Area, Legend } from 'recharts';
 
 interface DashboardStats {
   totalClients: number;
@@ -64,6 +65,7 @@ const Dashboard = () => {
     successRate: 0
   });
   const [recentSubmissions, setRecentSubmissions] = useState<Submission[]>([]);
+  const [statusData, setStatusData] = useState<any[]>([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -110,6 +112,17 @@ const Dashboard = () => {
           completedSubmissions,
           successRate
         });
+
+        // Prepare status data for chart
+        const statusChartData = submissionData.byStatus.map((item: any) => ({
+          status: getStatusTranslation(item._id, t),
+          count: item.count,
+          fill: item._id === 'new' ? '#3b82f6' :
+                item._id === 'viewed' ? '#eab308' :
+                item._id === 'contacted' ? '#8b5cf6' :
+                item._id === 'completed' ? '#10b981' : '#ef4444'
+        }));
+        setStatusData(statusChartData);
       }
 
       // Set recent submissions
@@ -282,6 +295,106 @@ const Dashboard = () => {
             )}
           </Card>
         </div>
+
+        {/* Enhanced Status Visualization */}
+        {statusData.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Status Breakdown Bar Chart */}
+            <Card className="p-6">
+              <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                {t('dashboard.statusOverview', { defaultValue: 'Status Overview' })}
+              </h3>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={statusData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis
+                    dataKey="status"
+                    tick={{ fontSize: 11 }}
+                    angle={-15}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis />
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const total = statusData.reduce((sum, item) => sum + item.count, 0);
+                        const percentage = total > 0 ? Math.round((payload[0].value as number / total) * 100) : 0;
+                        return (
+                          <div className="bg-white p-3 rounded-lg shadow-lg border">
+                            <p className="font-semibold">{payload[0].payload.status}</p>
+                            <p className="text-sm text-gray-600">{t('dashboard.submissions', { defaultValue: 'Submissions' })}: {payload[0].value}</p>
+                            <p className="text-sm text-primary font-semibold">{percentage}% {t('dashboard.ofTotal', { defaultValue: 'of total' })}</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {statusData.map((status, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: status.fill }}></div>
+                    <span className="text-xs truncate">{status.status}: {status.count}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Status Progress Visualization */}
+            <Card className="p-6">
+              <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-primary" />
+                {t('dashboard.workflowProgress', { defaultValue: 'Workflow Progress' })}
+              </h3>
+              <div className="space-y-4">
+                {statusData.map((status, index) => {
+                  const total = statusData.reduce((sum, item) => sum + item.count, 0);
+                  const percentage = total > 0 ? Math.round((status.count / total) * 100) : 0;
+                  return (
+                    <div key={index} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-foreground">{status.status}</span>
+                        <span className="text-sm font-bold" style={{ color: status.fill }}>{status.count} ({percentage}%)</span>
+                      </div>
+                      <div className="h-3 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${percentage}%`,
+                            backgroundColor: status.fill
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-6 pt-6 border-t border-border">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <p className="text-2xl font-bold text-blue-600">
+                      {statusData.find(s => s.status === getStatusTranslation('new', t))?.count || 0}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">{t('dashboard.pendingReview', { defaultValue: 'Pending Review' })}</p>
+                  </div>
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <p className="text-2xl font-bold text-green-600">{stats.successRate}%</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t('dashboard.successRate')}</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <Card className="p-6">

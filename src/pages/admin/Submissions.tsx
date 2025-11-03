@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Eye, Trash2, Phone, Mail, MessageSquare, Download, CheckCircle, Clock, Link as LinkIcon, FileText, UserCheck, PhoneCall, RefreshCw } from "lucide-react";
+import { Search, Filter, Eye, Trash2, Phone, Mail, MessageSquare, Download, CheckCircle, Clock, Link as LinkIcon, FileText, UserCheck, PhoneCall, RefreshCw, Square, CheckSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -112,6 +112,12 @@ const Submissions = () => {
   const [totalCount, setTotalCount] = useState(0);
   const itemsPerPage = 9;
 
+  // Stats state
+  const [statsNew, setStatsNew] = useState(0);
+  const [statsViewed, setStatsViewed] = useState(0);
+  const [statsContacted, setStatsContacted] = useState(0);
+  const [statsCompleted, setStatsCompleted] = useState(0);
+
   // Workflow dialogs state
   const [callDialogOpen, setCallDialogOpen] = useState(false);
   const [callNotes, setCallNotes] = useState("");
@@ -125,10 +131,14 @@ const Submissions = () => {
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [submissionToConvert, setSubmissionToConvert] = useState<{id: string, name: string} | null>(null);
 
+  // Bulk actions
+  const [selectedSubmissions, setSelectedSubmissions] = useState<Set<string>>(new Set());
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+
   // Fetch submissions from MongoDB
   useEffect(() => {
     const renderStartTime = performance.now();
-    fetchSubmissions().then(() => {
+    Promise.all([fetchSubmissions(), fetchStats()]).then(() => {
       // Performance monitoring - Measure total render time
       requestAnimationFrame(() => {
         const renderEndTime = performance.now();
@@ -183,6 +193,29 @@ const Submissions = () => {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      const response = await submissionsAPI.getStats();
+      if (response.success && response.data) {
+        const data = response.data;
+
+        // Extract stats by status
+        const newCount = data.byStatus.find((s: any) => s._id === 'new')?.count || 0;
+        const viewedCount = data.byStatus.find((s: any) => s._id === 'viewed')?.count || 0;
+        const contactedCount = data.byStatus.find((s: any) => s._id === 'contacted')?.count || 0;
+        const completedCount = data.byStatus.find((s: any) => s._id === 'completed')?.count || 0;
+
+        setStatsNew(newCount);
+        setStatsViewed(viewedCount);
+        setStatsContacted(contactedCount);
+        setStatsCompleted(completedCount);
+      }
+    } catch (error: any) {
+      console.error("Error fetching stats:", error);
+      // Don't show error toast for stats, just log it
+    }
+  };
+
   // Re-fetch when filters or page change
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -214,7 +247,7 @@ const Submissions = () => {
         });
         setDeleteDialogOpen(false);
         setSubmissionToDelete(null);
-        fetchSubmissions(); // Refresh the list
+        await Promise.all([fetchSubmissions(), fetchStats()]); // Refresh the list and stats
       }
     } catch (error: any) {
       console.error("Error deleting submission:", error);
@@ -235,7 +268,7 @@ const Submissions = () => {
           title: t('common.success'),
           description: t('submissions.validateSuccess'),
         });
-        fetchSubmissions();
+        await Promise.all([fetchSubmissions(), fetchStats()]);
       }
     } catch (error: any) {
       toast({
@@ -263,7 +296,7 @@ const Submissions = () => {
           description: t('submissions.callSuccess'),
         });
         setCallDialogOpen(false);
-        fetchSubmissions();
+        await Promise.all([fetchSubmissions(), fetchStats()]);
       }
     } catch (error: any) {
       toast({
@@ -289,7 +322,7 @@ const Submissions = () => {
           title: t('common.success'),
           description: t('submissions.linkSuccess'),
         });
-        fetchSubmissions();
+        await Promise.all([fetchSubmissions(), fetchStats()]);
       }
     } catch (error: any) {
       toast({
@@ -325,7 +358,7 @@ const Submissions = () => {
         });
         setConvertDialogOpen(false);
         setSubmissionToConvert(null);
-        fetchSubmissions();
+        await Promise.all([fetchSubmissions(), fetchStats()]);
       }
     } catch (error: any) {
       toast({
@@ -335,6 +368,64 @@ const Submissions = () => {
       });
     }
   };
+
+  // Bulk action handlers
+  const toggleSubmissionSelection = (id: string) => {
+    const newSelected = new Set(selectedSubmissions);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedSubmissions(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedSubmissions.size === filteredSubmissions.length) {
+      setSelectedSubmissions(new Set());
+    } else {
+      setSelectedSubmissions(new Set(filteredSubmissions.map(s => s._id)));
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedSubmissions.size === 0) return;
+    setBulkDeleteDialogOpen(true);
+  };
+
+  const handleBulkDeleteConfirm = async () => {
+    try {
+      const deletePromises = Array.from(selectedSubmissions).map(id =>
+        submissionsAPI.delete(id)
+      );
+
+      await Promise.all(deletePromises);
+
+      toast({
+        title: t('common.success'),
+        description: t('submissions.bulkDeleteSuccess', {
+          count: selectedSubmissions.size,
+          defaultValue: `${selectedSubmissions.size} submissions deleted successfully`
+        }),
+      });
+
+      setBulkDeleteDialogOpen(false);
+      setSelectedSubmissions(new Set());
+      await Promise.all([fetchSubmissions(), fetchStats()]);
+    } catch (error: any) {
+      console.error("Error bulk deleting submissions:", error);
+      toast({
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Clear selection when page changes
+  useEffect(() => {
+    setSelectedSubmissions(new Set());
+  }, [currentPage]);
 
   // Filtered submissions (now filtered on server-side)
   const filteredSubmissions = submissions;
@@ -380,7 +471,7 @@ const Submissions = () => {
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
-      await fetchSubmissions();
+      await Promise.all([fetchSubmissions(), fetchStats()]);
       toast({
         title: t('common.refreshed', { defaultValue: 'Refreshed' }),
         description: t('submissions.dataRefreshed', { defaultValue: 'Submission data has been refreshed' }),
@@ -514,6 +605,41 @@ const Submissions = () => {
           </div>
         </div>
 
+        {/* Bulk Actions Toolbar */}
+        {selectedSubmissions.size > 0 && (
+          <Card className="p-4 bg-primary/5 border-primary/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <CheckSquare className="w-5 h-5 text-primary" />
+                <span className="font-semibold text-foreground">
+                  {t('submissions.selectedCount', {
+                    count: selectedSubmissions.size,
+                    defaultValue: `${selectedSubmissions.size} selected`
+                  })}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedSubmissions(new Set())}
+                >
+                  {t('common.clearSelection', { defaultValue: 'Clear Selection' })}
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                  className="gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {t('submissions.deleteSelected', { defaultValue: 'Delete Selected' })}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-4">
@@ -524,7 +650,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusNew')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === 'new').length}
+                  {statsNew}
                 </p>
               </div>
             </div>
@@ -537,7 +663,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusViewed')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === 'viewed').length}
+                  {statsViewed}
                 </p>
               </div>
             </div>
@@ -550,7 +676,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusContacted')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === 'contacted').length}
+                  {statsContacted}
                 </p>
               </div>
             </div>
@@ -563,7 +689,7 @@ const Submissions = () => {
               <div>
                 <p className="text-sm text-muted-foreground">{t('submissions.statusCompleted')}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {submissions.filter(s => s.status === 'completed').length}
+                  {statsCompleted}
                 </p>
               </div>
             </div>
@@ -648,15 +774,49 @@ const Submissions = () => {
             <p className="text-muted-foreground">{t('submissions.noResults')}</p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredSubmissions.map((submission, index) => (
+          <>
+            {/* Select All Header */}
+            <div className="flex items-center gap-3 px-2">
+              <button
+                onClick={toggleSelectAll}
+                className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+              >
+                {selectedSubmissions.size === filteredSubmissions.length ? (
+                  <CheckSquare className="w-5 h-5 text-primary" />
+                ) : (
+                  <Square className="w-5 h-5" />
+                )}
+                {t('submissions.selectAll', { defaultValue: 'Select All' })}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredSubmissions.map((submission, index) => {
+                const isSelected = selectedSubmissions.has(submission._id);
+                return (
               <Card
                 key={submission._id}
-                className="p-6 hover:shadow-lg transition-all animate-fade-in-up border-2 hover:border-primary/30 flex flex-col"
+                className={`p-6 hover:shadow-lg transition-all animate-fade-in-up border-2 flex flex-col ${
+                  isSelected ? 'border-primary bg-primary/5' : 'hover:border-primary/30'
+                }`}
                 style={{ animationDelay: `${index * 0.03}s` }}
               >
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-4">
+                  {/* Selection Checkbox */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSubmissionSelection(submission._id);
+                    }}
+                    className="mt-1"
+                  >
+                    {isSelected ? (
+                      <CheckSquare className="w-5 h-5 text-primary" />
+                    ) : (
+                      <Square className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+                    )}
+                  </button>
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                     {submission.name.charAt(0)}
                   </div>
@@ -817,21 +977,37 @@ const Submissions = () => {
                   </Button>
                 </div>
               </Card>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          </>
         )}
 
         {/* Pagination */}
         {filteredSubmissions.length > 0 && totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              {t('submissions.showing', {
-                from: ((currentPage - 1) * itemsPerPage) + 1,
-                to: Math.min(currentPage * itemsPerPage, totalCount),
-                total: totalCount
-              })}
-            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                {t('submissions.showing', {
+                  from: ((currentPage - 1) * itemsPerPage) + 1,
+                  to: Math.min(currentPage * itemsPerPage, totalCount),
+                  total: totalCount
+                })}
+              </p>
+              <p className="text-sm font-medium text-foreground">
+                Page {currentPage} of {totalPages}
+              </p>
+            </div>
             <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                title="First page"
+              >
+                ≪
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -874,6 +1050,15 @@ const Submissions = () => {
                 onClick={() => setCurrentPage(currentPage + 1)}
               >
                 {t('submissions.next')}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                title="Last page"
+              >
+                ≫
               </Button>
             </div>
           </div>
@@ -1004,6 +1189,48 @@ const Submissions = () => {
             </Button>
             <Button onClick={handleConvertConfirm}>
               {t('submissions.convertConfirmButton')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('submissions.bulkDeleteDialogTitle', { defaultValue: 'Delete Multiple Submissions' })}</DialogTitle>
+            <DialogDescription>
+              {t('submissions.bulkDeleteDialogDescription', { defaultValue: 'This action cannot be undone.' })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-900 font-semibold mb-2">
+                {t('submissions.bulkDeleteWarning', {
+                  count: selectedSubmissions.size,
+                  defaultValue: `You are about to delete ${selectedSubmissions.size} submissions.`
+                })}
+              </p>
+              <p className="text-sm text-red-800">
+                {t('submissions.bulkDeleteConfirmText', {
+                  defaultValue: 'All data associated with these submissions will be permanently deleted.'
+                })}
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setBulkDeleteDialogOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleBulkDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {t('submissions.bulkDeleteConfirm', {
+                count: selectedSubmissions.size,
+                defaultValue: `Delete ${selectedSubmissions.size} Submissions`
+              })}
             </Button>
           </DialogFooter>
         </DialogContent>

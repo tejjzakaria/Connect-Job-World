@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Eye, Edit, Trash2, Phone, Mail, Download, Plus, RefreshCw } from "lucide-react";
+import { Search, Filter, Eye, Edit, Trash2, Phone, Mail, Download, Plus, RefreshCw, Square, CheckSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -86,6 +86,10 @@ const Clients = () => {
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<{id: string, name: string} | null>(null);
+
+  // Bulk actions
+  const [selectedClients, setSelectedClients] = useState<Set<string>>(new Set());
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
   const fetchClients = async () => {
     try {
@@ -187,6 +191,64 @@ const Clients = () => {
       });
     }
   };
+
+  // Bulk action handlers
+  const toggleClientSelection = (id: string) => {
+    const newSelected = new Set(selectedClients);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedClients(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedClients.size === filteredClients.length) {
+      setSelectedClients(new Set());
+    } else {
+      setSelectedClients(new Set(filteredClients.map(c => c._id)));
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedClients.size === 0) return;
+    setBulkDeleteDialogOpen(true);
+  };
+
+  const handleBulkDeleteConfirm = async () => {
+    try {
+      const deletePromises = Array.from(selectedClients).map(id =>
+        clientsAPI.delete(id)
+      );
+
+      await Promise.all(deletePromises);
+
+      toast({
+        title: t('common.success'),
+        description: t('clients.bulkDeleteSuccess', {
+          count: selectedClients.size,
+          defaultValue: `${selectedClients.size} clients deleted successfully`
+        }),
+      });
+
+      setBulkDeleteDialogOpen(false);
+      setSelectedClients(new Set());
+      fetchClients();
+    } catch (error: any) {
+      console.error("Error bulk deleting clients:", error);
+      toast({
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Clear selection when page changes
+  useEffect(() => {
+    setSelectedClients(new Set());
+  }, [currentPage]);
 
   // Clients are already filtered on server-side
   const filteredClients = clients;
@@ -348,6 +410,41 @@ const Clients = () => {
           </div>
         </div>
 
+        {/* Bulk Actions Toolbar */}
+        {selectedClients.size > 0 && (
+          <Card className="p-4 bg-primary/5 border-primary/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <CheckSquare className="w-5 h-5 text-primary" />
+                <span className="font-semibold text-foreground">
+                  {t('clients.selectedCount', {
+                    count: selectedClients.size,
+                    defaultValue: `${selectedClients.size} selected`
+                  })}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedClients(new Set())}
+                >
+                  {t('common.clearSelection', { defaultValue: 'Clear Selection' })}
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBulkDelete}
+                  className="gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {t('clients.deleteSelected', { defaultValue: 'Delete Selected' })}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Filters */}
         <Card className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -402,6 +499,19 @@ const Clients = () => {
             <table className="w-full">
               <thead className="bg-muted/50 border-b">
                 <tr>
+                  <th className="p-4 w-12">
+                    <button
+                      onClick={toggleSelectAll}
+                      className="flex items-center justify-center"
+                      title={t('clients.selectAll', { defaultValue: 'Select All' })}
+                    >
+                      {selectedClients.size === filteredClients.length && filteredClients.length > 0 ? (
+                        <CheckSquare className="w-5 h-5 text-primary" />
+                      ) : (
+                        <Square className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+                      )}
+                    </button>
+                  </th>
                   <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('clients.client', { defaultValue: 'Client' })}</th>
                   <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('clients.service')}</th>
                   <th className={`${isRTL ? 'text-right' : 'text-left'} p-4 font-semibold text-foreground`}>{t('clients.status')}</th>
@@ -412,7 +522,7 @@ const Clients = () => {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5} className="text-center p-8">
+                    <td colSpan={6} className="text-center p-8">
                       <div className="flex justify-center items-center">
                         <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
                       </div>
@@ -420,17 +530,36 @@ const Clients = () => {
                   </tr>
                 ) : filteredClients.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center p-8 text-muted-foreground">
+                    <td colSpan={6} className="text-center p-8 text-muted-foreground">
                       {t('clients.noResults', { defaultValue: 'No results match your search' })}
                     </td>
                   </tr>
                 ) : (
-                  filteredClients.map((client, index) => (
+                  filteredClients.map((client, index) => {
+                    const isSelected = selectedClients.has(client._id);
+                    return (
                     <tr
                       key={client._id}
-                      className="border-b hover:bg-muted/30 transition-colors animate-fade-in-up"
+                      className={`border-b transition-colors animate-fade-in-up ${
+                        isSelected ? 'bg-primary/5' : 'hover:bg-muted/30'
+                      }`}
                       style={{ animationDelay: `${index * 0.03}s` }}
                     >
+                      <td className="p-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleClientSelection(client._id);
+                          }}
+                          className="flex items-center justify-center"
+                        >
+                          {isSelected ? (
+                            <CheckSquare className="w-5 h-5 text-primary" />
+                          ) : (
+                            <Square className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+                          )}
+                        </button>
+                      </td>
                       <td className={`${isRTL ? 'text-right' : 'text-left'} p-4`}>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold flex-shrink-0">
@@ -500,7 +629,8 @@ const Clients = () => {
                         </div>
                       </td>
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -510,10 +640,24 @@ const Clients = () => {
         {/* Pagination */}
         {totalCount > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              {t('clients.showing', { start: startIndex, end: endIndex, total: totalCount, defaultValue: `Showing ${startIndex} - ${endIndex} of ${totalCount} clients` })}
-            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                {t('clients.showing', { start: startIndex, end: endIndex, total: totalCount, defaultValue: `Showing ${startIndex} - ${endIndex} of ${totalCount} clients` })}
+              </p>
+              <p className="text-sm font-medium text-foreground">
+                Page {currentPage} of {totalPages}
+              </p>
+            </div>
             <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                title="First page"
+              >
+                ≪
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -557,6 +701,15 @@ const Clients = () => {
               >
                 {t('common.next')}
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                title="Last page"
+              >
+                ≫
+              </Button>
             </div>
           </div>
         )}
@@ -588,6 +741,48 @@ const Clients = () => {
               className="bg-red-600 hover:bg-red-700"
             >
               {t('common.delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <Dialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('clients.bulkDeleteDialogTitle', { defaultValue: 'Delete Multiple Clients' })}</DialogTitle>
+            <DialogDescription>
+              {t('clients.bulkDeleteDialogDescription', { defaultValue: 'This action cannot be undone.' })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-900 font-semibold mb-2">
+                {t('clients.bulkDeleteWarning', {
+                  count: selectedClients.size,
+                  defaultValue: `You are about to delete ${selectedClients.size} clients.`
+                })}
+              </p>
+              <p className="text-sm text-red-800">
+                {t('clients.bulkDeleteConfirmText', {
+                  defaultValue: 'All data associated with these clients will be permanently deleted.'
+                })}
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setBulkDeleteDialogOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleBulkDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {t('clients.bulkDeleteConfirm', {
+                count: selectedClients.size,
+                defaultValue: `Delete ${selectedClients.size} Clients`
+              })}
             </Button>
           </DialogFooter>
         </DialogContent>

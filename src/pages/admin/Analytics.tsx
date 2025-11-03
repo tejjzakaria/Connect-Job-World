@@ -14,6 +14,7 @@ import { clientsAPI, submissionsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatShortDate, formatDateForExport, formatDateForFilename, formatNumber } from "@/lib/dateUtils";
 import { useTranslation } from "react-i18next";
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, ComposedChart, Area } from 'recharts';
 
 interface ServiceStat {
   name: string;
@@ -27,6 +28,21 @@ interface StatusStat {
   count: number;
   percentage: number;
   color: string;
+}
+
+interface ConversionFunnelData {
+  stage: string;
+  count: number;
+  percentage: number;
+  conversionRate: number;
+}
+
+interface ServicePerformance {
+  service: string;
+  total: number;
+  completed: number;
+  completionRate: number;
+  inProgress: number;
 }
 
 // Helper function to get service translation from key
@@ -69,6 +85,8 @@ const Analytics = () => {
   const [successRate, setSuccessRate] = useState(0);
   const [serviceStats, setServiceStats] = useState<ServiceStat[]>([]);
   const [statusBreakdown, setStatusBreakdown] = useState<StatusStat[]>([]);
+  const [conversionFunnel, setConversionFunnel] = useState<ConversionFunnelData[]>([]);
+  const [servicePerformance, setServicePerformance] = useState<ServicePerformance[]>([]);
 
   useEffect(() => {
     fetchAnalyticsData();
@@ -78,15 +96,17 @@ const Analytics = () => {
     try {
       setIsLoading(true);
 
-      // Fetch stats from both APIs
-      const [clientStatsRes, submissionStatsRes] = await Promise.all([
+      // Fetch stats from both APIs and all submissions for detailed analysis
+      const [clientStatsRes, submissionStatsRes, allSubmissionsRes] = await Promise.all([
         clientsAPI.getStats(),
-        submissionsAPI.getStats()
+        submissionsAPI.getStats(),
+        submissionsAPI.getAll({ limit: 10000, page: 1 }) // Fetch all for detailed analysis
       ]);
 
       if (clientStatsRes.success && submissionStatsRes.success) {
         const clientData = clientStatsRes.data;
         const submissionData = submissionStatsRes.data;
+        const allSubmissions = allSubmissionsRes.success ? allSubmissionsRes.data : [];
 
         // Set totals
         setTotalClients(clientData.total || 0);
@@ -148,6 +168,62 @@ const Analytics = () => {
           };
         });
         setStatusBreakdown(statuses);
+
+        // Calculate Conversion Funnel
+        const newCount = submissionData.byStatus.find((s: any) => s._id === "new")?.count || 0;
+        const viewedCount = submissionData.byStatus.find((s: any) => s._id === "viewed")?.count || 0;
+        const contactedCount = submissionData.byStatus.find((s: any) => s._id === "contacted")?.count || 0;
+        const completedCount = submissionData.byStatus.find((s: any) => s._id === "completed")?.count || 0;
+
+        const totalInFunnel = submissionData.total || 1;
+        const funnelData: ConversionFunnelData[] = [
+          {
+            stage: t('submissions.statusNew'),
+            count: newCount,
+            percentage: Math.round((newCount / totalInFunnel) * 100),
+            conversionRate: 100
+          },
+          {
+            stage: t('submissions.statusViewed'),
+            count: viewedCount,
+            percentage: Math.round((viewedCount / totalInFunnel) * 100),
+            conversionRate: newCount > 0 ? Math.round((viewedCount / newCount) * 100) : 0
+          },
+          {
+            stage: t('submissions.statusContacted'),
+            count: contactedCount,
+            percentage: Math.round((contactedCount / totalInFunnel) * 100),
+            conversionRate: viewedCount > 0 ? Math.round((contactedCount / viewedCount) * 100) : 0
+          },
+          {
+            stage: t('submissions.statusCompleted'),
+            count: completedCount,
+            percentage: Math.round((completedCount / totalInFunnel) * 100),
+            conversionRate: contactedCount > 0 ? Math.round((completedCount / contactedCount) * 100) : 0
+          }
+        ];
+        setConversionFunnel(funnelData);
+
+        // Calculate Service Performance
+        const servicePerf: ServicePerformance[] = submissionData.byService.map((serviceItem: any) => {
+          // Filter submissions by this service
+          const serviceSubmissions = allSubmissions.filter((sub: any) => sub.service === serviceItem._id);
+          const totalForService = serviceSubmissions.length;
+          const completedForService = serviceSubmissions.filter((sub: any) => sub.status === 'completed').length;
+          const inProgressForService = serviceSubmissions.filter((sub: any) =>
+            sub.status === 'viewed' || sub.status === 'contacted'
+          ).length;
+
+          return {
+            service: getServiceTranslation(serviceItem._id, t),
+            total: totalForService,
+            completed: completedForService,
+            completionRate: totalForService > 0 ? Math.round((completedForService / totalForService) * 100) : 0,
+            inProgress: inProgressForService
+          };
+        }).sort((a, b) => b.completionRate - a.completionRate); // Sort by completion rate
+
+        setServicePerformance(servicePerf);
       }
 
     } catch (error: any) {
@@ -365,71 +441,156 @@ const Analytics = () => {
           })}
         </div>
 
+        {/* Main Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Service Distribution */}
+          {/* Service Distribution - Keeping this one as user likes it */}
           <Card className="p-6">
             <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary" />
               {t('analytics.serviceDistribution')}
             </h3>
-            <div className="space-y-4">
-              {serviceStats.map((service, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-foreground">{service.name}</span>
-                    <span className="text-muted-foreground">
-                      {service.count} ({service.percentage}%)
-                    </span>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={serviceStats}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percentage }) => `${name.split(' ')[0]}: ${percentage}%`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="count"
+                >
+                  {serviceStats.map((entry, index) => {
+                    const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#eab308'];
+                    return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                  })}
+                </Pie>
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white p-3 rounded-lg shadow-lg border">
+                          <p className="font-semibold">{payload[0].name}</p>
+                          <p className="text-sm text-gray-600">{t('analytics.requests')}: {payload[0].value}</p>
+                          <p className="text-sm text-gray-600">{payload[0].payload.percentage}%</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {serviceStats.map((service, index) => {
+                const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#eab308'];
+                return (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors[index % colors.length] }}></div>
+                    <span className="text-xs truncate">{service.name}: {service.count}</span>
                   </div>
-                  <div className="relative h-3 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`absolute inset-y-0 right-0 ${service.color} rounded-full transition-all duration-500`}
-                      style={{ width: `${service.percentage}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </Card>
 
-          {/* Status Breakdown */}
+          {/* Conversion Funnel */}
           <Card className="p-6">
             <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-primary" />
-              {t('analytics.statusDistribution')}
+              <TrendingUp className="w-5 h-5 text-primary" />
+              {t('analytics.conversionFunnel', { defaultValue: 'Conversion Funnel' })}
             </h3>
-            <div className="space-y-4">
-              {statusBreakdown.map((status, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-foreground">{status.status}</span>
-                    <span className="text-muted-foreground">
-                      {status.count} ({status.percentage}%)
-                    </span>
-                  </div>
-                  <div className="relative h-3 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`absolute inset-y-0 right-0 ${status.color} rounded-full transition-all duration-500`}
-                      style={{ width: `${status.percentage}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Summary Stats */}
-            <div className="mt-6 pt-6 border-t border-border grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <p className="text-2xl font-bold text-green-600">{completedStat?.percentage || 0}%</p>
-                <p className="text-xs text-muted-foreground mt-1">{t('analytics.completionRate')}</p>
-              </div>
-              <div className="text-center p-3 bg-red-50 rounded-lg">
-                <p className="text-2xl font-bold text-red-600">{rejectedStat?.percentage || 0}%</p>
-                <p className="text-xs text-muted-foreground mt-1">{t('analytics.rejectionRate')}</p>
+            <ResponsiveContainer width="100%" height={300}>
+              <ComposedChart data={conversionFunnel} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis type="number" domain={[0, 100]} />
+                <YAxis dataKey="stage" type="category" width={100} tick={{ fontSize: 11 }} />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white p-3 rounded-lg shadow-lg border">
+                          <p className="font-semibold">{payload[0].payload.stage}</p>
+                          <p className="text-sm text-gray-600">{t('analytics.count')}: {payload[0].payload.count}</p>
+                          <p className="text-sm text-gray-600">{t('analytics.percentage', { defaultValue: 'Percentage' })}: {payload[0].payload.percentage}%</p>
+                          <p className="text-sm font-semibold text-primary">{t('analytics.conversionRate', { defaultValue: 'Conversion' })}: {payload[0].payload.conversionRate}%</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar dataKey="percentage" fill="#3b82f6" radius={[0, 8, 8, 0]} />
+              </ComposedChart>
+            </ResponsiveContainer>
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <p className="text-xs text-muted-foreground mb-2">{t('analytics.overallConversion', { defaultValue: 'Overall Conversion' })}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('submissions.statusNew')} → {t('submissions.statusCompleted')}</span>
+                <span className="text-lg font-bold text-primary">{successRate}%</span>
               </div>
             </div>
           </Card>
         </div>
+
+        {/* Service Performance Comparison */}
+        <Card className="p-6">
+          <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+            <Award className="w-5 h-5 text-primary" />
+            {t('analytics.servicePerformance', { defaultValue: 'Service Performance Comparison' })}
+          </h3>
+          <ResponsiveContainer width="100%" height={350}>
+            <ComposedChart data={servicePerformance}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis
+                dataKey="service"
+                tick={{ fontSize: 11 }}
+                angle={-20}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis yAxisId="left" />
+              <YAxis yAxisId="right" orientation="right" domain={[0, 100]} />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-white p-3 rounded-lg shadow-lg border">
+                        <p className="font-semibold mb-2">{payload[0].payload.service}</p>
+                        <p className="text-sm text-gray-600">{t('analytics.total', { defaultValue: 'Total' })}: {payload[0].payload.total}</p>
+                        <p className="text-sm text-green-600">{t('analytics.completed', { defaultValue: 'Completed' })}: {payload[0].payload.completed}</p>
+                        <p className="text-sm text-yellow-600">{t('analytics.inProgress', { defaultValue: 'In Progress' })}: {payload[0].payload.inProgress}</p>
+                        <p className="text-sm font-bold text-primary mt-1">{t('analytics.completionRate')}: {payload[0].payload.completionRate}%</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Legend />
+              <Bar yAxisId="left" dataKey="completed" name={t('analytics.completed', { defaultValue: 'Completed' })} fill="#10b981" radius={[8, 8, 0, 0]} />
+              <Bar yAxisId="left" dataKey="inProgress" name={t('analytics.inProgress', { defaultValue: 'In Progress' })} fill="#eab308" radius={[8, 8, 0, 0]} />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="completionRate"
+                name={t('analytics.completionRate')}
+                stroke="#3b82f6"
+                strokeWidth={3}
+                dot={{ fill: '#3b82f6', r: 5 }}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+            {servicePerformance.slice(0, 4).map((service, index) => (
+              <div key={index} className="p-3 bg-muted/50 rounded-lg">
+                <p className="text-xs text-muted-foreground truncate">{service.service}</p>
+                <p className="text-lg font-bold text-primary">{service.completionRate}%</p>
+              </div>
+            ))}
+          </div>
+        </Card>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
