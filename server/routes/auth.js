@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import { protect } from '../middleware/auth.js';
+import { protect, authorize } from '../middleware/auth.js';
 import { logActivity } from '../utils/activityLogger.js';
 
 const router = express.Router();
@@ -9,7 +9,7 @@ const router = express.Router();
 // @desc    Register a new user (admin only)
 // @route   POST /api/auth/register
 // @access  Private/Admin
-router.post('/register', async (req, res) => {
+router.post('/register', protect, authorize('admin'), async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -27,13 +27,16 @@ router.post('/register', async (req, res) => {
       role: role || 'viewer',
     });
 
-    // Log activity
+    // Log activity (admin creating the user)
     await logActivity({
-      userId: user._id,
+      userId: req.user.id,
       action: 'user_created',
       entityType: 'User',
       entityId: user._id,
-      details: { name: user.name, email: user.email, role: user.role },
+      details: {
+        createdUser: { name: user.name, email: user.email, role: user.role },
+        createdBy: { name: req.user.name, email: req.user.email }
+      },
       req,
     });
 

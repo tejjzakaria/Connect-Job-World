@@ -1118,6 +1118,8 @@ const resources = {
       'common.success': 'نجح',
       'common.confirm': 'تأكيد',
       'common.close': 'إغلاق',
+      'common.refresh': 'تحديث',
+      'common.exportCSV': 'تصدير CSV',
 
       // Roles
       'role.admin': 'مدير',
@@ -2280,6 +2282,8 @@ const resources = {
       'common.success': 'Succès',
       'common.confirm': 'Confirmer',
       'common.close': 'Fermer',
+      'common.refresh': 'Actualiser',
+      'common.exportCSV': 'Exporter CSV',
 
       // Roles
       'role.admin': 'Administrateur',
@@ -3442,6 +3446,8 @@ const resources = {
       'common.success': 'Success',
       'common.confirm': 'Confirm',
       'common.close': 'Close',
+      'common.refresh': 'Refresh',
+      'common.exportCSV': 'Export CSV',
 
       // Roles
       'role.admin': 'Administrator',

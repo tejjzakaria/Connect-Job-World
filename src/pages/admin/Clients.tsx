@@ -463,10 +463,10 @@ const Clients = () => {
             <Select value={filterService} onValueChange={setFilterService}>
               <SelectTrigger>
                 <Filter className="w-4 h-4 ml-2" />
-                <SelectValue placeholder={t('clients.filterByService')} />
+                <SelectValue placeholder={t('clients.filterByService', { defaultValue: 'Filter by Service' })} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('clients.allServices', { defaultValue: 'All Services' })}</SelectItem>
+                <SelectItem value="all">{t('submissions.allServices', { defaultValue: 'All Services' })}</SelectItem>
                 <SelectItem value="us_lottery">{t('submissions.serviceUSLottery')}</SelectItem>
                 <SelectItem value="canada_immigration">{t('submissions.serviceCanadaImmigration')}</SelectItem>
                 <SelectItem value="work_visa">{t('submissions.serviceWorkVisa')}</SelectItem>
@@ -480,10 +480,10 @@ const Clients = () => {
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger>
                 <Filter className="w-4 h-4 ml-2" />
-                <SelectValue placeholder={t('clients.filterByStatus')} />
+                <SelectValue placeholder={t('clients.filterByStatus', { defaultValue: 'Filter by Status' })} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('clients.allStatuses', { defaultValue: 'All Statuses' })}</SelectItem>
+                <SelectItem value="all">{t('submissions.allStatuses', { defaultValue: 'All Statuses' })}</SelectItem>
                 <SelectItem value="new">{t('status.new')}</SelectItem>
                 <SelectItem value="in_review">{t('status.inProgress')}</SelectItem>
                 <SelectItem value="completed">{t('status.completed')}</SelectItem>

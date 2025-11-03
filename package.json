@@ -19,6 +19,7 @@
     "pm2:logs": "pm2 logs connect-job-world-api",
     "pm2:monit": "pm2 monit",
     "deploy": "npm run build:prod && npm run pm2:restart",
+    "create-admin": "node server/scripts/createFirstAdmin.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

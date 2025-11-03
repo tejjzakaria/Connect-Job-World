@@ -803,6 +803,18 @@ const Submissions = () => {
               >
                 {/* Header */}
                 <div className="flex items-start gap-3 mb-4">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                    {submission.name.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-lg text-foreground truncate">{submission.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(submission.status)}`}>
+                        {getStatusIcon(submission.status)}
+                        {getStatusTranslation(submission.status, t)}
+                      </span>
+                    </div>
+                  </div>
                   {/* Selection Checkbox */}
                   <button
                     onClick={(e) => {
@@ -817,18 +829,6 @@ const Submissions = () => {
                       <Square className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
                     )}
                   </button>
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
-                    {submission.name.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-lg text-foreground truncate">{submission.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(submission.status)}`}>
-                        {getStatusIcon(submission.status)}
-                        {getStatusTranslation(submission.status, t)}
-                      </span>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Contact Info */}
