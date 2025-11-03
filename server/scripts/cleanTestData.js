@@ -9,7 +9,7 @@ dotenv.config();
 const cleanDatabase = async () => {
   try {
     console.log('🔄 Connecting to MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI_STAGING);
     console.log('✅ Connected to MongoDB\n');
 
     // Get current counts

@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const connectDB = async () => {
   try {
     // Log database name (without credentials) for debugging
-    const dbUri = process.env.MONGODB_URI;
+    const dbUri = process.env.MONGODB_URI_STAGING;
     const dbName = dbUri?.split('/').pop()?.split('?')[0] || 'unknown';
     console.log(`🔄 Attempting to connect to MongoDB database: ${dbName}`);
 
