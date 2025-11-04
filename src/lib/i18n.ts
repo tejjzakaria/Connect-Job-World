@@ -41,6 +41,14 @@ const resources = {
       'dashboard.noRecentSubmissions': 'لا توجد طلبات حديثة',
       'dashboard.errorLoading': 'خطأ في تحميل البيانات',
       'dashboard.tryAgain': 'يرجى المحاولة مرة أخرى',
+      'dashboard.statusOverview': 'نظرة عامة على الحالات',
+      'dashboard.submissions': 'الطلبات',
+      'dashboard.ofTotal': 'من الإجمالي',
+      'dashboard.workflowProgress': 'تقدم سير العمل',
+      'dashboard.pendingReview': 'قيد المراجعة',
+      'dashboard.welcome': 'مرحباً!',
+      'dashboard.todayOverview': 'إليك نظرة عامة على نشاط اليوم',
+      'dashboard.quickActions': 'إجراءات سريعة',
 
       // Clients
       'clients.title': 'العملاء',
@@ -60,6 +68,14 @@ const resources = {
       'clients.view': 'عرض',
       'clients.noClients': 'لا يوجد عملاء',
       'clients.deleteConfirm': 'هل أنت متأكد من حذف هذا العميل؟',
+      'clients.selectedCount': '{{count}} محدد',
+      'clients.deleteSelected': 'حذف المحدد',
+      'clients.bulkDeleteSuccess': 'تم حذف {{count}} بنجاح',
+      'clients.bulkDeleteDialogTitle': 'حذف عدة عملاء',
+      'clients.bulkDeleteDialogDescription': 'لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع العملاء المحددين نهائياً.',
+      'clients.bulkDeleteWarning': 'أنت على وشك حذف {{count}} عملاء',
+      'clients.bulkDeleteConfirmText': 'سيتم حذف جميع بيانات العملاء نهائياً',
+      'clients.bulkDeleteConfirm': 'حذف {{count}} عملاء',
 
       // Add/Edit Client
       'addClient.title': 'إضافة عميل جديد',
@@ -169,6 +185,14 @@ const resources = {
       'submissions.csvHeaderConverted': 'تم التحويل إلى عميل',
       'submissions.csvYes': 'نعم',
       'submissions.csvNo': 'لا',
+      'submissions.selectedCount': '{{count}} محدد',
+      'submissions.deleteSelected': 'حذف المحدد',
+      'submissions.bulkDeleteSuccess': 'تم حذف {{count}} بنجاح',
+      'submissions.bulkDeleteDialogTitle': 'حذف عدة طلبات',
+      'submissions.bulkDeleteDialogDescription': 'لا يمكن التراجع عن هذا الإجراء. سيتم حذف جميع الطلبات المحددة نهائياً.',
+      'submissions.bulkDeleteWarning': 'أنت على وشك حذف {{count}} طلبات',
+      'submissions.bulkDeleteConfirmText': 'سيتم حذف جميع بيانات الطلبات نهائياً',
+      'submissions.bulkDeleteConfirm': 'حذف {{count}} طلبات',
 
       // Employees
       'employees.title': 'الموظفين',
@@ -250,6 +274,17 @@ const resources = {
       'analytics.thisMonth': 'هذا الشهر',
       'analytics.thisQuarter': 'هذا الربع',
       'analytics.thisYear': 'هذا العام',
+      'analytics.conversionFunnel': 'قمع التحويل',
+      'analytics.percentage': 'النسبة المئوية',
+      'analytics.conversionRate': 'معدل التحويل',
+      'analytics.overallConversion': 'معدل التحويل الإجمالي',
+      'analytics.servicePerformance': 'مقارنة أداء الخدمات',
+      'analytics.total': 'الإجمالي',
+      'analytics.completed': 'مكتمل',
+      'analytics.inProgress': 'قيد التنفيذ',
+      'analytics.requests': 'الطلبات',
+      'analytics.reportDownloaded': 'تم تنزيل التقرير الشامل',
+      'analytics.exportError': 'حدث خطأ أثناء تصدير التقرير',
 
       // Settings
       'settings.title': 'تفاصيل النظام',
@@ -1120,6 +1155,9 @@ const resources = {
       'common.close': 'إغلاق',
       'common.refresh': 'تحديث',
       'common.exportCSV': 'تصدير CSV',
+      'common.clearSelection': 'إلغاء التحديد',
+      'common.tryAgain': 'يرجى المحاولة مرة أخرى',
+      'common.pleaseWait': 'يرجى الانتظار',
 
       // Roles
       'role.admin': 'مدير',
@@ -1205,6 +1243,14 @@ const resources = {
       'dashboard.noRecentSubmissions': 'Aucune demande récente',
       'dashboard.errorLoading': 'Erreur lors du chargement des données',
       'dashboard.tryAgain': 'Veuillez réessayer',
+      'dashboard.statusOverview': 'Aperçu des statuts',
+      'dashboard.submissions': 'Soumissions',
+      'dashboard.ofTotal': 'du total',
+      'dashboard.workflowProgress': 'Progression du flux de travail',
+      'dashboard.pendingReview': 'En attente de révision',
+      'dashboard.welcome': 'Bienvenue!',
+      'dashboard.todayOverview': 'Voici un aperçu de l\'activité d\'aujourd\'hui',
+      'dashboard.quickActions': 'Actions rapides',
 
       // Clients
       'clients.title': 'Clients',
@@ -1224,6 +1270,14 @@ const resources = {
       'clients.view': 'Voir',
       'clients.noClients': 'Aucun client',
       'clients.deleteConfirm': 'Êtes-vous sûr de vouloir supprimer ce client ?',
+      'clients.selectedCount': '{{count}} sélectionné(s)',
+      'clients.deleteSelected': 'Supprimer la sélection',
+      'clients.bulkDeleteSuccess': '{{count}} supprimé(s) avec succès',
+      'clients.bulkDeleteDialogTitle': 'Supprimer plusieurs clients',
+      'clients.bulkDeleteDialogDescription': 'Cette action ne peut pas être annulée. Tous les clients sélectionnés seront définitivement supprimés.',
+      'clients.bulkDeleteWarning': 'Vous êtes sur le point de supprimer {{count}} clients',
+      'clients.bulkDeleteConfirmText': 'Toutes les données client seront définitivement supprimées',
+      'clients.bulkDeleteConfirm': 'Supprimer {{count}} clients',
 
       // Add/Edit Client
       'addClient.title': 'Ajouter un nouveau client',
@@ -1333,6 +1387,14 @@ const resources = {
       'submissions.csvHeaderConverted': 'Converti en client',
       'submissions.csvYes': 'Oui',
       'submissions.csvNo': 'Non',
+      'submissions.selectedCount': '{{count}} sélectionné(s)',
+      'submissions.deleteSelected': 'Supprimer la sélection',
+      'submissions.bulkDeleteSuccess': '{{count}} supprimé(s) avec succès',
+      'submissions.bulkDeleteDialogTitle': 'Supprimer plusieurs soumissions',
+      'submissions.bulkDeleteDialogDescription': 'Cette action ne peut pas être annulée. Toutes les soumissions sélectionnées seront définitivement supprimées.',
+      'submissions.bulkDeleteWarning': 'Vous êtes sur le point de supprimer {{count}} soumissions',
+      'submissions.bulkDeleteConfirmText': 'Toutes les données de soumission seront définitivement supprimées',
+      'submissions.bulkDeleteConfirm': 'Supprimer {{count}} soumissions',
 
       // Employees
       'employees.title': 'Employés',
@@ -1414,6 +1476,17 @@ const resources = {
       'analytics.thisMonth': 'Ce mois',
       'analytics.thisQuarter': 'Ce trimestre',
       'analytics.thisYear': 'Cette année',
+      'analytics.conversionFunnel': 'Entonnoir de conversion',
+      'analytics.percentage': 'Pourcentage',
+      'analytics.conversionRate': 'Taux de conversion',
+      'analytics.overallConversion': 'Conversion globale',
+      'analytics.servicePerformance': 'Comparaison des performances de service',
+      'analytics.total': 'Total',
+      'analytics.completed': 'Complété',
+      'analytics.inProgress': 'En cours',
+      'analytics.requests': 'Demandes',
+      'analytics.reportDownloaded': 'Rapport complet téléchargé',
+      'analytics.exportError': 'Erreur lors de l\'exportation du rapport',
 
       // Settings
       'settings.title': 'Paramètres système',
@@ -2284,6 +2357,9 @@ const resources = {
       'common.close': 'Fermer',
       'common.refresh': 'Actualiser',
       'common.exportCSV': 'Exporter CSV',
+      'common.clearSelection': 'Effacer la sélection',
+      'common.tryAgain': 'Veuillez réessayer',
+      'common.pleaseWait': 'Veuillez patienter',
 
       // Roles
       'role.admin': 'Administrateur',
@@ -2578,6 +2654,8 @@ const resources = {
       'analytics.thisMonth': 'This Month',
       'analytics.thisQuarter': 'This Quarter',
       'analytics.thisYear': 'This Year',
+      'analytics.reportDownloaded': 'Comprehensive report downloaded',
+      'analytics.exportError': 'Error exporting report',
 
       // Settings
       'settings.title': 'System Settings',
@@ -3448,6 +3526,8 @@ const resources = {
       'common.close': 'Close',
       'common.refresh': 'Refresh',
       'common.exportCSV': 'Export CSV',
+      'common.tryAgain': 'Please try again',
+      'common.pleaseWait': 'Please wait',
 
       // Roles
       'role.admin': 'Administrator',

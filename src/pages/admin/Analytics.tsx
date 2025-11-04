@@ -246,7 +246,7 @@ const Analytics = () => {
       console.error("Error fetching analytics data:", error);
       toast({
         title: t('common.error'),
-        description: error.message || "يرجى المحاولة مرة أخرى",
+        description: error.message || t('common.tryAgain'),
         variant: "destructive"
       });
     } finally {
@@ -289,7 +289,7 @@ const Analytics = () => {
     try {
       toast({
         title: t('common.loading'),
-        description: "يرجى الانتظار",
+        description: t('common.pleaseWait'),
       });
 
       // Create comprehensive analytics report
@@ -377,13 +377,13 @@ const Analytics = () => {
 
       toast({
         title: t('common.success'),
-        description: "تم تنزيل التقرير الشامل",
+        description: t('analytics.reportDownloaded'),
       });
     } catch (error: any) {
       console.error("Error exporting report:", error);
       toast({
         title: t('common.error'),
-        description: error.message || "حدث خطأ أثناء تصدير التقرير",
+        description: error.message || t('analytics.exportError'),
         variant: "destructive"
       });
     }

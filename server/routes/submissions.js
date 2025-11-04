@@ -444,8 +444,8 @@ router.post('/:id/convert', authorize('admin'), async (req, res) => {
 
 // @desc    Get submission statistics
 // @route   GET /api/submissions/stats/overview
-// @access  Private (Admin, Viewer)
-router.get('/stats/overview', authorize('admin', 'viewer'), async (req, res) => {
+// @access  Private (Admin, Agent, Viewer)
+router.get('/stats/overview', authorize('admin', 'agent', 'viewer'), async (req, res) => {
   try {
     const total = await Submission.countDocuments();
     const byStatus = await Submission.aggregate([

@@ -191,16 +191,12 @@ const Dashboard = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "new":
-      case "جديد":
         return "bg-blue-50 text-blue-700";
       case "viewed":
-      case "تمت المعاينة":
         return "bg-yellow-50 text-yellow-700";
       case "contacted":
-      case "تم التواصل":
         return "bg-purple-50 text-purple-700";
       case "completed":
-      case "مكتمل":
         return "bg-green-50 text-green-700";
       default:
         return "bg-gray-50 text-gray-700";

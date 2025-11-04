@@ -264,8 +264,8 @@ router.post('/:id/notes', authorize('admin', 'agent'), async (req, res) => {
 
 // @desc    Get client statistics
 // @route   GET /api/clients/stats/overview
-// @access  Private (Admin, Viewer)
-router.get('/stats/overview', authorize('admin', 'viewer'), async (req, res) => {
+// @access  Private (Admin, Agent, Viewer)
+router.get('/stats/overview', authorize('admin', 'agent', 'viewer'), async (req, res) => {
   try {
     const total = await Client.countDocuments();
     const byStatus = await Client.aggregate([

@@ -275,16 +275,12 @@ const Clients = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "new":
-      case "جديد":
         return "bg-blue-50 text-blue-700 border-blue-300";
       case "in_review":
-      case "قيد المراجعة":
         return "bg-yellow-50 text-yellow-700 border-yellow-300";
       case "completed":
-      case "مكتمل":
         return "bg-green-50 text-green-700 border-green-300";
       case "rejected":
-      case "مرفوض":
         return "bg-red-50 text-red-700 border-red-300";
       default:
         return "bg-gray-50 text-gray-700 border-gray-300";

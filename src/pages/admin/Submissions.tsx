@@ -448,16 +448,12 @@ const Submissions = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "new":
-      case "جديد":
         return "bg-blue-50 text-blue-700 border-blue-300";
       case "viewed":
-      case "تمت المعاينة":
         return "bg-yellow-50 text-yellow-700 border-yellow-300";
       case "contacted":
-      case "تم التواصل":
         return "bg-purple-50 text-purple-700 border-purple-300";
       case "completed":
-      case "مكتمل":
         return "bg-green-50 text-green-700 border-green-300";
       default:
         return "bg-gray-50 text-gray-700 border-gray-300";
@@ -467,16 +463,12 @@ const Submissions = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "new":
-      case "جديد":
         return <Clock className="w-3 h-3" />;
       case "viewed":
-      case "تمت المعاينة":
         return <Eye className="w-3 h-3" />;
       case "contacted":
-      case "تم التواصل":
         return <Phone className="w-3 h-3" />;
       case "completed":
-      case "مكتمل":
         return <CheckCircle className="w-3 h-3" />;
       default:
         return null;
