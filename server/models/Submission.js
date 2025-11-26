@@ -97,7 +97,18 @@ const submissionSchema = new mongoose.Schema(
     // Workflow fields
     workflowStatus: {
       type: String,
-      enum: ['pending_validation', 'validated', 'call_confirmed', 'documents_requested', 'documents_uploaded', 'documents_verified', 'converted_to_client'],
+      enum: [
+        'pending_validation',
+        'validated',
+        'call_confirmed',
+        'payment_requested',
+        'payment_uploaded',
+        'payment_confirmed',
+        'documents_requested',
+        'documents_uploaded',
+        'documents_verified',
+        'converted_to_client'
+      ],
       default: 'pending_validation',
     },
     validatedBy: {

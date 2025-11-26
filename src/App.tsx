@@ -22,6 +22,7 @@ import Documentation from "./pages/admin/Documentation";
 import Employees from "./pages/admin/Employees";
 import Profile from "./pages/admin/Profile";
 import DocumentUpload from "./pages/DocumentUpload";
+import PaymentUpload from "./pages/PaymentUpload";
 import TrackApplication from "./pages/public/TrackApplication";
 
 const queryClient = new QueryClient();
@@ -135,6 +136,7 @@ const App = () => (
             />
             {/* Public routes */}
             <Route path="/upload/:token" element={<DocumentUpload />} />
+            <Route path="/payment/:token" element={<PaymentUpload />} />
             <Route path="/track" element={<TrackApplication />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

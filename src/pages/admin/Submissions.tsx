@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Eye, Trash2, Phone, Mail, MessageSquare, Download, CheckCircle, Clock, Link as LinkIcon, FileText, UserCheck, PhoneCall } from "lucide-react";
+import { Search, Filter, Eye, Trash2, Phone, Mail, MessageSquare, Download, CheckCircle, Clock, Link as LinkIcon, FileText, UserCheck, PhoneCall, CreditCard, DollarSign } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import DashboardLayout from "@/components/admin/DashboardLayout";
-import { submissionsAPI, documentsAPI } from "@/lib/api";
+import { submissionsAPI, documentsAPI, paymentsAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { formatDateForExport, formatDateForFilename, formatDateTime } from "@/lib/dateUtils";
 
@@ -117,6 +117,12 @@ const Submissions = () => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [generatedLink, setGeneratedLink] = useState("");
+
+  // Payment dialog state
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [paymentLinkDialogOpen, setPaymentLinkDialogOpen] = useState(false);
+  const [generatedPaymentLink, setGeneratedPaymentLink] = useState("");
 
   // Confirmation dialogs
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -280,6 +286,61 @@ const Submissions = () => {
     toast({
       title: t('common.copied', { defaultValue: 'Copied' }),
       description: t('submissions.linkCopied'),
+    });
+  };
+
+  // Payment link handlers
+  const openPaymentDialog = (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setPaymentAmount("");
+    setPaymentDialogOpen(true);
+  };
+
+  const handleGeneratePaymentLink = async () => {
+    if (!selectedSubmission || !paymentAmount) return;
+
+    const amount = parseFloat(paymentAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({
+        title: t('common.error'),
+        description: t('submissions.invalidAmount'),
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const response = await paymentsAPI.generateLink({
+        submissionId: selectedSubmission._id,
+        amount,
+        currency: 'MAD',
+        expiresInDays: 7,
+      });
+
+      if (response.success && response.paymentUrl) {
+        setGeneratedPaymentLink(response.paymentUrl);
+        setPaymentDialogOpen(false);
+        setPaymentLinkDialogOpen(true);
+        toast({
+          title: t('common.success'),
+          description: t('submissions.paymentLinkSuccess'),
+        });
+        fetchSubmissions();
+      }
+    } catch (error: any) {
+      toast({
+        title: t('common.error'),
+        description: error.message || t('dashboard.tryAgain'),
+        variant: "destructive"
+      });
+    }
+  };
+
+  const copyPaymentLinkToClipboard = () => {
+    navigator.clipboard.writeText(generatedPaymentLink);
+    toast({
+      title: t('common.copied', { defaultValue: 'Copied' }),
+      description: t('submissions.paymentLinkCopied'),
     });
   };
 
@@ -712,7 +773,36 @@ const Submissions = () => {
                     </Button>
                   )}
 
-                  {(submission.workflowStatus === 'call_confirmed' || submission.workflowStatus === 'documents_requested') && (
+                  {/* Payment Link Button - appears after call confirmed */}
+                  {(submission.workflowStatus === 'call_confirmed' || submission.workflowStatus === 'payment_requested') && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 flex-1"
+                      onClick={() => openPaymentDialog(submission)}
+                      title={t('submissions.paymentTooltip')}
+                    >
+                      <DollarSign className="w-4 h-4" />
+                      {t('submissions.paymentButton')}
+                    </Button>
+                  )}
+
+                  {/* Verify Payment Button - appears when receipt is uploaded */}
+                  {submission.workflowStatus === 'payment_uploaded' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 flex-1"
+                      onClick={() => navigate(`/admin/submissions/${submission._id}/documents?tab=payment`)}
+                      title={t('submissions.verifyPaymentTooltip')}
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      {t('submissions.verifyPaymentButton')}
+                    </Button>
+                  )}
+
+                  {/* Document Upload Link Button - appears after payment confirmed */}
+                  {(submission.workflowStatus === 'payment_confirmed' || submission.workflowStatus === 'documents_requested') && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -739,7 +829,10 @@ const Submissions = () => {
                   )}
 
                   {/* View Documents */}
-                  {(submission.workflowStatus === 'documents_uploaded' ||
+                  {(submission.workflowStatus === 'payment_uploaded' ||
+                    submission.workflowStatus === 'payment_confirmed' ||
+                    submission.workflowStatus === 'documents_requested' ||
+                    submission.workflowStatus === 'documents_uploaded' ||
                     submission.workflowStatus === 'documents_verified' ||
                     submission.workflowStatus === 'converted_to_client') && (
                     <Button
@@ -953,6 +1046,83 @@ const Submissions = () => {
             </Button>
             <Button onClick={handleConvertConfirm}>
               {t('submissions.convertConfirmButton')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Amount Dialog */}
+      <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('submissions.paymentDialogTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('submissions.paymentDialogDescription', { name: selectedSubmission?.name })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold">{t('submissions.paymentAmountLabel')}</label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  type="number"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                  placeholder={t('submissions.paymentAmountPlaceholder')}
+                  className="flex-1"
+                  min="0"
+                  step="0.01"
+                />
+                <span className="text-muted-foreground font-semibold">MAD</span>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setPaymentDialogOpen(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button onClick={handleGeneratePaymentLink} disabled={!paymentAmount}>
+              {t('submissions.generatePaymentLink')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Generated Payment Link Dialog */}
+      <Dialog open={paymentLinkDialogOpen} onOpenChange={setPaymentLinkDialogOpen}>
+        <DialogContent dir={isRTL ? 'rtl' : 'ltr'} className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{t('submissions.paymentLinkDialogTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('submissions.paymentLinkDialogDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold">{t('submissions.paymentLinkLabel')}</label>
+              <div className="flex gap-2">
+                <Input
+                  value={generatedPaymentLink}
+                  readOnly
+                  className="font-mono text-sm"
+                />
+                <Button onClick={copyPaymentLinkToClipboard} variant="outline">
+                  {t('submissions.copyButton')}
+                </Button>
+              </div>
+            </div>
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 text-sm text-emerald-900">
+              <p className="font-semibold mb-2">{t('submissions.paymentLinkInfoTitle')}</p>
+              <ul className="space-y-1">
+                <li>{t('submissions.paymentLinkValidDays')}</li>
+                <li>{t('submissions.paymentLinkBankDetails')}</li>
+                <li>{t('submissions.paymentLinkReceipt')}</li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button onClick={() => setPaymentLinkDialogOpen(false)}>
+              {t('common.close')}
             </Button>
           </DialogFooter>
         </DialogContent>

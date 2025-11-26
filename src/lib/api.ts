@@ -406,6 +406,89 @@ export const notificationsAPI = {
   },
 };
 
+// Payments API
+export const paymentsAPI = {
+  // Generate payment link (Admin)
+  generateLink: async (data: {
+    submissionId: string;
+    amount: number;
+    currency?: string;
+    expiresInDays?: number;
+    notes?: string;
+    bankDetails?: {
+      bankName?: string;
+      accountName?: string;
+      accountNumber?: string;
+      rib?: string;
+      swift?: string;
+    };
+  }) => {
+    return await apiCall('/payments/generate-link', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Get all payment links for a submission (Admin)
+  getLinks: async (submissionId: string) => {
+    return await apiCall(`/payments/links/${submissionId}`);
+  },
+
+  // Validate payment link (Public)
+  validateLink: async (token: string) => {
+    const response = await fetch(`${API_URL}/payments/validate-link/${token}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Invalid link');
+    }
+
+    return data;
+  },
+
+  // Upload payment receipt (Public)
+  uploadReceipt: async (token: string, file: File) => {
+    const formData = new FormData();
+    formData.append('receipt', file);
+
+    const response = await fetch(`${API_URL}/payments/upload-receipt/${token}`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Upload failed');
+    }
+
+    return data;
+  },
+
+  // Preview receipt (Admin)
+  previewReceipt: async (id: string) => {
+    return await apiCall(`/payments/${id}/preview-receipt`);
+  },
+
+  // Verify or reject payment (Admin)
+  verify: async (id: string, data: {
+    status: 'confirmed' | 'rejected';
+    rejectionReason?: string;
+  }) => {
+    return await apiCall(`/payments/${id}/verify`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Deactivate payment link (Admin)
+  deactivateLink: async (id: string) => {
+    return await apiCall(`/payments/links/${id}/deactivate`, {
+      method: 'PATCH',
+    });
+  },
+};
+
 // Users API
 export const usersAPI = {
   getAll: async (params?: {
@@ -505,6 +588,7 @@ export default {
   clients: clientsAPI,
   submissions: submissionsAPI,
   documents: documentsAPI,
+  payments: paymentsAPI,
   notifications: notificationsAPI,
   users: usersAPI,
 };

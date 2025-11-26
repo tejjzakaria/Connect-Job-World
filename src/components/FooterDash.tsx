@@ -34,7 +34,7 @@ const FooterDash = () => {
             {t('footerDash.systemOperational')}
           </span>
           <span>•</span>
-          <span>v1.0.0</span>
+          <span>v1.3.0</span>
           <span>•</span>
           <span className="hover:text-primary transition-colors cursor-default">
             © 2025
