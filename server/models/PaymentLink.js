@@ -22,27 +22,11 @@ const paymentLinkSchema = new mongoose.Schema(
       type: String,
       default: 'MAD', // Moroccan Dirham
     },
+    // Bank details are now configured in the frontend (PaymentUpload.tsx)
+    // This field is kept for backwards compatibility but not used
     bankDetails: {
-      bankName: {
-        type: String,
-        default: 'Attijariwafa Bank',
-      },
-      accountName: {
-        type: String,
-        default: 'Connect Job World',
-      },
-      accountNumber: {
-        type: String,
-        default: '007 810 0002 5810 0000 1234 56',
-      },
-      rib: {
-        type: String,
-        default: '007 810 0002581000001234 56',
-      },
-      swift: {
-        type: String,
-        default: 'BCMAMAMC',
-      },
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
     },
     expiresAt: {
       type: Date,
