@@ -292,6 +292,22 @@ const PaymentUpload = () => {
           </div>
         </Card>
 
+        {/* Payment Reference Disclaimer */}
+        <Card className="p-6 mb-6 bg-amber-50 border-amber-300">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+            <div className="space-y-2">
+              <p className="text-amber-900 font-bold">{t('payment.importantNote')}</p>
+              <p className="text-amber-800 text-sm">
+                {t('payment.referenceDisclaimer')}
+              </p>
+              <div className="bg-amber-100 border border-amber-300 rounded-lg px-4 py-2 inline-block">
+                <p className="text-amber-900 font-mono font-bold text-lg">SERVICE INF</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* Bank Accounts Cards */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
@@ -391,6 +407,8 @@ const PaymentUpload = () => {
           ))}
           </div>
         </div>
+
+        
 
         {/* Info Card */}
         <Card className="p-6 mb-6 bg-blue-50 border-blue-200">
