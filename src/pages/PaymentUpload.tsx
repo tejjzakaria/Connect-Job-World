@@ -13,27 +13,56 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 // BANK ACCOUNTS CONFIGURATION
 // Edit the bank accounts below to update payment details
 // ============================================================
-const BANK_ACCOUNTS = [
+const BANK_ACCOUNTS: BankAccount[] = [
   {
+    type: "bank",
     bankName: "Attijariwafa Bank",
     accountName: "ABDERRAFIK KHOUMCHAT",
     rib: "007010000710930040104668",
     swift: "BCMAMAMCXXX",
+    logo: "/Logo_Attijari_bank.png",
   },
   {
+    type: "bank",
     bankName: "Bank of Africa (BMCE)",
     accountName: "M ABDERRAFIK KHOUMCHAT",
     rib: "011010000007200001102049",
     swift: "BMCEMAMCXXX",
+    logo: "/Bank_of_Africa_Logo.png",
+  },
+  {
+    type: "bank",
+    bankName: "CIH Bank",
+    accountName: "LINA BADAOUI",
+    rib: "230810564027821101580004",
+    swift: "CIHMMAMC",
+    logo: "/Cih-bank-logo.png",
+  },
+  {
+    type: "cash",
+    bankName: "Cash Plus",
+    accountName: "LINA BADAOUI",
+    phone: "07 64 72 46 08", // Add phone number here
+    logo: "/cash-plus-mobile-logo.png",
+  },
+  {
+    type: "cash",
+    bankName: "Wafacash",
+    accountName: "LINA BADAOUI",
+    phone: "07 64 72 46 08", // Add phone number here
+    logo: "/wafacash-logo.png",
   },
 ];
 // ============================================================
 
 interface BankAccount {
+  type: "bank" | "cash";
   bankName: string;
   accountName: string;
-  rib: string;
-  swift: string;
+  rib?: string;
+  swift?: string;
+  phone?: string;
+  logo?: string;
 }
 
 interface PaymentLinkData {
@@ -264,26 +293,38 @@ const PaymentUpload = () => {
         </Card>
 
         {/* Bank Accounts Cards */}
-        <div className="space-y-4 mb-6">
+        <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <Building2 className="w-6 h-6 text-primary" />
             <h3 className="text-xl font-bold text-foreground">{t('payment.bankDetails')}</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-4">{t('payment.chooseBank')}</p>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {BANK_ACCOUNTS.map((bank, index) => (
             <Card key={index} className="p-6">
               <div className="flex items-center gap-3 mb-4 pb-3 border-b">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-primary" />
-                </div>
+                {bank.logo ? (
+                  <img
+                    src={bank.logo}
+                    alt={bank.bankName}
+                    className="w-12 h-12 object-contain"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-primary" />
+                  </div>
+                )}
                 <h4 className="text-lg font-bold text-foreground">{bank.bankName}</h4>
               </div>
 
               <div className="space-y-3">
+                {/* Account Name / Send To */}
                 <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('payment.accountName')}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {bank.type === "cash" ? t('payment.sendTo') : t('payment.accountName')}
+                    </p>
                     <p className="font-semibold text-foreground">{bank.accountName}</p>
                   </div>
                   <Button
@@ -295,36 +336,60 @@ const PaymentUpload = () => {
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <div>
-                    <p className="text-xs text-muted-foreground">{t('payment.rib')}</p>
-                    <p className="font-semibold text-foreground font-mono text-sm">{bank.rib}</p>
+                {/* RIB - only for bank type */}
+                {bank.type === "bank" && bank.rib && (
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t('payment.rib')}</p>
+                      <p className="font-semibold text-foreground font-mono text-sm">{bank.rib}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(bank.rib!, t('payment.rib'))}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard(bank.rib, t('payment.rib'))}
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
+                )}
 
-                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <div>
-                    <p className="text-xs text-muted-foreground">{t('payment.swift')}</p>
-                    <p className="font-semibold text-foreground font-mono">{bank.swift}</p>
+                {/* SWIFT - only for bank type */}
+                {bank.type === "bank" && bank.swift && (
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t('payment.swift')}</p>
+                      <p className="font-semibold text-foreground font-mono">{bank.swift}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(bank.swift!, t('payment.swift'))}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => copyToClipboard(bank.swift, t('payment.swift'))}
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
+                )}
+
+                {/* Phone - only for cash type */}
+                {bank.type === "cash" && bank.phone && (
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                    <div>
+                      <p className="text-xs text-muted-foreground">{t('payment.phoneNumber')}</p>
+                      <p className="font-semibold text-foreground font-mono">{bank.phone}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(bank.phone!, t('payment.phoneNumber'))}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card>
           ))}
+          </div>
         </div>
 
         {/* Info Card */}
